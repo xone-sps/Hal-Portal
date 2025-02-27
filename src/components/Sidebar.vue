@@ -2,8 +2,8 @@
   <a-layout-sider
       collapsible
       v-model:collapsed="collapsed"
-      class="h-screen fixed !left-0 !top-0 !bg-white shadow-md px-4 pt-6 !w-[280px] !default" style="left:0;"
-      width="280"
+      class="h-screen !fixed left-0 top-0 !bg-white shadow-md px-4 pt-6 w-[252px] z-50"
+      width="252"
   >
     <!-- Logo & Branding -->
     <div class="flex mb-4">
@@ -39,44 +39,43 @@
 
     <!-- Menu Sections -->
     <div class="!my-4">
-      <p v-if="!collapsed" class="px-4 mb-2 group-text-menu">ເມນູ</p>
+      <p v-if="!collapsed" class="px-4 !mb-2 group-text-menu">ເມນູ</p>
       <a-menu v-model:selectedKeys="selectedKeys" mode="inline" class="!border-none">
-        <a-menu-item key="dashboard">
+        <a-menu-item key="/">
           <router-link to="/" class="flex items-center gap-2">
             <img :src="dashboard_data" alt="Dashboard" class="w-6 h-6"/>
             <span v-if="!collapsed" class="text-menu">ແດຊບອດ</span>
           </router-link>
         </a-menu-item>
 
-        <a-menu-item key="cod">
+        <a-menu-item key="/cod">
           <router-link to="/cod" class="flex items-center gap-2">
             <img :src="cod" alt="COD" class="w-6 h-6"/>
             <span v-if="!collapsed" class="text-menu">ລາຍການ COD</span>
           </router-link>
         </a-menu-item>
 
-        <a-menu-item key="self-drop">
+        <a-menu-item key="/self-delivery">
           <router-link to="/self-delivery" class="flex items-center gap-2">
             <img :src="self_delivery" alt="Self Delivery" class="w-6 h-6"/>
             <span v-if="!collapsed" class="text-menu">ຝາກເຄື່ອງເອງ</span>
           </router-link>
         </a-menu-item>
       </a-menu>
-
     </div>
 
     <!-- Tracking Section -->
     <div class="!my-4">
-      <p v-if="!collapsed" class="px-4 mb-2 group-text-menu">ຕິດຕາມພັດສະດຸ</p>
+      <p v-if="!collapsed" class="px-4 !mb-2 group-text-menu">ຕິດຕາມພັດສະດຸ</p>
       <a-menu v-model:selectedKeys="selectedKeys" mode="inline" class="!border-none">
         <a-menu-item key="tracking-out">
-          <router-link to="/tracking-out" class="flex items-center gap-2">
+          <router-link to="/cod" class="flex items-center gap-2">
             <img :src="box_fill" alt="Open Box Icon" class="w-6 h-6"/>
             <span v-if="!collapsed" class="text-menu">ພັດສະດຸອອກ</span>
           </router-link>
         </a-menu-item>
         <a-menu-item key="tracking-in">
-          <router-link to="/tracking-in" class="flex items-center gap-2">
+          <router-link to="/cod" class="flex items-center gap-2">
             <img :src="open_box" alt="Open Box Icon" class="w-6 h-6"/>
             <span v-if="!collapsed" class="text-menu">ພັດສະດຸເຂົ້າ</span>
           </router-link>
@@ -86,22 +85,22 @@
 
     <!-- Settings Section -->
     <div class="!my-4 ant-menu-vertical">
-      <p v-if="!collapsed" class="px-4 mb-2 group-text-menu">ຂໍ້ມູນສ່ວນຕົວ</p>
+      <p v-if="!collapsed" class="px-4 !mb-2 group-text-menu">ຂໍ້ມູນສ່ວນຕົວ</p>
       <a-menu v-model:selectedKeys="selectedKeys" mode="inline" class="!border-none">
         <a-menu-item key="profile">
-          <router-link to="/profile" class="flex items-center gap-2">
+          <router-link to="/cod" class="flex items-center gap-2">
             <img :src="user" alt="Open Box Icon" class="w-6 h-6"/>
             <span v-if="!collapsed" class="text-menu">ຂໍ້ມູນທົ່ວໄປ</span>
           </router-link>
         </a-menu-item>
         <a-menu-item key="address">
-          <router-link to="/address" class="flex items-center gap-2">
+          <router-link to="/cod" class="flex items-center gap-2">
             <img :src="location" alt="Open Box Icon" class="w-6 h-6"/>
             <span v-if="!collapsed" class="text-menu">ທີ່ຢູ່</span>
           </router-link>
         </a-menu-item>
         <a-menu-item key="password">
-          <router-link to="/password" class="flex items-center gap-2">
+          <router-link to="/cod" class="flex items-center gap-2">
             <img :src="change_password" alt="Open Box Icon" class="w-6 h-6"/>
             <span v-if="!collapsed" class="text-menu">ປ່ຽນລະຫັດຜ່ານ</span>
           </router-link>
@@ -133,12 +132,13 @@ import logo from "@/assets/images/logo2.png";
 
 const collapsed = ref(false);
 const route = useRoute();
-const selectedKeys = ref([route.path]);
+const selectedKeys = ref([route.path]); // Set active menu based on current path
 
 // Watch route changes & update active menu
 watch(() => route.path, (newPath) => {
-  selectedKeys.value = [newPath];
+  selectedKeys.value = [newPath]; // Ensure it updates correctly
 });
+
 </script>
 
 <style scoped>
@@ -155,6 +155,7 @@ watch(() => route.path, (newPath) => {
 .a-layout-sider {
   height: 100vh !important;
   transition: width 0.3s ease-in-out;
+  position: fixed !important;
 }
 
 /* Collapsed Mode */

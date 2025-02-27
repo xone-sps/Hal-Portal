@@ -2,6 +2,10 @@
 @import './base.css';
 @import "./styles/variables.scss";
 
+.ant-layout-content {
+  margin: 0px;
+  padding: 0px;
+}
 
 @font-face {
   font-family: "NotoSanLao";
@@ -64,15 +68,22 @@ h1,h2,h3,h4,p {
   font-weight: normal;
 }
 
-a,
-.green {
+a{
   text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
-  padding: 3px;
+  color: #E00C16;
 }
-h1,h2,h3,h4 {
-  margin: 0;
+a:hover{
+  background-color: transparent !important;
+  color: #E00C16;
+}
+h1,h2,h3,h4,p, span,a {
+  margin: 0 !important;
+  font-family: "NotoSanLao";
+}
+.ant-layout-sider {
+  height: 100vh !important;
+  transition: width 0.3s ease-in-out;
+  position: relative !important;
 }
 .ant-layout-sider-trigger {
   position: fixed !important;
@@ -87,6 +98,7 @@ h1,h2,h3,h4 {
   transition: all 0.2s !important;
   left: 0 !important;
 }
+
 /* Active menu item */
 .ant-menu-item-selected {
   background-color: #fffcf3 !important; /* Light cream background */
@@ -94,22 +106,23 @@ h1,h2,h3,h4 {
   border-radius: 12px !important;
   border: 1px solid #F4F1E8 !important; /* Light border */
   position: relative;
+  padding-left: 18px !important; /* Adjust padding so text stays aligned */
 }
 
-/* Move the red left border to the absolute edge */
+/* Move the red border fully to the left edge */
 .ant-menu-item-selected::before {
   content: "";
   position: absolute;
-  left: -16px; /* Move it to the left edge */
+  left: 0; /* Move further left to touch the sidebar edge */
   top: 50%;
   transform: translateY(-50%);
-  width: 4px; /* Border thickness */
-  height: 60%; /* Adjust height */
+  width: 5px; /* Border thickness */
+  height: 100%; /* Adjust height */
   background-color: #E00C16; /* Red border color */
-  border-radius: 4px; /* Rounded edges */
+  border-radius: 4px; /* Slight rounding */
 }
 
-/* Style the icon in active menu */
+/* Style active menu icon */
 .ant-menu-item-selected img {
   filter: brightness(0) saturate(100%) invert(18%) sepia(100%) saturate(6000%) hue-rotate(-10deg) brightness(90%) contrast(100%);
 }
@@ -117,6 +130,34 @@ h1,h2,h3,h4 {
 /* Remove hover background */
 .ant-menu-item:hover {
   background-color: transparent !important;
+}
+
+/* Ensure menu items are centered when collapsed */
+.ant-menu-inline-collapsed > .ant-menu-item {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  text-align: center !important;
+  padding: 12px 0 !important; /* Adjust spacing */
+  width: 100% !important;
+}
+
+/* Ensure icons inside collapsed menu stay centered */
+.ant-menu-inline-collapsed .ant-menu-item img {
+  display: block !important;
+  margin: 0 auto !important;
+  width: 24px !important; /* Adjust icon size */
+  height: 24px !important;
+}
+/* Change icon color on hover */
+.ant-menu-item:hover img {
+  filter: brightness(0) saturate(100%) invert(18%) sepia(100%) saturate(6000%) hue-rotate(-10deg) brightness(90%) contrast(100%);
+  transition: filter 0.2s ease-in-out;
+}
+
+/* Change icon color when the menu is collapsed */
+.ant-menu-inline-collapsed .ant-menu-item:hover img {
+  filter: brightness(0) saturate(100%) invert(18%) sepia(100%) saturate(6000%) hue-rotate(-10deg) brightness(90%) contrast(100%);
 }
 
 
