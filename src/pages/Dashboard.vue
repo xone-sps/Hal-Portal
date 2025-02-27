@@ -1,7 +1,7 @@
 <template>
   <div>
     <a-card title="Dashboard">
-      <p>Welcome to the dashboard!</p>
+      <p class="text-blue-500">Welcome to the dashboard!</p>
     </a-card>
   </div>
 </template>

@@ -1,8 +1,9 @@
 <template>
-  <a-layout-header class="bg-white shadow-md flex items-center justify-between px-6">
+  <a-layout-header class="!bg-white shadow-md flex items-center justify-between px-6">
     <!-- Title aligned to start -->
     <a-typography-title :level="4" class="mb-0 text-black">
-      Dashboard
+      <span class="text-xl">Dashboard</span>
+      <p class="text-sm">ສະຖິຕິພາບລວມການເຄື່ອນໄຫວພັດສະດຸຂອງທ່ານ</p>
     </a-typography-title>
 
     <!-- Avatar aligned to end -->

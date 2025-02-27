@@ -1,9 +1,63 @@
 @import 'tailwindcss';
 @import './base.css';
+@import "./styles/variables.scss";
 
 
-body{
-  color: white;
+@font-face {
+  font-family: "NotoSanLao";
+  src: url(fonts/NotoSansLao-ExtraBold.ttf) format("truetype");
+  font-weight: 800;
+}
+
+@font-face {
+  font-family: "NotoSanLao";
+  src: url(fonts/NotoSansLao-Bold.ttf) format("truetype");
+  font-weight: 700;
+}
+
+@font-face {
+  font-family: "NotoSanLao";
+  src: url(fonts/NotoSansLao-SemiBold.ttf) format("truetype");
+  font-weight: 600;
+}
+
+@font-face {
+  font-family: "NotoSanLao";
+  src: url(fonts/NotoSansLao-Medium.ttf) format("truetype");
+  font-weight: 500;
+}
+
+@font-face {
+  font-family: "NotoSanLao";
+  src: url(fonts/NotoSansLao-Regular.ttf) format("truetype");
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: "NotoSanLao";
+  src: url(fonts/NotoSansLao-Light.ttf) format("truetype");
+  font-weight: 300;
+}
+
+/* Apply Tailwind class */
+.font-notosan {
+  font-family: "NotoSanLao", sans-serif;
+}
+
+/* Override Ant Design's Font */
+:root {
+  --ant-font-family: "NotoSanLao", sans-serif !important;
+}
+
+.ant-typography,
+.ant-btn,
+.ant-menu-item,
+.ant-layout,
+.ant-input {
+  font-family: "NotoSanLao", sans-serif !important;
+}
+h1,h2,h3,h4,p {
+  margin: 0;
 }
 #app {
   margin: 0 auto;
@@ -17,6 +71,54 @@ a,
   transition: 0.4s;
   padding: 3px;
 }
+h1,h2,h3,h4 {
+  margin: 0;
+}
+.ant-layout-sider-trigger {
+  position: fixed !important;
+  bottom: 0 !important;
+  z-index: 1000 !important;
+  height: 50px !important;
+  color: white !important;
+  line-height: 50px !important;
+  text-align: center !important;
+  background: #E00C16 !important; /* Custom Red */
+  cursor: pointer !important;
+  transition: all 0.2s !important;
+  left: 0 !important;
+}
+/* Active menu item */
+.ant-menu-item-selected {
+  background-color: #fffcf3 !important; /* Light cream background */
+  color: #E00C16 !important; /* Red text */
+  border-radius: 12px !important;
+  border: 1px solid #F4F1E8 !important; /* Light border */
+  position: relative;
+}
+
+/* Move the red left border to the absolute edge */
+.ant-menu-item-selected::before {
+  content: "";
+  position: absolute;
+  left: -16px; /* Move it to the left edge */
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px; /* Border thickness */
+  height: 60%; /* Adjust height */
+  background-color: #E00C16; /* Red border color */
+  border-radius: 4px; /* Rounded edges */
+}
+
+/* Style the icon in active menu */
+.ant-menu-item-selected img {
+  filter: brightness(0) saturate(100%) invert(18%) sepia(100%) saturate(6000%) hue-rotate(-10deg) brightness(90%) contrast(100%);
+}
+
+/* Remove hover background */
+.ant-menu-item:hover {
+  background-color: transparent !important;
+}
+
 
 @media (hover: hover) {
   a:hover {
