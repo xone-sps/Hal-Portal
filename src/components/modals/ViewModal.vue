@@ -1,5 +1,5 @@
 <template>
-  <a-modal v-model:open="modalStore.isOpen" :title="modalStore.modalTitle" width="450px" @ok="modalStore.closeModal">
+  <a-modal v-model:open="modalStore.isOpen" :title="modalStore.modalTitle" width="450px" @ok="modalStore.closeModal" :maskClosable="false">
     <div class="divider"></div>
     <div class="p-2">
       <!-- Total Amount -->
@@ -55,6 +55,8 @@
       </a-button>
     </template>
   </a-modal>
+  <!-- COD Success Modal -->
+  <CodSuccessModal ref="codSuccessModal" />
 </template>
 
 <script setup lang="ts">
@@ -65,14 +67,13 @@ import {
   WarningOutlined,
 } from "@ant-design/icons-vue";
 
+
 const modalStore = useModalStore();
 const codSuccessModal = ref();
 
 const handleConfirm = () => {
-  console.log(codSuccessModal.value)
-  //Open success cod modal
-  codSuccessModal.value.showModal();
-
+  modalStore.closeModal();
+  codSuccessModal.value?.showModal();
 };
 
 onMounted(() => {

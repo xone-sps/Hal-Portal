@@ -90,7 +90,7 @@
           </div>
         </div>
         <div class="divider !mt-2"></div>
-        <a-button type="primary" class="!mt-6 !bg-red-600 !text-white px-6 py-3 text-lg rounded-md" @click="openCODModal">ຢືນຢັນຮັບຍອດ COD</a-button>
+        <a-button type="primary" class="!mt-6 !bg-red-600 !text-white px-6 py-3 text-lg rounded-md !h-10" @click="openCODModal">ຢືນຢັນຮັບຍອດເງິນ COD</a-button>
       </a-card>
     </div>
   </div>
