@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import DefaultLayout from "@/layouts/DefaultLayout.vue";
 import Dashboard from "@/pages/Dashboard.vue";
-import Cod from "@/pages/CodView.vue";
+import Cod from "@/pages/cod/AllCod.vue";
 import SelfDelivery from "@/pages/SelfDelivery.vue";
 
 const routes = [

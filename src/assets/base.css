@@ -18,3 +18,14 @@
   padding-left: 8px;
   padding-right: 8px;
 }
+.ant-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: #E00C16;
+}
+.ant-tabs-nav-wrap{
+  background-color: white !important;
+  padding-left: 22px;
+  padding-right: 22px;
+}
+.ant-tabs .ant-tabs-tab:hover {
+  color: #E00C16 !important;
+}

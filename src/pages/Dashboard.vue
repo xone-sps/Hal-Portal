@@ -98,7 +98,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref,onMounted } from 'vue';
+import { ref } from 'vue';
 import dayjs, { type Dayjs } from 'dayjs';
 import { useModalStore } from "@/stores/useModalStore";
 type RangeValue = [Dayjs, Dayjs];

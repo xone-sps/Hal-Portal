@@ -80,7 +80,7 @@ a:hover{
   background-color: transparent !important;
   color: #E00C16;
 }
-h1,h2,h3,h4,p, span,a {
+h1,h2,h3,h4,p, span,a,.ant-tabs,.ant-table-wrapper .ant-table {
   margin: 0 !important;
   font-family: "NotoSanLao";
 }
