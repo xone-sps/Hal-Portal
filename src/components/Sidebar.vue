@@ -30,7 +30,7 @@
     <div class="!my-4 border-t border-gray-200"></div>
 
     <!-- Primary Action Button -->
-    <div v-if="!collapsed" class="px-4 mb-4">
+    <div v-if="!collapsed" class="px-4 !mb-4">
       <a-button block type="primary"
                 class="!bg-red-600 hover:bg-red-700 text-white font-bold py-2 !text-2l text-menu !h-10">
         ຝາກເຄື່ອງເອງ
@@ -38,7 +38,7 @@
     </div>
 
     <!-- Menu Sections -->
-    <div class="!my-4">
+    <div class="!mb-4 !mt-6">
       <p v-if="!collapsed" class="px-4 !mb-2 group-text-menu">ເມນູ</p>
       <a-menu v-model:selectedKeys="selectedKeys" mode="inline" class="!border-none">
         <a-menu-item key="/">
@@ -65,7 +65,7 @@
     </div>
 
     <!-- Tracking Section -->
-    <div class="!my-4">
+    <div class="!mt-4 mb-6">
       <p v-if="!collapsed" class="px-4 !mb-2 group-text-menu">ຕິດຕາມພັດສະດຸ</p>
       <a-menu v-model:selectedKeys="selectedKeys" mode="inline" class="!border-none">
         <a-menu-item key="tracking-out">
@@ -84,7 +84,7 @@
     </div>
 
     <!-- Settings Section -->
-    <div class="!my-4 ant-menu-vertical">
+    <div class="!mt-4 mb-6">
       <p v-if="!collapsed" class="px-4 !mb-2 group-text-menu">ຂໍ້ມູນສ່ວນຕົວ</p>
       <a-menu v-model:selectedKeys="selectedKeys" mode="inline" class="!border-none">
         <a-menu-item key="profile">

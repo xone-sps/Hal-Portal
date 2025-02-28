@@ -90,7 +90,7 @@
           </div>
         </div>
         <div class="divider !mt-2"></div>
-        <a-button type="primary" class="!mt-6 !bg-red-600 !text-white px-6 py-3 text-lg rounded-md">ຢືນຢັນຮັບຍອດ COD</a-button>
+        <a-button type="primary" class="!mt-6 !bg-red-600 !text-white px-6 py-3 text-lg rounded-md" @click="openCODModal">ຢືນຢັນຮັບຍອດ COD</a-button>
       </a-card>
     </div>
   </div>
@@ -98,12 +98,26 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref,onMounted } from 'vue';
 import dayjs, { type Dayjs } from 'dayjs';
-
+import { useModalStore } from "@/stores/useModalStore";
 type RangeValue = [Dayjs, Dayjs];
 import cover from "@/assets/images/dashboard-image.png";
 const date = ref<RangeValue>([dayjs(), dayjs()]);
+const modalStore = useModalStore();
+
+
+const openCODModal = () => {
+  modalStore.showModal({
+    totalAmount: "14,981,000",
+    codAmount: "5,000,000",
+    codRate: "0",
+    transferFee: "19,000",
+    bankAccount: "182120001640922001",
+    bankOwner: "Outhai VONGSA MS",
+    receiveDate: "25/01/2025",
+  });
+};
 
 </script>
 
