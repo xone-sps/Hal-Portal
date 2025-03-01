@@ -31,11 +31,19 @@
            <div>
              <p class="text-lg font-semibold">ລາຍການພັດສະດຸທີ່ສຳເລັດ <span class="text-red-500">100</span></p>
            </div>
-            <div>
-              <a-input-search placeholder="Search" class="!w-180" v-model:value="searchQuery" />
+            <div class="flex items-center gap-4">
+              <a-pagination v-model:current="pagination.current" :total="pagination.total" :pageSize="pagination.pageSize" show-less-items />
+              <!-- Search Input -->
+              <div class="relative w-90">
+                <a-input-search
+                    v-model:value="searchQuery"
+                    placeholder="Search"
+                    class="!w-full !pl-10 1text-left"
+                />
+              </div>
             </div>
           </div>
-          <a-table :columns="columns" :data-source="data" :pagination="pagination" bordered />
+          <a-table :columns="columns" :data-source="data" :pagination="false" />
         </a-card>
         </div>
       </a-tab-pane>

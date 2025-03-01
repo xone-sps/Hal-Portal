@@ -25,15 +25,29 @@
       </div>
 
       <!-- Table -->
-      <a-table :columns="columns" :data-source="data" :pagination="false" bordered />
+      <a-table :columns="columns" :data-source="data" :pagination="false">
+
+        <template #bodyCell="{ column, record }">
+          <!-- Customize Detail Column -->
+          <template v-if="column.key === 'details'">
+            <a-button type="link" @click="viewDetails(record)">
+              <EyeOutlined class="!text-red-500 text-xl cursor-pointer" />
+            </a-button>
+          </template>
+        </template>
+
+      </a-table>
+
     </a-card>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from "vue";
-import { SearchOutlined } from "@ant-design/icons-vue";
+import { EyeOutlined } from "@ant-design/icons-vue";
+import { useRouter } from "vue-router";
 
+const router = useRouter();
 const searchQuery = ref("");
 
 const columns = [
@@ -46,7 +60,7 @@ const columns = [
     title: "ລາຍລະອຽດ",
     key: "details",
     align: "center",
-    render: () => `<span class="text-red-500 cursor-pointer">👁️</span>`,
+    dataIndex:"details"
   },
 ];
 
@@ -74,6 +88,13 @@ const pagination = ref({
   total: 100,
   pageSize: 30,
 });
+
+
+// Function to handle row detail view
+const viewDetails = (record: any) => {
+  router.push({ name: "pending-cod-detail", query: { transferId: record.transferId } });
+};
+
 </script>
 
 <style scoped>

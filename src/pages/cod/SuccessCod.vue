@@ -20,16 +20,27 @@
       </div>
 
       <!-- Table -->
-      <a-table :columns="columns" :data-source="data" :pagination="false" bordered />
+      <a-table :columns="columns" :data-source="data" :pagination="false">
+        <template #bodyCell="{ column, record }">
+          <!-- Customize Detail Column -->
+          <template v-if="column.key === 'details'">
+            <a-button type="link" @click="viewDetails(record)">
+              <EyeOutlined class="!text-red-500 text-xl cursor-pointer" />
+            </a-button>
+          </template>
+        </template>
+      </a-table>
     </a-card>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from "vue";
-import { SearchOutlined } from "@ant-design/icons-vue";
+import { EyeOutlined } from "@ant-design/icons-vue";
+import {useRouter} from "vue-router";
 
 const searchQuery = ref("");
+const router = useRouter();
 
 const columns = [
   { title: "ເລກບິນໂອນ", dataIndex: "transferId", key: "transferId" },
@@ -41,10 +52,6 @@ const columns = [
     title: "ລາຍລະອຽດ",
     key: "details",
     align: "center",
-    render: (record: any) =>
-        `<a-button type="link" @click="viewDetails(record)">
-        <EyeOutlined class="text-red-500 text-xl cursor-pointer" />
-      </a-button>`,
   },
 ];
 
@@ -76,8 +83,9 @@ const pagination = ref({
 
 // Function to handle row detail view
 const viewDetails = (record: any) => {
-  console.log("Viewing details for:", record);
+  router.push({ name: "success-cod-detail", query: { transferId: record.transferId } });
 };
+
 
 </script>
 
