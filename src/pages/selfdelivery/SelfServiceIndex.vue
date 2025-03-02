@@ -1,9 +1,8 @@
 <template>
   <div>
     <a-tabs v-model:activeKey="activeTab" class="mb-4" @change="handleTabChange">
-      <a-tab-pane key="summary" tab="ສະຫຼຸບຍອດ COD" />
-      <a-tab-pane key="pending" tab="ລໍຖ້າການໂອນ" />
-      <a-tab-pane key="completed" tab="ໂອນສຳເລັດ" />
+      <a-tab-pane key="one-parcel" tab="ຝາກເຄື່ອງເອງ" />
+      <a-tab-pane key="multiple-parcel" tab="ຝາກຫຼາຍພັດສະດຸ" />
     </a-tabs>
 
     <!-- Dynamic Content Based on Router -->
@@ -19,23 +18,23 @@ const route = useRoute();
 const router = useRouter();
 
 const activeTab = ref(
-    route.path.includes("pending")
-        ? "pending"
-        : route.path.includes("completed")
-            ? "completed"
-            : "summary"
+    route.path.includes("one-parcel")
+        ? "one-parcel"
+        : route.path.includes("multiple-parcel")
+            ? "multiple-parcel"
+            : "one-parcel"
 );
 
 watch(() => route.path, (newPath) => {
-  activeTab.value = newPath.includes("pending")
-      ? "pending"
-      : newPath.includes("completed")
-          ? "completed"
-          : "summary";
+  activeTab.value = newPath.includes("one-parcel")
+      ? "one-parcel"
+      : newPath.includes("multiple-parcel")
+          ? "multiple-parcel"
+          : "one-parcel";
 });
 
 const handleTabChange = (key: string) => {
-  router.push(`/cod/${key}`);
+  router.push(`/self-service/${key}`);
 };
 </script>
 

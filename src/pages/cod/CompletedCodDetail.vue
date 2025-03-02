@@ -10,8 +10,8 @@
         <div>
           <p class="text-lg font-bold">IN1234567890</p>
         </div>
-        <a-button type="default" class="!bg-orange-500 !text-white rounded-md px-4 py-2">
-          ລໍຖ້າການໂອນ
+        <a-button type="default" class="!bg-green-600 !text-white rounded-md px-4 py-2">
+          ໄດ້ຮັບເງິນແລ້ວ
         </a-button>
       </div>
     </a-card>
@@ -21,24 +21,24 @@
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div>
           <p class="text-gray-500">ຍອດລວມສຸດທິ</p>
-          <p class="text-blue-600 text-3xl font-bold">14,981,000 LAK</p>
+          <p class="text-green-600 text-3xl font-bold">14,981,000 LAK</p>
         </div>
         <div>
           <p class="text-gray-500">ຍອດ COD ທັງໝົດ</p>
           <p class="text-xl font-bold">5,000,000 LAK</p>
         </div>
         <div>
-          <p class="text-gray-500">ທ່ານຈະໄດ້ຮັບບັນຊີໃນວັນທີ</p>
+          <p class="text-gray-500">ໄດ້ຮັບເງິນໃນວັນທີ</p>
           <p class="text-xl font-bold">25/01/2025</p>
         </div>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
         <div>
-          <p class="text-gray-500">ຄ່າທໍານຽມ COD</p>
+          <p class="text-gray-500">ຄ່າທຳນຽມ COD</p>
           <p class="text-xl font-bold">0%</p>
         </div>
         <div>
-          <p class="text-gray-500">ຄ່າທໍານຽມໂອນ</p>
+          <p class="text-gray-500">ຄ່າທຳນຽມໂອນ COD</p>
           <p class="text-xl font-bold">19,000 LAK</p>
         </div>
       </div>
@@ -95,20 +95,3 @@ const data = [
   },
 ];
 </script>
-
-<style scoped>
-:deep(.ant-tabs-tab-active) {
-  font-weight: bold !important;
-}
-
-:deep(.ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn) {
-  color: #e00c16 !important; /* Custom active tab color */
-  font-size: 15px !important;
-}
-
-:deep(.ant-tabs-ink-bar) {
-  height: 3px !important;  /* Thicker bottom border */
-  background-color: #e00c16 !important; /* Custom red border */
-  border-radius: 2px;
-}
-</style>

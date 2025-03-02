@@ -2,7 +2,7 @@
   <a-layout-sider
       collapsible
       v-model:collapsed="collapsed"
-      class="h-screen !fixed left-0 top-0 !bg-white shadow-md px-4 pt-6 w-[252px] z-50"
+      class="h-screen !fixed left-0 top-0 !bg-white px-4 pt-6 w-[252px] z-50"
       width="252"
   >
     <!-- Logo & Branding -->
@@ -48,15 +48,15 @@
           </router-link>
         </a-menu-item>
 
-        <a-menu-item key="/cod">
-          <router-link to="/cod" class="flex items-center gap-2">
+        <a-menu-item key="/cod/summary">
+          <router-link to="/cod/summary" class="flex items-center gap-2">
             <img :src="cod" alt="COD" class="w-6 h-6"/>
             <span v-if="!collapsed" class="text-menu">ລາຍການ COD</span>
           </router-link>
         </a-menu-item>
 
-        <a-menu-item key="/self-delivery">
-          <router-link to="/self-delivery" class="flex items-center gap-2">
+        <a-menu-item key="/self-service">
+          <router-link to="/self-service" class="flex items-center gap-2">
             <img :src="self_delivery" alt="Self Delivery" class="w-6 h-6"/>
             <span v-if="!collapsed" class="text-menu">ຝາກເຄື່ອງເອງ</span>
           </router-link>
@@ -111,7 +111,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref, watch,computed } from "vue";
 import { useRoute } from "vue-router";
 import {
   UserOutlined,
@@ -132,11 +132,24 @@ import logo from "@/assets/images/logo2.png";
 
 const collapsed = ref(false);
 const route = useRoute();
-const selectedKeys = ref([route.path]); // Set active menu based on current path
+// const selectedKeys = ref([route.path]); // Set active menu based on current path
 
 // Watch route changes & update active menu
 watch(() => route.path, (newPath) => {
   selectedKeys.value = [newPath]; // Ensure it updates correctly
+});
+
+// Define active keys dynamically
+const selectedKeys = computed(() => {
+  const path = route.path;
+
+  if (path.startsWith("/cod")) {
+    return ["/cod/summary"];
+  }
+  if (path.startsWith("/self-delivery")) {
+    return ["/self-delivery"];
+  }
+  return ["/"]; // Default to Dashboard
 });
 
 </script>

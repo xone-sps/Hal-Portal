@@ -83,7 +83,7 @@ const pagination = ref({
 
 // Function to handle row detail view
 const viewDetails = (record: any) => {
-  router.push({ name: "success-cod-detail", query: { transferId: record.transferId } });
+  router.push({ name: "completed-detail", query: { transferId: record.transferId } });
 };
 
 

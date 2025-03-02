@@ -90,11 +90,12 @@ const pagination = ref({
 });
 
 
-// Function to handle row detail view
 const viewDetails = (record: any) => {
-  router.push({ name: "pending-cod-detail", query: { transferId: record.transferId } });
+  router.push({
+    name: "pending-detail", // ✅ Correct route name
+    query: { transferId: record.tracking }, // ✅ Pass tracking number as query param
+  });
 };
-
 </script>
 
 <style scoped>

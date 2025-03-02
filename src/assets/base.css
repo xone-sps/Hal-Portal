@@ -29,3 +29,9 @@
 .ant-tabs .ant-tabs-tab:hover {
   color: #E00C16 !important;
 }
+.text-sub-title{
+  color:#676767;
+  font-weight: 400;
+  line-height: 24px;
+  font-size: 14px;
+}

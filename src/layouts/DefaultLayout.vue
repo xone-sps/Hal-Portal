@@ -14,8 +14,8 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import Sidebar from "@/components/Sidebar.vue";
-import Navbar from "@/components/Navbar.vue";
+import Sidebar from "@/components/sidebar.vue";
+import Navbar from "@/components/navbar.vue";
 
 const collapsed = ref(false);
 </script>
