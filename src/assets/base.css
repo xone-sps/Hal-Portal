@@ -35,3 +35,34 @@
   line-height: 24px;
   font-size: 14px;
 }
+.edit-icon{
+  color: #007AFF;
+  padding-bottom: 0px;
+}
+.u-receiver{
+  background-color: #F0A420;
+;
+}
+.custom-select .ant-select-selector {
+  display: flex !important;
+  align-items: center !important;
+  height: 32px !important; /* Match input height */
+}
+
+.custom-select .ant-select-arrow {
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+}
+.
+.anticon {
+  vertical-align: middle !important;
+}
+.anticon svg{
+  display: block;
+}
+.custom-card .ant-card-body {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+

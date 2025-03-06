@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a-tabs v-model:activeKey="activeTab" class="mb-4" @change="handleTabChange">
+    <a-tabs v-model:activeKey="activeTab" @change="handleTabChange">
       <a-tab-pane key="one-parcel" tab="ຝາກເຄື່ອງເອງ" />
       <a-tab-pane key="multiple-parcel" tab="ຝາກຫຼາຍພັດສະດຸ" />
     </a-tabs>

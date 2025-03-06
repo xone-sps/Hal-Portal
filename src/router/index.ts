@@ -93,32 +93,31 @@ const routes = [
         path: "/self-service",
         component: DefaultLayout,
         children: [
-            // {
-            //     path: "", // Empty path
-            //     redirect: "/self-service/one-parcel", // ✅ Redirect to summary tab
-            // },
+            {
+                path: "", // Empty path for `/self-service`
+                redirect: "/self-service/one-parcel", // ✅ Always redirect to first tab
+            },
             {
                 path: "",
-                component: SelfServiceIndex,
+                component: SelfServiceIndex, // ✅ This should be a wrapper component with <router-view />
                 meta: { title: "ຝາກເຄື່ອງເອງ", description: "" },
                 children: [
                     {
-                        path: "/one-parcel",
+                        path: "one-parcel", // ✅ Correct relative path
                         name: "one-parcel",
                         component: SelfDelivery,
-                        meta: { title: "ຝາກເຄື່ອງເອງ", description: "" },
+                        meta: { title: "ຝາກເຄື່ອງເອງ - ສົ່ງ 1 ຊິ້ນ", description: "" },
                     },
                     {
-                        path: "/multiple-parcel",
+                        path: "multiple-parcel", // ✅ Correct relative path
                         name: "multiple-parcel",
                         component: DeliveryMoreParcel,
-                        meta: { title: "ຝາກເຄື່ອງເອງ", description: "" },
+                        meta: { title: "ຝາກເຄື່ອງເອງ - ສົ່ງຫຼາຍຊິ້ນ", description: "" },
                     }
                 ]
-            },
-
-        ],
-    },
+            }
+        ]
+    }
 ];
 
 const router = createRouter({
