@@ -10,6 +10,22 @@ import CompleteCodDetail from "@/pages/cod/CompletedCodDetail.vue";
 import SelfServiceIndex from "@/pages/selfdelivery/SelfServiceIndex.vue";
 import SelfDelivery from "@/pages/selfdelivery/SelfDelivery.vue";
 import DeliveryMoreParcel from "@/pages/selfdelivery/DeliveryMoreParcel.vue";
+import OutboundIndex from "@/pages/parcel/outboundParcel/OutboundIndex.vue";
+import OutboundProcessing from "@/pages/parcel/outboundParcel/OutboundProcessing.vue";
+import OutboundArrived from "@/pages/parcel/outboundParcel/OutboundArrived.vue";
+import OutboundDelivered from "@/pages/parcel/outboundParcel/OutboundDelivered.vue";
+import OutboundReturn from "@/pages/parcel/outboundParcel/OutboundReturn.vue";
+import OutboundReturned from "@/pages/parcel/outboundParcel/OutboundReturned.vue";
+import OutboundDetail from "@/pages/parcel/outboundParcel/OutboundDetail.vue";
+import InboundIndex from "@/pages/parcel/inboundParcel/InboundIndex.vue";
+import InboundProcessing from "@/pages/parcel/inboundParcel/InboundProcessing.vue";
+import InboundArrived from "@/pages/parcel/inboundParcel/InboundArrived.vue";
+import InboundDelivered from "@/pages/parcel/inboundParcel/InboundDelivered.vue";
+import InboundReturn from "@/pages/parcel/inboundParcel/InboundReturn.vue";
+import InboundReturned from "@/pages/parcel/inboundParcel/InboundReturned.vue";
+import InboundDetail from "@/pages/parcel/inboundParcel/InboundDetail.vue";
+
+
 
 const routes = [
     {
@@ -117,7 +133,105 @@ const routes = [
                 ]
             }
         ]
+    },
+    // Outbound parcel  and Inbound parcel
+
+    {
+        path: "/parcel",
+        component: DefaultLayout,
+        children: [
+            //Outbound route
+            {
+                path: "outbound",
+                component: OutboundIndex,
+                meta: { title: "ຝາກເຄື່ອງເອງ", description: "" },
+                children: [
+                    {
+                        path: "processing", // ✅ Correct relative path
+                        name: "outbound-processing",
+                        component: OutboundProcessing,
+                        meta: { title: "ກໍາລັງຈັດສົ່ງ", description: "" },
+                    },
+                    {
+                        path: "arrived", // ✅ Correct relative path
+                        name: "outbound-arrived",
+                        component: OutboundArrived,
+                        meta: { title: "ພັດສະດຸຮອດສາຂາປາຍທາງ", description: "" },
+                    },
+                    {
+                        path: "delivered", // ✅ Correct relative path
+                        name: "outbound-delivered",
+                        component: OutboundDelivered,
+                        meta: { title: "ພັດສະດຸຈັດສົ່ງສໍາເລັດ", description: "" },
+                    },
+                    {
+                        path: "return", // ✅ Correct relative path
+                        name: "outbound-return",
+                        component: OutboundReturn,
+                        meta: { title: "ພັດສະດຸຕີກັບ", description: "" },
+                    },
+                    {
+                        path: "returned", // ✅ Correct relative path
+                        name: "outbound-returned",
+                        component: OutboundReturned,
+                        meta: { title: "ພັດສະດຸຕີກັບສໍາເລັດ", description: "" },
+                    },
+                ]
+            },
+            {
+                path: "outbound/detail/$id",
+                name: "outbound-detail",
+                component: OutboundDetail,
+                meta: { title: "ລາຍລະອຽດພັດສະດຸຂາອອກ", description: "" },
+            },
+            // Inbound route
+            {
+                path: "inbound",
+                component: InboundIndex,
+                meta: { title: "ຝາກເຄື່ອງເອງ", description: "" },
+                children: [
+                    {
+                        path: "processing", // ✅ Correct relative path
+                        name: "inbound-processing",
+                        component: InboundProcessing,
+                        meta: { title: "ກໍາລັງຈັດສົ່ງ", description: "" },
+                    },
+                    {
+                        path: "arrived", // ✅ Correct relative path
+                        name: "inbound-arrived",
+                        component: InboundArrived,
+                        meta: { title: "ພັດສະດຸຮອດສາຂາປາຍທາງ", description: "" },
+                    },
+                    {
+                        path: "delivered", // ✅ Correct relative path
+                        name: "inbound-delivered",
+                        component: InboundDelivered,
+                        meta: { title: "ພັດສະດຸຈັດສົ່ງສໍາເລັດ", description: "" },
+                    },
+                    {
+                        path: "return", // ✅ Correct relative path
+                        name: "inbound-return",
+                        component: InboundReturn,
+                        meta: { title: "ພັດສະດຸຕີກັບ", description: "" },
+                    },
+                    {
+                        path: "returned", // ✅ Correct relative path
+                        name: "inbound-returned",
+                        component: InboundReturned,
+                        meta: { title: "ພັດສະດຸຕີກັບສໍາເລັດ", description: "" },
+                    },
+                ]
+            },
+            {
+                path: "inbound/detail/$id",
+                name: "inbound-detail",
+                component: InboundDetail,
+                meta: { title: "ລາຍລະອຽດພັດສະດຸຂາເຂົ້າ", description: "" },
+            },
+        ]
+
     }
+
 ];
 
 const router = createRouter({

@@ -48,7 +48,7 @@
           </router-link>
         </a-menu-item>
 
-        <a-menu-item key="/cod/summary">
+        <a-menu-item key="/cod">
           <router-link to="/cod/summary" class="flex items-center gap-2">
             <img :src="cod" alt="COD" class="w-6 h-6"/>
             <span v-if="!collapsed" class="text-menu">ລາຍການ COD</span>
@@ -68,14 +68,14 @@
     <div class="!mt-4 mb-6">
       <p v-if="!collapsed" class="px-4 !mb-2 group-text-menu">ຕິດຕາມພັດສະດຸ</p>
       <a-menu v-model:selectedKeys="selectedKeys" mode="inline" class="!border-none">
-        <a-menu-item key="tracking-out">
-          <router-link to="/cod" class="flex items-center gap-2">
+        <a-menu-item key="/parcel/outbound">
+          <router-link to="/parcel/outbound/processing" class="flex items-center gap-2">
             <img :src="box_fill" alt="Open Box Icon" class="w-6 h-6"/>
             <span v-if="!collapsed" class="text-menu">ພັດສະດຸອອກ</span>
           </router-link>
         </a-menu-item>
-        <a-menu-item key="tracking-in">
-          <router-link to="/cod" class="flex items-center gap-2">
+        <a-menu-item key="/parcel/inbound">
+          <router-link to="/parcel/inbound/processing" class="flex items-center gap-2">
             <img :src="open_box" alt="Open Box Icon" class="w-6 h-6"/>
             <span v-if="!collapsed" class="text-menu">ພັດສະດຸເຂົ້າ</span>
           </router-link>
@@ -111,7 +111,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch,computed } from "vue";
+import { ref, watch,computed,watchEffect } from "vue";
 import { useRoute } from "vue-router";
 import {
   UserOutlined,
@@ -132,26 +132,23 @@ import logo from "@/assets/images/logo2.png";
 
 const collapsed = ref(false);
 const route = useRoute();
-// const selectedKeys = ref([route.path]); // Set active menu based on current path
+const selectedKeys = ref<string[]>([route.path]);
 
-// Watch route changes & update active menu
-watch(() => route.path, (newPath) => {
-  selectedKeys.value = [newPath]; // Ensure it updates correctly
-});
-
-// Define active keys dynamically
-const selectedKeys = computed(() => {
+watchEffect(() => {
   const path = route.path;
 
   if (path.startsWith("/cod")) {
-    return ["/cod/summary"];
+    selectedKeys.value = ["/cod"];
+  } else if (path.startsWith("/self-service")) {
+    selectedKeys.value = ["/self-service"];
+  } else if (path.startsWith("/parcel/outbound")) {
+    selectedKeys.value = ["/parcel/outbound"];
+  } else if (path.startsWith("/parcel/inbound")) {
+    selectedKeys.value = ["/parcel/inbound"];
+  } else {
+    selectedKeys.value = ["/"];
   }
-  if (path.startsWith("/self-delivery")) {
-    return ["/self-delivery"];
-  }
-  return ["/"]; // Default to Dashboard
 });
-
 </script>
 
 <style scoped>

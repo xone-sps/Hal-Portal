@@ -1,5 +1,6 @@
 import { createApp } from "vue";
 import App from "./App.vue";
+import emptyStatePlugin from "@/plugins/emptyState";
 import router from "./router";
 import { createPinia } from "pinia";
 import Antd from "ant-design-vue";
@@ -7,6 +8,7 @@ import "ant-design-vue/dist/reset.css";
 import "@/assets/main.css"; // Ensure this is imported
 
 const app = createApp(App);
+app.use(emptyStatePlugin);
 app.use(createPinia());
 app.use(router);
 app.use(Antd);

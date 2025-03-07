@@ -57,7 +57,7 @@
 .ant-btn,
 .ant-menu-item,
 .ant-layout,
-.ant-input,label {
+.ant-input,label,ant-form-item-explain-error,* {
   font-family: "NotoSanLao", sans-serif !important;
 }
 h1,h2,h3,h4,p {

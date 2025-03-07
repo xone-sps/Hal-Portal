@@ -43,7 +43,7 @@
     </div>
 
     <!-- Form Section -->
-    <a-form layout="vertical">
+    <a-form layout="vertical" ref="formRef" :model="form" :rules="rules">
       <a-card class="!mb-3 custom-card">
         <!-- Receiver Info -->
         <div class="flex items-center gap-3">
@@ -57,14 +57,24 @@
         </div>
 
         <div class="grid grid-cols-2 md:grid-cols-2 mt-4">
-          <a-form-item label="ຊື່">
-            <a-input placeholder="ຊື່ຜູ້ສົ່ງ" v-model:value="form.senderName"/>
+          <a-form-item label="ຊື່" name="receiverName">
+            <a-input placeholder="ຊື່ຜູ້ສົ່ງ" v-model:value="form.receiverName"/>
           </a-form-item>
-          <a-form-item label="ເບີໂທ" class="!pl-2">
-            <a-input placeholder="ເບີໂທ" v-model:value="form.senderPhone"/>
+          <a-form-item label="ເບີໂທ" class="!pl-2" name="receiverPhone">
+            <a-input-group compact>
+              <a-select v-model:value="prefixPhone" class="custom-select">
+                <a-select-option value="Sign Up">020</a-select-option>
+                <a-select-option value="Sign In">030</a-select-option>
+              </a-select>
+              <a-input
+                  v-model:value="receiverPhone"
+                  style="width: 410px;"
+                  placeholder="ເບີໂທ"
+              />
+            </a-input-group>
           </a-form-item>
-          <a-form-item label="ທີ່ຢູ່ຜູ້ສົ່ງ">
-            <a-input placeholder="ທີ່ຢູ່ຜູ້ສົ່ງ" v-model:value="form.senderAddress"/>
+          <a-form-item label="ທີ່ຢູ່ຜູ້ສົ່ງ" name="receiverAddress">
+            <a-input placeholder="ທີ່ຢູ່ຜູ້ສົ່ງ" v-model:value="form.receiverAddress"/>
           </a-form-item>
         </div>
         <div>
@@ -85,8 +95,8 @@
         <div class="w-2/5">
           <a-card class="!mr-2 custom-card !py-1">
             <div>
-              <a-form-item label="ປະເພດພັສະດຸ">
-                <a-radio-group v-model:value="parcelType">
+              <a-form-item label="ປະເພດພັສະດຸ" name="parcelType">
+                <a-radio-group v-model:value="form.parcelType">
                   <a-radio value="general">ພັດສະດຸທົ່ວໄປ</a-radio>
                   <a-radio value="document">ເອກະສານ</a-radio>
                 </a-radio-group>
@@ -96,9 +106,9 @@
         </div>
         <div class="w-3/5">
           <a-card class="custom-card">
-            <a-form-item label="ບໍລິການເສີມ">
+            <a-form-item label="ບໍລິການເສີມ" name="selectedServices">
               <!-- Checkbox Group -->
-              <a-checkbox-group v-model:value="selectedServices" class="flex">
+              <a-checkbox-group v-model:value="form.selectedServices" class="flex">
                 <div v-for="service in serviceMore" :key="service.value" class="pr-6">
                   <a-checkbox :value="service.value">
                     {{ service.label }}
@@ -114,8 +124,8 @@
       <a-card class="!mb-2 custom-card">
         <div class="flex items-center">
           <!-- Origin Branch Select -->
-          <a-form-item label="ສາຂາຕົ້ນທາງ" class="w-full">
-            <a-select v-model:value="originValue" placeholder="ເລືອກສາຂາຕົ້ນທາງ" show-search
+          <a-form-item label="ສາຂາຕົ້ນທາງ" class="w-full" name="originValue">
+            <a-select v-model:value="form.originValue" placeholder="ເລືອກສາຂາຕົ້ນທາງ" show-search
                       :options="originBranch"
                       :filter-option="filterOption"
                       class="w-full custom-select"
@@ -130,8 +140,8 @@
           </div>
 
           <!-- Destination Branch Select -->
-          <a-form-item label="ສາຂາປາຍທາງ" class="w-full">
-            <a-select v-model:value="destinationValue" placeholder="ເລືອກສາຂາປາຍທາງ" show-search
+          <a-form-item label="ສາຂາປາຍທາງ" class="w-full" name="destinationValue">
+            <a-select v-model:value="form.destinationValue" placeholder="ເລືອກສາຂາປາຍທາງ" show-search
                       :options="destinationBranch"
                       :filter-option="filterOption"
                       class="w-full custom-select"
@@ -142,18 +152,18 @@
       <a-card class="!mb-2 custom-card">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
           <!-- Origin Branch Select -->
-          <a-form-item label="ເລືອກປະເພດພັດສະດຸ" class="w-full">
-            <a-select v-model:value="parcelValue" placeholder="ເລືອກປະເພດພັດສະດຸ" show-search
+          <a-form-item label="ເລືອກປະເພດພັດສະດຸ" class="w-full" name="parcelCategoryValue">
+            <a-select v-model:value="form.parcelCategoryValue" placeholder="ເລືອກປະເພດພັດສະດຸ" show-search
                       :options="parcelCategory"
                       :filter-option="filterOption"
                       class="w-full custom-select"
             ></a-select>
           </a-form-item>
-          <a-form-item label="ກວ້າງ + ສູງ + ຍາວ">
-            <a-input placeholder="ກວ້າງ + ສູງ + ຍາວ" v-model:value="form.length" class="custom-select"/>
+          <a-form-item label="ກວ້າງ + ສູງ + ຍາວ" name="parcelDimensions">
+            <a-input placeholder="ກວ້າງ + ສູງ + ຍາວ" v-model:value="form.parcelDimensions" class="custom-select"/>
           </a-form-item>
-          <a-form-item label="ນໍ້າໜັກ (kg)">
-            <a-input placeholder="ນໍ້າໜັກ (kg)" v-model:value="form.weight"/>
+          <a-form-item label="ນໍ້າໜັກ (kg)" name="parcelWeight">
+            <a-input placeholder="ນໍ້າໜັກ (kg)" v-model:value="form.parcelWeight"/>
           </a-form-item>
         </div>
       </a-card>
@@ -189,9 +199,12 @@
 
 <script setup lang="ts">
 import {ref, onMounted} from "vue";
+import { validationRules } from "@/utils/validationRules"; // Import validation rules
 import {EditOutlined, SaveOutlined, ArrowRightOutlined} from "@ant-design/icons-vue";
+import { message,notification } from "ant-design-vue";
 import box_fill from "@/assets/icons/box-fill.svg";
 
+const formRef = ref();
 const form = ref({
   senderName: "",
   senderPhone: "",
@@ -200,11 +213,17 @@ const form = ref({
   receiverPhone: "",
   receiverAddress: "",
   packageType: "",
-  length: "",
+  selectedServices:[],
+  originValue: undefined,
+  destinationValue: undefined,
+  parcelType:"",
+  originBranch:[],
+  parcelCategoryValue:undefined,
+  parcelDimensions: "",
   weight: "",
 });
-const parcelType = ref<String>('');
-const selectedServices = ref([]);
+const prefixPhone = ref<string>('020');
+const receiverPhone = ref<string>('');
 const serviceMore = ref([
   {value: "cdc", label: "CDC", detail: "ເກັບຄ່າຂົນສົ່ງປາຍທາງ"},
   {value: "cod", label: "COD", detail: "ເກັບຄ່າເຄື່ອງປາຍທາງ"},
@@ -227,20 +246,32 @@ const parcelCategory = ref([
   {value: "cloth", label: "ເສື້ອຍຜ້າ"},
   {value: "cosmetic", label: "ເຄື່ອງສໍາອາງ"},
 ]);
-
-const submitForm = () => {
-  console.log("Submitting: ", form.value);
-};
-onMounted(() => {
-      console.log("hi")
-    }
-)
 const filterOption = (input: string, option: any) => {
   return option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0;
 };
-const parcelValue = ref<string | undefined>(undefined);
-const destinationValue = ref<string | undefined>(undefined);
-const originValue = ref<string | undefined>(undefined);
+const rules = ref(validationRules); // Assign imported rules
+const submitForm = async () => {
+  try {
+    await formRef.value.validate();
+    notification.success({
+      message: "ສຳເລັດ!",
+      description: "ຂໍ້ມູນຂອງທ່ານຖືກບັນທຶກສຳເລັດ",
+      placement: "topRight", // Show at top right
+      duration: 5, // Auto close in 5 seconds
+    });
+    console.log("Form Data:", form.value);
+  } catch (error) {
+    notification.error({
+      message: "ຜິດພາດ!",
+      description: "ກະລຸນາກວດຄືນຂໍ້ມູນຂອງທ່ານ",
+      placement: "topRight", // Show at top right
+      duration: 5, // Auto close in 5 seconds
+    });
+  }
+};
+onMounted(() => {
+    }
+)
 </script>
 
 <style scoped>
