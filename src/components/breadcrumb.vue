@@ -23,6 +23,11 @@ const breadcrumbMap: Record<string, string> = {
   "/cod/completed": "ໂອນສຳເລັດ",
   "/cod/pending/detail": "ລາຍລະອຽດ ລໍຖ້າການໂອນ",
   "/cod/completed/detail": "ລາຍລະອຽດ ໂອນສຳເລັດ",
+  "/parcel": "ພັດສະດຸ",
+  "/parcel/outbound": "ພັດສະດຸ ຂາອອກ",
+  "/parcel/inbound": "ພັດສະດຸ ຂາເຂົ້າ",
+  "/parcel/outbound/detail": "ລາຍລະອຽດ ພັດສະດຸຂາອອກ",
+  "/parcel/inbound/detail": "ລາຍລະອຽດ ພັດສະດຸຂາເຂົ້າ",
 };
 
 // Generate breadcrumbs dynamically
