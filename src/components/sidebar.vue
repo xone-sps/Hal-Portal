@@ -21,7 +21,7 @@
         <UserOutlined class="text-xl"/>
       </a-avatar>
       <div class="flex-1">
-        <p class="font-semibold text-gray-800 text-memu">ໂປຣໄຟລ໌</p>
+        <p class="font-semibold text-gray-800 text-memu">{{ profile?.userName || 'No Name' }}</p>
       </div>
       <DownOutlined class="text-gray-500"/>
     </div>
@@ -31,7 +31,7 @@
 
     <!-- Primary Action Button -->
     <div v-if="!collapsed" class="px-4 !mb-4">
-      <a-button block type="primary"
+      <a-button block type="primary" @click="selfDelivery"
                 class="!bg-red-600 hover:bg-red-700 text-white font-bold py-2 !text-2l text-menu !h-10">
         ຝາກເຄື່ອງເອງ
       </a-button>
@@ -88,13 +88,13 @@
       <p v-if="!collapsed" class="px-4 !mb-2 group-text-menu">ຂໍ້ມູນສ່ວນຕົວ</p>
       <a-menu v-model:selectedKeys="selectedKeys" mode="inline" class="!border-none">
         <a-menu-item key="profile">
-          <router-link to="/cod" class="flex items-center gap-2">
+          <router-link to="/profile" class="flex items-center gap-2">
             <img :src="user" alt="Open Box Icon" class="w-6 h-6"/>
             <span v-if="!collapsed" class="text-menu">ຂໍ້ມູນທົ່ວໄປ</span>
           </router-link>
         </a-menu-item>
         <a-menu-item key="address">
-          <router-link to="/cod" class="flex items-center gap-2">
+          <router-link to="/address" class="flex items-center gap-2">
             <img :src="location" alt="Open Box Icon" class="w-6 h-6"/>
             <span v-if="!collapsed" class="text-menu">ທີ່ຢູ່</span>
           </router-link>
@@ -111,8 +111,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch,computed,watchEffect } from "vue";
+import { ref,computed,watchEffect } from "vue";
 import { useRoute } from "vue-router";
+import { useUserStore } from '@/stores/useUserStore';
 import {
   UserOutlined,
   DownOutlined,
@@ -129,14 +130,16 @@ import location from "@/assets/icons/location.svg";
 import change_password from "@/assets/icons/chang_password.svg";
 
 import logo from "@/assets/images/logo2.png";
+import router from "@/router";
 
 const collapsed = ref(false);
 const route = useRoute();
 const selectedKeys = ref<string[]>([route.path]);
+const userStore = useUserStore();
+const profile = computed(() => userStore.user);
 
 watchEffect(() => {
   const path = route.path;
-
   if (path.startsWith("/cod")) {
     selectedKeys.value = ["/cod"];
   } else if (path.startsWith("/self-service")) {
@@ -145,10 +148,19 @@ watchEffect(() => {
     selectedKeys.value = ["/parcel/outbound"];
   } else if (path.startsWith("/parcel/inbound")) {
     selectedKeys.value = ["/parcel/inbound"];
-  } else {
+  } else if (path.startsWith("/profile")) {
+    selectedKeys.value = ["/profile"];
+  }
+  else {
     selectedKeys.value = ["/"];
   }
 });
+
+const selfDelivery = () =>{
+  router.push({
+    name: "one-parcel",
+  });
+}
 </script>
 
 <style scoped>

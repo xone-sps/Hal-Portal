@@ -21,7 +21,6 @@
         </div>
       </div>
 
-
       <!-- Summary Cards -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 !mt-2">
         <a-card class="p-4">
@@ -106,6 +105,7 @@ import cover from "@/assets/images/dashboard-image.png";
 const date = ref<RangeValue>([dayjs(), dayjs()]);
 const modalStore = useModalStore();
 
+const apiUrl = import.meta.env.VITE_BASE_API_URL;
 
 const openCODModal = () => {
   modalStore.showModal({

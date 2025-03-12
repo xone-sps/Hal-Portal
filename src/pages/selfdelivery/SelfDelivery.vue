@@ -201,7 +201,7 @@
 import {ref, onMounted} from "vue";
 import { validationRules } from "@/utils/validationRules"; // Import validation rules
 import {EditOutlined, SaveOutlined, ArrowRightOutlined} from "@ant-design/icons-vue";
-import { message,notification } from "ant-design-vue";
+import { notification } from "ant-design-vue";
 import box_fill from "@/assets/icons/box-fill.svg";
 
 const formRef = ref();

@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col items-center justify-center p-6">
-    <img :src="empty_box" alt="No Data" class="w-20 h-20 mb-2" />
+    <img :src="empty_box" alt="No Data" class="w-22 h-22 mb-2" />
     <p class="text-gray-500 text-sm">{{ message }}</p>
   </div>
 </template>

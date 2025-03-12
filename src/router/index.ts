@@ -1,4 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
+import {useUserStore} from '@/stores/useUserStore';
+import AuthLayout from "@/layouts/AuthLayout.vue";
 import DefaultLayout from "@/layouts/DefaultLayout.vue";
 import Dashboard from "@/pages/Dashboard.vue";
 import AllCod from "@/pages/cod/AllCod.vue";
@@ -24,10 +26,26 @@ import InboundDelivered from "@/pages/parcel/inboundParcel/InboundDelivered.vue"
 import InboundReturn from "@/pages/parcel/inboundParcel/InboundReturn.vue";
 import InboundReturned from "@/pages/parcel/inboundParcel/InboundReturned.vue";
 import InboundDetail from "@/pages/parcel/inboundParcel/InboundDetail.vue";
+import  Profile from "@/pages/Profile.vue";
+import  AllAddress from "@/pages/address/AllAddress.vue";
+import  SenderAddress from "@/pages/address/Sender.vue";
+import  ReceiverAddress from "@/pages/address/Receiver.vue";
+import  Login from "@/pages/auth/Login.vue";
 
 
 
 const routes = [
+    {
+        path: "/login",
+        component: AuthLayout,
+        children: [
+            {
+                path: "",
+                name: "login",
+                component: Login,
+            },
+        ],
+    },
     {
         path: "/",
         component: DefaultLayout,
@@ -36,7 +54,7 @@ const routes = [
                 path: "",
                 name: "dashboard",
                 component: Dashboard,
-                meta: { title: "Dashboard", description: "ສະຖິຕິພາບລວມການເຄື່ອນໄຫວພັດສະດຸຂອງທ່ານ" },
+                meta: {requiresAuth: true, title: "Dashboard", description: "ສະຖິຕິພາບລວມການເຄື່ອນໄຫວພັດສະດຸຂອງທ່ານ" },
             },
         ],
     },
@@ -59,6 +77,7 @@ const routes = [
                         name: "cod-summary",
                         component: SummaryCod,
                         meta: {
+                            requiresAuth: true,
                             title: "ສະຫຼຸບຍອດ COD",
                             description: "ລາຍລະອຽດການເກັບເງິນປາຍທາງ (COD)",
                         },
@@ -68,6 +87,7 @@ const routes = [
                         name: "cod-pending",
                         component: PendingCod,
                         meta: {
+                            requiresAuth: true,
                             title: "ລໍຖ້າການໂອນ",
                             description: "ລາຍການ COD ທີ່ກຳລັງລໍຖ້າການໂອນ",
                         },
@@ -77,6 +97,7 @@ const routes = [
                         name: "cod-completed",
                         component: CompleteCod,
                         meta: {
+                            requiresAuth: true,
                             title: "ໂອນສຳເລັດ",
                             description: "ລາຍການ COD ທີ່ໄດ້ຮັບເງິນແລ້ວ",
                         },
@@ -88,6 +109,7 @@ const routes = [
                 name: "pending-detail",
                 component: PendingCodDetail,
                 meta: {
+                    requiresAuth: true,
                     title: "ລາຍລະອຽດລໍຖ້າການໂອນ COD",
                     description: "",
                 },
@@ -97,6 +119,7 @@ const routes = [
                 name: "completed-detail",
                 component: CompleteCodDetail,
                 meta: {
+                    requiresAuth: true,
                     title: "ລາຍລະອຽດໂອນສຳເລັດ",
                     description: "ລາຍການ COD ທີ່ໄດ້ຮັບເງິນແລ້ວ",
                 },
@@ -116,19 +139,19 @@ const routes = [
             {
                 path: "",
                 component: SelfServiceIndex, // ✅ This should be a wrapper component with <router-view />
-                meta: { title: "ຝາກເຄື່ອງເອງ", description: "" },
+                meta: {requiresAuth: true, title: "ຝາກເຄື່ອງເອງ", description: "" },
                 children: [
                     {
                         path: "one-parcel", // ✅ Correct relative path
                         name: "one-parcel",
                         component: SelfDelivery,
-                        meta: { title: "ຝາກເຄື່ອງເອງ - ສົ່ງ 1 ຊິ້ນ", description: "" },
+                        meta: {requiresAuth: true, title: "ຝາກເຄື່ອງເອງ - ສົ່ງ 1 ຊິ້ນ", description: "" },
                     },
                     {
                         path: "multiple-parcel", // ✅ Correct relative path
                         name: "multiple-parcel",
                         component: DeliveryMoreParcel,
-                        meta: { title: "ຝາກເຄື່ອງເອງ - ສົ່ງຫຼາຍຊິ້ນ", description: "" },
+                        meta: {requiresAuth: true, title: "ຝາກເຄື່ອງເອງ - ສົ່ງຫຼາຍຊິ້ນ", description: "" },
                     }
                 ]
             }
@@ -144,37 +167,37 @@ const routes = [
             {
                 path: "outbound",
                 component: OutboundIndex,
-                meta: { title: "ຝາກເຄື່ອງເອງ", description: "" },
+                meta: {requiresAuth: true, title: "ຝາກເຄື່ອງເອງ", description: "" },
                 children: [
                     {
                         path: "processing", // ✅ Correct relative path
                         name: "outbound-processing",
                         component: OutboundProcessing,
-                        meta: { title: "ກໍາລັງຈັດສົ່ງ", description: "" },
+                        meta: {requiresAuth: true, title: "ກໍາລັງຈັດສົ່ງ", description: "" },
                     },
                     {
                         path: "arrived", // ✅ Correct relative path
                         name: "outbound-arrived",
                         component: OutboundArrived,
-                        meta: { title: "ພັດສະດຸຮອດສາຂາປາຍທາງ", description: "" },
+                        meta: {requiresAuth: true, title: "ພັດສະດຸຮອດສາຂາປາຍທາງ", description: "" },
                     },
                     {
                         path: "delivered", // ✅ Correct relative path
                         name: "outbound-delivered",
                         component: OutboundDelivered,
-                        meta: { title: "ພັດສະດຸຈັດສົ່ງສໍາເລັດ", description: "" },
+                        meta: {requiresAuth: true, title: "ພັດສະດຸຈັດສົ່ງສໍາເລັດ", description: "" },
                     },
                     {
                         path: "return", // ✅ Correct relative path
                         name: "outbound-return",
                         component: OutboundReturn,
-                        meta: { title: "ພັດສະດຸຕີກັບ", description: "" },
+                        meta: {requiresAuth: true, title: "ພັດສະດຸຕີກັບ", description: "" },
                     },
                     {
                         path: "returned", // ✅ Correct relative path
                         name: "outbound-returned",
                         component: OutboundReturned,
-                        meta: { title: "ພັດສະດຸຕີກັບສໍາເລັດ", description: "" },
+                        meta: {requiresAuth: true, title: "ພັດສະດຸຕີກັບສໍາເລັດ", description: "" },
                     },
                 ]
             },
@@ -182,43 +205,43 @@ const routes = [
                 path: "outbound/detail/$id",
                 name: "outbound-detail",
                 component: OutboundDetail,
-                meta: { title: "ລາຍລະອຽດພັດສະດຸຂາອອກ", description: "" },
+                meta: {requiresAuth: true, title: "ລາຍລະອຽດພັດສະດຸຂາອອກ", description: "" },
             },
             // Inbound route
             {
                 path: "inbound",
                 component: InboundIndex,
-                meta: { title: "ຝາກເຄື່ອງເອງ", description: "" },
+                meta: {requiresAuth: true, title: "ຝາກເຄື່ອງເອງ", description: "" },
                 children: [
                     {
                         path: "processing", // ✅ Correct relative path
                         name: "inbound-processing",
                         component: InboundProcessing,
-                        meta: { title: "ກໍາລັງຈັດສົ່ງ", description: "" },
+                        meta: {requiresAuth: true, title: "ກໍາລັງຈັດສົ່ງ", description: "" },
                     },
                     {
                         path: "arrived", // ✅ Correct relative path
                         name: "inbound-arrived",
                         component: InboundArrived,
-                        meta: { title: "ພັດສະດຸຮອດສາຂາປາຍທາງ", description: "" },
+                        meta: {requiresAuth: true, title: "ພັດສະດຸຮອດສາຂາປາຍທາງ", description: "" },
                     },
                     {
                         path: "delivered", // ✅ Correct relative path
                         name: "inbound-delivered",
                         component: InboundDelivered,
-                        meta: { title: "ພັດສະດຸຈັດສົ່ງສໍາເລັດ", description: "" },
+                        meta: {requiresAuth: true, title: "ພັດສະດຸຈັດສົ່ງສໍາເລັດ", description: "" },
                     },
                     {
                         path: "return", // ✅ Correct relative path
                         name: "inbound-return",
                         component: InboundReturn,
-                        meta: { title: "ພັດສະດຸຕີກັບ", description: "" },
+                        meta: {requiresAuth: true, title: "ພັດສະດຸຕີກັບ", description: "" },
                     },
                     {
                         path: "returned", // ✅ Correct relative path
                         name: "inbound-returned",
                         component: InboundReturned,
-                        meta: { title: "ພັດສະດຸຕີກັບສໍາເລັດ", description: "" },
+                        meta: {requiresAuth: true, title: "ພັດສະດຸຕີກັບສໍາເລັດ", description: "" },
                     },
                 ]
             },
@@ -226,17 +249,77 @@ const routes = [
                 path: "inbound/detail/$id",
                 name: "inbound-detail",
                 component: InboundDetail,
-                meta: { title: "ລາຍລະອຽດພັດສະດຸຂາເຂົ້າ", description: "" },
+                meta: {requiresAuth: true, title: "ລາຍລະອຽດພັດສະດຸຂາເຂົ້າ", description: "" },
             },
+
         ]
 
-    }
-
+    },
+    {
+        path: "/",
+        component: DefaultLayout,
+        children: [
+            {
+                path: "profile",
+                name: "profile",
+                component: Profile,
+                meta: {requiresAuth: true, title: "ຂໍ້ມູນທົ່ວໄປ", description: "" },
+            },
+        ],
+    },
+    //Address Route
+    {
+        path: "/address",
+        component: DefaultLayout,
+        children: [
+            {
+                path: "", // Empty path
+                redirect: "/address/sender", // ✅ Redirect to summary tab
+            },
+            {
+                path: "",
+                component: AllAddress, // ✅ This will be the parent of the COD tabs
+                children: [
+                    {
+                        path: "sender",
+                        name: "address-sender",
+                        component: SenderAddress,
+                        meta: {
+                            requiresAuth: true,
+                            title: "ທີ່ຢູ່ຜູ້ສົ່ງ",
+                            description: "",
+                        },
+                    },
+                    {
+                        path: "receiver",
+                        name: "address-receiver",
+                        component: ReceiverAddress,
+                        meta: {
+                            requiresAuth: true,
+                            title: "ທີ່ຢູ່ຜູ້ຮັບ",
+                            description: "",
+                        },
+                    },
+                ],
+            },
+        ],
+    },
 ];
 
 const router = createRouter({
-    history: createWebHistory(),
+    history: createWebHistory(import.meta.env.BASE_URL),
     routes,
 });
+
+router.beforeEach(async (to, from, next) => {
+    const userStore = useUserStore();
+
+    if (to.path !== '/login' && !userStore.token) {
+        next('/login');
+    } else {
+        next();
+    }
+});
+
 
 export default router;

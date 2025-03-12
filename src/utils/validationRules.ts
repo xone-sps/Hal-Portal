@@ -1,5 +1,7 @@
 export const validationRules = {
 //Self Delivery Validation
+    phone: [{ required: true, message: "ກະລຸນາປ້ອນເບີໂທ", trigger: "blur" }],
+    password: [{ required: true, message: "ກະລຸນາປ້ອນລະຫັດຜ່ານ", trigger: "blur" }],
     receiverName: [{ required: true, message: "ກະລຸນາປ້ອນຊື່", trigger: "blur" }],
     receiverPhone: [
         { required: true, message: "ກະລຸນາປ້ອນເບີໂທ", trigger: "blur" },
@@ -21,5 +23,12 @@ export const validationRules = {
             trigger: "change",
         },
     ],
+    userName: [{ required: true, message: "ກະລຸນາປ້ອນຊື່", trigger: "blur" }],
+    surname: [{ required: true, message: "ກະລຸນາປ້ອນນາມສະກຸນ", trigger: "blur" }],
+    userAddress: [{ required: true, message: "ກະລຸນາປ້ອນທີ່ຢູ່", trigger: "change" }],
+    province: [{ required: true, message: "ເລືອກປະເພດພັດສະດຸ", trigger: "change" }],
+    city: [{ required: true, message: "ເລືອກປະເພດພັດສະດຸ", trigger: "change" }],
+    village: [{ required: true, message: "ເລືອກປະເພດພັດສະດຸ", trigger: "change" }],
+    branch: [{ required: true, message: "ເລືອກສາຂາ", trigger: "change" }],
 
 };

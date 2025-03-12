@@ -1,6 +1,6 @@
 @import 'tailwindcss';
 @import './base.css';
-@import "./styles/variables.scss";
+/*@import "./styles/variables.scss";*/
 
 .ant-layout-content {
   margin: 0px;
