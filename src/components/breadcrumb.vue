@@ -1,7 +1,13 @@
 <template>
   <a-breadcrumb separator=">" class="!mb-2 text-gray-600">
-    <a-breadcrumb-item v-for="(breadcrumb, index) in breadcrumbs" :key="index">
-      <router-link v-if="breadcrumb.path" :to="breadcrumb.path">
+    <a-breadcrumb-item
+        v-for="(breadcrumb, index) in breadcrumbs"
+        :key="index"
+    >
+      <router-link
+          v-if="breadcrumb.path && breadcrumb.clickable"
+          :to="breadcrumb.path"
+      >
         {{ breadcrumb.label }}
       </router-link>
       <span v-else>{{ breadcrumb.label }}</span>
@@ -15,14 +21,12 @@ import { useRoute } from "vue-router";
 
 const route = useRoute();
 
-// Breadcrumb map
+// ✅ Static breadcrumb map for named routes
 const breadcrumbMap: Record<string, string> = {
   "/cod": "ລາຍການ COD",
   "/cod/summary": "ສະຫຼຸບຍອດ COD",
   "/cod/pending": "ລໍຖ້າການໂອນ",
   "/cod/completed": "ໂອນສຳເລັດ",
-  "/cod/pending/detail": "ລາຍລະອຽດ ລໍຖ້າການໂອນ",
-  "/cod/completed/detail": "ລາຍລະອຽດ ໂອນສຳເລັດ",
   "/parcel": "ພັດສະດຸ",
   "/parcel/outbound": "ພັດສະດຸ ຂາອອກ",
   "/parcel/inbound": "ພັດສະດຸ ຂາເຂົ້າ",
@@ -30,16 +34,54 @@ const breadcrumbMap: Record<string, string> = {
   "/parcel/inbound/detail": "ລາຍລະອຽດ ພັດສະດຸຂາເຂົ້າ",
 };
 
-// Generate breadcrumbs dynamically
+// ✅ Generate breadcrumbs dynamically
 const breadcrumbs = computed(() => {
   const paths = route.path.split("/").filter(Boolean);
   let fullPath = "";
-  return paths.map((segment, index) => {
-    fullPath += `/${segment}`;
-    return {
-      label: breadcrumbMap[fullPath] || segment,
-      path: index !== paths.length - 1 ? fullPath : null,
-    };
-  });
+  const breadcrumbList = paths
+      .map((segment, index) => {
+        fullPath += `/${segment}`;
+
+        // ✅ Skip the dynamic trackingId from path
+        if (segment === route.params.trackingId) return null;
+
+        const label = breadcrumbMap[fullPath] || segment;
+
+        return {
+          label,
+          path:
+              label !== "ພັດສະດຸ" &&
+              label !== "ລາຍລະອຽດ ພັດສະດຸຂາເຂົ້າ" &&
+              label !== "ລາຍລະອຽດ ພັດສະດຸຂາອອກ"
+                  ? fullPath
+                  : null,
+          clickable:
+              label !== "ພັດສະດຸ" &&
+              label !== "ລາຍລະອຽດ ພັດສະດຸຂາເຂົ້າ" &&
+              label !== "ລາຍລະອຽດ ພັດສະດຸຂາອອກ",
+        };
+      })
+      .filter(Boolean); // ✅ Remove skipped values
+
+  // ✅ Add trackingId at the end (if present)
+  if (route.params.trackingId) {
+    breadcrumbList.push({
+      label: route.params.trackingId as string,
+      path: null,
+      clickable: false, // ✅ Not clickable since it's a reference value
+    });
+  }
+
+  return breadcrumbList;
 });
 </script>
+
+<style scoped>
+a {
+  transition: color 0.2s ease-in-out;
+}
+
+a:hover {
+  color: #e00c16;
+}
+</style>

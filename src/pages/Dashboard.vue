@@ -27,7 +27,7 @@
           <template #title>
             <div class="flex justify-between items-center">
               <span class="font-semibold text-lg">ພັດສະດຸເຂົ້າ</span>
-              <a href="#" class="text-red-500 text-sm">ເພີ່ມເຕີມ</a>
+              <a @click="inboundParcel" class="text-red-500 text-sm">ເພີ່ມເຕີມ</a>
             </div>
           </template>
           <div class="flex justify-between text-lg">
@@ -50,7 +50,7 @@
           <template #title>
             <div class="flex justify-between items-center">
               <span class="font-semibold text-lg">ພັດສະດຸອອກ</span>
-              <a href="#" class="text-red-500 text-sm">ເພີ່ມເຕີມ</a>
+              <a @click="outboundParcel" class="text-red-500 text-sm">ເພີ່ມເຕີມ</a>
             </div>
           </template>
           <div class="flex justify-between text-lg">
@@ -76,8 +76,8 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
           <div>
             <p class="text-gray-600">ຍອດ COD ທັງໝົດ</p>
-            <p class="text-red-600 text-3xl font-bold py-2">5,000,000 LAK</p>
-            <p class="text-gray-600 pt-6 pb-4">ຄ່າທຳນຽມ COD 0% <span class="pl-4">ຄ່າທຳນຽມໂອນ 19,000 LAK</span></p>
+            <p class="text-red-600 text-3xl font-bold py-2">{{codStore.codSummary.toLocaleString()}} LAK</p>
+            <p class="text-gray-600 pt-6 pb-4">ຄ່າທຳນຽມ {{codStore.cod_fee_percent.toLocaleString()}} % <span class="pl-4">ຄ່າທຳນຽມໂອນ {{codStore.transferFee.toLocaleString()}} LAK</span></p>
           </div>
           <div>
             <p class="text-gray-600">ລໍຖ້າການໂອນ</p>
@@ -97,15 +97,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import {onMounted, ref} from 'vue';
 import dayjs, { type Dayjs } from 'dayjs';
 import { useModalStore } from "@/stores/useModalStore";
 type RangeValue = [Dayjs, Dayjs];
 import cover from "@/assets/images/dashboard-image.png";
+import {useRouter} from "vue-router";
+import { useCodStore } from '@/stores/cod/codStore';
 const date = ref<RangeValue>([dayjs(), dayjs()]);
 const modalStore = useModalStore();
 
-const apiUrl = import.meta.env.VITE_BASE_API_URL;
+const router = useRouter();
+const codStore = useCodStore();
 
 const openCODModal = () => {
   modalStore.showModal({
@@ -118,7 +121,19 @@ const openCODModal = () => {
     receiveDate: "25/01/2025",
   });
 };
-
+const inboundParcel = () => {
+  router.push({
+    name: "inbound-processing",
+  });
+};
+const outboundParcel = () => {
+  router.push({
+    name: "outbound-processing",
+  });
+};
+onMounted(async () => {
+  await codStore.fetchCodData();
+});
 </script>
 
 <style scoped>

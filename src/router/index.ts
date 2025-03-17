@@ -170,7 +170,7 @@ const routes = [
                 meta: {requiresAuth: true, title: "ຝາກເຄື່ອງເອງ", description: "" },
                 children: [
                     {
-                        path: "processing", // ✅ Correct relative path
+                        path: "", // ✅ Correct relative path
                         name: "outbound-processing",
                         component: OutboundProcessing,
                         meta: {requiresAuth: true, title: "ກໍາລັງຈັດສົ່ງ", description: "" },
@@ -214,7 +214,7 @@ const routes = [
                 meta: {requiresAuth: true, title: "ຝາກເຄື່ອງເອງ", description: "" },
                 children: [
                     {
-                        path: "processing", // ✅ Correct relative path
+                        path: "", // ✅ Correct relative path
                         name: "inbound-processing",
                         component: InboundProcessing,
                         meta: {requiresAuth: true, title: "ກໍາລັງຈັດສົ່ງ", description: "" },
@@ -246,7 +246,7 @@ const routes = [
                 ]
             },
             {
-                path: "inbound/detail/$id",
+                path: "inbound/detail/:trackingId",
                 name: "inbound-detail",
                 component: InboundDetail,
                 meta: {requiresAuth: true, title: "ລາຍລະອຽດພັດສະດຸຂາເຂົ້າ", description: "" },

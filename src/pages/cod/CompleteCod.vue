@@ -2,25 +2,62 @@
   <div class="px-3">
     <!-- Pending COD Table -->
     <a-card>
-      <div class="flex justify-between items-center mb-4">
-        <div class="">
-          <p class="text-lg font-semibold">ລາຍການລໍຖ້າການໂອນ</p>
-          <p class="text-gray-500">ສະແດງ 1-10 ຈາກ 100 ລາຍການ</p>
+      <div class="flex justify-between items-center !mb-4">
+        <!--       <div class="">-->
+        <!--         <h2 class="text-lg font-semibold">ລາຍການລໍຖ້າການໂອນ</h2>-->
+        <!--         <p class="text-gray-500">ສະແດງ 1-10 ຈາກ 100 ລາຍການ</p>-->
+        <!--       </div>-->
+
+        <div>
+          <Pagination  :pagination="codStore.pagination"
+                       @paginate="handlePaginate"/>
         </div>
-        <!-- Pagination -->
-        <a-pagination v-model:current="pagination.current" :total="pagination.total" :pageSize="pagination.pageSize" show-less-items />
-        <!-- Search Input -->
-        <div class="relative w-80">
-          <a-input-search
-              v-model:value="searchQuery"
-              placeholder="Search"
-              class="!w-full !pl-10 1text-left"
-          />
+
+        <!-- Pagination & Search -->
+        <div class="flex items-center gap-4">
+          <!-- Pagination -->
+          <div>
+            <!--            <div>-->
+            <!--              <Pagination  :pagination="codStore.pagination"-->
+            <!--                           @paginate="handlePaginate"/>-->
+            <!--            </div>-->
+          </div>
+          <div class="flex justify-between items-center">
+            <div class="flex">
+              <a-date-picker
+                  v-model:value="codStore.startDate"
+                  placeholder="ມື້ເລີ່ມຕົ້ນ" class="!mr-3"
+                  style="width: 200px;"
+                  format="DD-MM-YYYY"
+              />
+              <a-date-picker v-model:value="codStore.endDate" placeholder="ມື້ສິ້ນສຸດ" class="!mr-3"
+                             style="width: 200px;"
+                             format="DD-MM-YYYY"/>
+              <a-button type="primary" class="search-button !text-white !mr-4" @click="codStore.searchQuery">
+                ຄົ້ນຫາ
+              </a-button>
+              <a-button type="primary" class="clear-button" @click="codStore.clearSearch">
+                ລົບການຄົ້ນຫາ
+              </a-button>
+            </div>
+            <!--            <a-button type="primary" class="export-button !text-white" @click="exportExcel">-->
+            <!--              Export Excel-->
+            <!--            </a-button>-->
+          </div>
+          <!-- Search Input -->
+          <!--          <div class="relative w-80">-->
+          <!--            <a-input-search-->
+          <!--                v-model:value="searchQuery"-->
+          <!--                placeholder="Search"-->
+          <!--                class="!w-full !pl-10 1text-left"-->
+          <!--            />-->
+          <!--          </div>-->
         </div>
       </div>
 
       <!-- Table -->
-      <a-table :columns="columns" :data-source="data" :pagination="false">
+      <a-table :columns="columns" :data-source="codStore.codListStatus" :pagination="false" :loading="codStore.loading">
+
         <template #bodyCell="{ column, record }">
           <!-- Customize Detail Column -->
           <template v-if="column.key === 'details'">
@@ -29,64 +66,63 @@
             </a-button>
           </template>
         </template>
+
       </a-table>
+
     </a-card>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import {onMounted, ref} from "vue";
+import Pagination from "@/components/pagination.vue";
 import { EyeOutlined } from "@ant-design/icons-vue";
-import {useRouter} from "vue-router";
+import { useRouter } from "vue-router";
+import { useCodStore } from '@/stores/cod/codStore';
 
-const searchQuery = ref("");
 const router = useRouter();
+const searchQuery = ref("");
+const codStore = useCodStore();
 
 const columns = [
-  { title: "ເລກບິນໂອນ", dataIndex: "transferId", key: "transferId" },
-  { title: "ຍອດລວມສຸດທິ", dataIndex: "totalAmount", key: "totalAmount" },
+  { title: "ເລກບິນໂອນ", dataIndex: ["shipment_number"], key: "shipment_number"  },
+  { title: "ຍອດລວມສຸດທິ", dataIndex: "total_price", key: "total_price",
+    customRender: ({ text }: { text: number }) => `${text.toLocaleString()} ກີບ` },
+  // { title: "ສາຂາຕົ້ນທາງ", dataIndex: ["start_branch","name"], key: "start_branch" },
+  // { title: "ສາຂາປາຍທາງ", dataIndex: ["end_branch","name"], key: "end_branch" },
+  { title: "ຜູ້ຮັບ", dataIndex: ["receiver_customer","name"], key: "receiver_customer" },
   { title: "ລາຍການ COD", dataIndex: "codItems", key: "codItems" },
   { title: "ຄ່າທໍານຽມໂອນ", dataIndex: "transferFee", key: "transferFee" },
-  { title: "ໄດ້ຮັບບິນເມື່ອໃດ", dataIndex: "receiveDate", key: "receiveDate" },
+  { title: "ໄດ້ຮັບບິນເມື່ອໃດ", dataIndex: "start_date_actual", key: "start_date_actual" },
   {
     title: "ລາຍລະອຽດ",
     key: "details",
     align: "center",
+    dataIndex:"details"
   },
 ];
 
-const data = [
-  {
-    key: "1",
-    transferId: "VTE85688364229",
-    totalAmount: "14,981,000 ກີບ",
-    codItems: "100 ລາຍການ",
-    transferFee: "3,000 ກີບ",
-    receiveDate: "30/01/2025",
-  },
-  {
-    key: "2",
-    transferId: "VTE85688364229",
-    totalAmount: "14,981,000 ກີບ",
-    codItems: "100 ລາຍການ",
-    transferFee: "3,000 ກີບ",
-    receiveDate: "26/01/2025",
-  },
-];
 
-// const pagination = { pageSize: 10, total: data.length };
 const pagination = ref({
   current: 1,
   total: 100,
   pageSize: 30,
 });
 
-// Function to handle row detail view
-const viewDetails = (record: any) => {
-  router.push({ name: "completed-detail", query: { transferId: record.transferId } });
+// ✅ Handle Page Change with Cursor
+const handlePaginate = (cursor: string) => {
+  codStore.fetchCodStatusData(cursor);
 };
+onMounted(async () => {
+  await codStore.fetchCodStatusData('success');
+});
 
-
+const viewDetails = (record: any) => {
+  router.push({
+    name: "pending-detail", // ✅ Correct route name
+    query: { transferId: record.tracking }, // ✅ Pass tracking number as query param
+  });
+};
 </script>
 
 <style scoped>

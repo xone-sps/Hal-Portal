@@ -69,13 +69,13 @@
       <p v-if="!collapsed" class="px-4 !mb-2 group-text-menu">ຕິດຕາມພັດສະດຸ</p>
       <a-menu v-model:selectedKeys="selectedKeys" mode="inline" class="!border-none">
         <a-menu-item key="/parcel/outbound">
-          <router-link to="/parcel/outbound/processing" class="flex items-center gap-2">
+          <router-link to="/parcel/outbound" class="flex items-center gap-2">
             <img :src="box_fill" alt="Open Box Icon" class="w-6 h-6"/>
             <span v-if="!collapsed" class="text-menu">ພັດສະດຸອອກ</span>
           </router-link>
         </a-menu-item>
         <a-menu-item key="/parcel/inbound">
-          <router-link to="/parcel/inbound/processing" class="flex items-center gap-2">
+          <router-link to="/parcel/inbound" class="flex items-center gap-2">
             <img :src="open_box" alt="Open Box Icon" class="w-6 h-6"/>
             <span v-if="!collapsed" class="text-menu">ພັດສະດຸເຂົ້າ</span>
           </router-link>

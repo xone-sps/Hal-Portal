@@ -60,12 +60,13 @@
 </template>
 
 <script setup lang="ts">
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
 import { EyeOutlined } from "@ant-design/icons-vue";
 import type {Dayjs} from 'dayjs';
 import {useModalStore} from "@/stores/useModalStore";
 import {useRouter} from "vue-router";
-
+import {useInboundParcelStore} from "@/stores/parcel/inboundStore"
+const inboundStore = useInboundParcelStore();
 const searchQuery = ref("");
 const modalStore = useModalStore();
 const startDate = ref<Dayjs>();
@@ -128,6 +129,11 @@ const viewDetails = (record: any) => {
 };
 
 const pagination = {pageSize: 10, total: data.length};
+
+onMounted(async () => {
+  await inboundStore.fetchInboundData('arrived_status');
+});
+
 </script>
 
 <style scoped>

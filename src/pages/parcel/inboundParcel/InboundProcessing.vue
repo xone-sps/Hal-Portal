@@ -5,18 +5,18 @@
       <div class="flex justify-between items-center">
         <div class="flex">
           <a-date-picker
-              v-model:value="startDate"
+              v-model:value="inboundStore.startDate"
               placeholder="ມື້ເລີ່ມຕົ້ນ" class="!mr-3"
               style="width: 200px;"
               format="DD-MM-YYYY"
           />
-          <a-date-picker v-model:value="endDate" placeholder="ມື້ສິ້ນສຸດ" class="!mr-3"
+          <a-date-picker v-model:value="inboundStore.endDate" placeholder="ມື້ສິ້ນສຸດ" class="!mr-3"
                          style="width: 200px;"
                          format="DD-MM-YYYY"/>
-          <a-button type="primary" class="search-button !text-white !mr-4" @click="searchQ">
+          <a-button type="primary" class="search-button !text-white !mr-4" @click="inboundStore.searchQuery">
             ຄົ້ນຫາ
           </a-button>
-          <a-button type="primary" class="clear-button" @click="clearSearch">
+          <a-button type="primary" class="clear-button" @click="inboundStore.clearSearch">
             ລົບການຄົ້ນຫາ
           </a-button>
         </div>
@@ -45,13 +45,13 @@
           </div>
         </div>
       </div>
-      <a-table :columns="columns" :data-source="data" :pagination="false"
+      <a-table :columns="columns" :data-source="inboundStore.inboundList" :pagination="false" :loading="inboundStore.loading"
                :locale="{ emptyText: $emptyText() }"
       >
         <template #bodyCell="{ column, record }">
           <!-- Customize Detail Column -->
           <template v-if="column.key === 'details'">
-            <a-button type="link" @click="viewDetails(record)">
+            <a-button type="link" @click="viewDetails(record.shipment_number)">
               <EyeOutlined class="!text-red-500 text-xl cursor-pointer" />
             </a-button>
           </template>
@@ -62,18 +62,16 @@
 </template>
 
 <script setup lang="ts">
-import {ref,computed} from "vue";
+import {ref, computed, onMounted} from "vue";
 import { EyeOutlined } from "@ant-design/icons-vue";
-import type {Dayjs} from 'dayjs';
 import {useModalStore} from "@/stores/useModalStore";
 import {useRouter} from "vue-router";
-import empty_box from "@/assets/icons/empty.svg";
+import {useInboundParcelStore} from "@/stores/parcel/inboundStore"
 
 const searchQuery = ref("");
 const modalStore = useModalStore();
-const startDate = ref<Dayjs>();
-const endDate = ref<Dayjs>();
 const router = useRouter();
+const inboundStore = useInboundParcelStore();
 
 const openCODModal = () => {
   modalStore.showModal({
@@ -88,40 +86,17 @@ const openCODModal = () => {
 };
 
 const columns = [
-  {title: "ເລກພັດສະດຸ", dataIndex: "tracking", key: "tracking"},
-  {title: "ປະເພດພັດສະດຸ", dataIndex: "type", key: "type"},
-  {title: "ລາຄາຂົນສົ່ງ", dataIndex: "price", key: "price"},
+  {title: "ເລກພັດສະດຸ", dataIndex: "shipment_number", key: "shipment_number"},
+  {title: "ປະເພດພັດສະດຸ", dataIndex: ["parcel","parcel_category","name"], key: "parcel_category"},
+  {title: "ລາຄາຂົນສົ່ງ", dataIndex: "total_price", key: "total_price",  customRender: ({ text }: { text: number }) => `${text.toLocaleString()} ກີບ`},
   {title: "ລາຄາ COD", dataIndex: "cod", key: "cod"},
-  {title: "ສາຂາສົ່ງອອກ", dataIndex: "senderBranch", key: "senderBranch"},
-  {title: "ສາຂາປາຍທາງ", dataIndex: "receiverBranch", key: "receiverBranch"},
-  {title: "ວັນທີສົ່ງບິນ", dataIndex: "date", key: "date"},
+  {title: "ສາຂາຕົ້ນທາງ", dataIndex: ["start_branch","name",], key: "start_branch"},
+  {title: "ສາຂາປາຍທາງ", dataIndex: ["end_branch","name"], key: "end_branch"},
+  {title: "ວັນທີສົ່ງບິນ", dataIndex: "start_date_actual", key: "start_date_actual"},
   {
     title: "ລາຍລະອຽດ",
     key: "details",
     align: "center",
-  },
-];
-
-const data = [
-  {
-    key: "1",
-    tracking: "VTE85688364229",
-    type: "ເສື້ອຜ້າ",
-    price: "8,000 ກີບ",
-    cod: "0 ກີບ",
-    senderBranch: "ດອນໂດກ (02055555555)",
-    receiverBranch: "ສີສັດຕະນາກ (02055665555)",
-    date: "30/01/2025",
-  },
-  {
-    key: "2",
-    tracking: "VTE85688364229",
-    type: "ເສື້ອຜ້າ",
-    price: "11,000 ກີບ",
-    cod: "120,000 ກີບ",
-    senderBranch: "ດອນໂດກ (02055555555)",
-    receiverBranch: "ສີສັດຕະນາກ (02055665555)",
-    date: "30/01/2025",
   },
 ];
 
@@ -131,8 +106,9 @@ const data = [
 //   pagination.value.total = data.value.length;
 // };
 // Function to handle row detail view
-const viewDetails = (record: any) => {
-  router.push({ name: "inbound-detail", query: { transferId: record.transferId } });
+const viewDetails = (trackingId: string) => {
+  console.log(trackingId)
+  router.push({ name: "inbound-detail", params: { trackingId } });
 };
 const clearSearch = () => {
   searchQuery.value = "";
@@ -141,7 +117,12 @@ const clearSearch = () => {
 const exportExcel = () => {
   console.log("Exporting data...");
 };
-const pagination = {pageSize: 10, total: data.length};
+const pagination = {pageSize: 10, total: 20};
+
+onMounted(async () => {
+  await inboundStore.fetchInboundData('processing');
+});
+
 </script>
 
 <style scoped>
