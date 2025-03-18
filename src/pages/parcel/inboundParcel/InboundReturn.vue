@@ -13,7 +13,7 @@
           <a-date-picker v-model:value="endDate" placeholder="ມື້ສິ້ນສຸດ" class="!mr-3"
                          style="width: 200px;"
                          format="DD-MM-YYYY"/>
-          <a-button type="primary" class="search-button !text-white !mr-4" @click="searchQuery">
+          <a-button type="primary" class="search-button !text-white !mr-4" @click="handleSearch">
             ຄົ້ນຫາ
           </a-button>
           <a-button type="primary" class="clear-button" @click="clearSearch">
@@ -21,7 +21,7 @@
           </a-button>
         </div>
 
-        <a-button type="primary" class="export-button !text-white" @click="exportExcel">
+        <a-button type="primary" class="export-button !text-white" @click="handleExport" :loading="exportStore.isExportLoading">
           Export Excel
         </a-button>
       </div>
@@ -30,29 +30,30 @@
     <a-card class="custom-table-card">
       <div class="flex justify-between items-center !mb-4">
         <div>
-          <p class="text-lg font-semibold">ລາຍການພັດສະດຸທີ່ສຳເລັດ <span class="text-red-500">100</span></p>
+          <p class="text-lg font-semibold">ລາຍການພັດສະດຸທີ່ສຳເລັດ <span class="text-red-500">{{inboundStore.inboundList.length}}</span></p>
         </div>
+        <Pagination :pagination="inboundStore.pagination"
+                    @paginate="handlePaginate"/>
         <div class="flex items-center gap-4">
-          <a-pagination v-model:current="pagination.current" :total="pagination.total" :pageSize="pagination.pageSize"
-                        show-less-items/>
           <!-- Search Input -->
           <div class="relative w-90">
             <a-input-search
                 v-model:value="searchQuery"
-                placeholder="Search"
+                @keydown.enter="debouncedSearch"
+                placeholder="ປ້ອນເລກບິນ"
                 class="!w-full !pl-10 1text-left"
             />
           </div>
         </div>
       </div>
       <a-table :columns="columns"
-               :data-source="data"
+               :data-source="inboundStore.inboundList"
                :pagination="false"
                :locale="{ emptyText: $emptyText() }"
       >
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'details'">
-            <a-button type="link" @click="viewDetails(record)">
+            <a-button type="link" @click="viewDetails(record.shipment_number)">
               <EyeOutlined class="!text-red-500 text-xl cursor-pointer"/>
             </a-button>
           </template>
@@ -63,67 +64,79 @@
 </template>
 
 <script setup lang="ts">
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
 import {EyeOutlined} from "@ant-design/icons-vue";
-import type {Dayjs} from 'dayjs';
-import {useModalStore} from "@/stores/useModalStore";
+import Pagination from "@/components/pagination.vue";
+import {useInboundParcelStore} from "@/stores/parcel/inboundStore";
+import {useExportStore} from "@/stores/useExportStore";
 import {useRouter} from "vue-router";
+import dayjs, {Dayjs} from "dayjs";
+import { debounce } from 'lodash';
 
-
-const searchQuery = ref("");
-const modalStore = useModalStore();
-const startDate = ref<Dayjs>();
-const endDate = ref<Dayjs>();
 const router = useRouter();
-const pagination = ref({current: 1, total: 0, pageSize: 10});
-
-const openCODModal = () => {
-  modalStore.showModal({
-    totalAmount: "5,000,000",
-    codAmount: "5,000,000",
-    codRate: "0",
-    transferFee: "19,000",
-    bankAccount: "182120001640922001",
-    bankOwner: "Outhai VONGSA MS",
-    receiveDate: "25/01/2025",
-  });
-};
+const inboundStore = useInboundParcelStore();
+const exportStore = useExportStore();
+const searchQuery = ref('');
+const startDate= ref<Dayjs>(dayjs().subtract(3, 'month'));
+const endDate = ref<Dayjs>(dayjs());
 
 const columns = [
-  {title: "ເລກພັດສະດຸ", dataIndex: "tracking", key: "tracking"},
-  {title: "ປະເພດພັດສະດຸ", dataIndex: "type", key: "type"},
-  {title: "ລາຄາຂົນສົ່ງ", dataIndex: "price", key: "price"},
-  {title: "ລາຄາ COD", dataIndex: "cod", key: "cod"},
-  {title: "ສາຂາສົ່ງອອກ", dataIndex: "senderBranch", key: "senderBranch"},
-  {title: "ສາຂາປາຍທາງ", dataIndex: "receiverBranch", key: "receiverBranch"},
-  {title: "ວັນທີສົ່ງບິນ", dataIndex: "date", key: "date"},
+  {title: "ເລກພັດສະດຸ", dataIndex: "shipment_number", key: "shipment_number"},
+  {title: "ປະເພດພັດສະດຸ", dataIndex: ["parcel","parcel_category","name"], key: "parcel_category"},
+  {title: "ລາຄາຂົນສົ່ງ", dataIndex: "total_freight", key: "total_freight",  customRender: ({ text }: { text: number }) => `${text.toLocaleString()} ກີບ`},
+  {title: "ລາຄາ COD", dataIndex: "total_price", key: "cod",customRender: ({ text }: { text: number }) => `${text.toLocaleString()} ກີບ`},
+  {
+    title: "ສາຂາຕົ້ນທາງ",
+    key: "start_branch",
+    customRender: ({ record }: any) => {
+      return `${record.start_branch?.name || ""} (${record.start_branch?.tel || ""})`;
+    }},
+  {title: "ສາຂາປາຍທາງ", key: "end_branch", customRender: ({ record }: any) => {
+      return `${record.end_branch?.name || ""} (${record.end_branch?.tel || ""})`;
+    }},
+  // {title: "ວັນທີສົ່ງບິນ", dataIndex: "start_date_actual", key: "start_date_actual"},
   {
     title: "ລາຍລະອຽດ",
     key: "details",
     align: "center",
   },
 ];
-
-const data = ref([]);
-
-// const fetchData = () => {
-//   // Simulate API call
-//   data.value = []; // No data found scenario
-//   pagination.value.total = data.value.length;
-// };
-
 // Function to handle row detail view
-const viewDetails = (record: any) => {
-  router.push({name: "outbound-detail", query: {transferId: record.transferId}});
+const viewDetails = (trackingId: string) => {
+  router.push({ name: "inbound-detail", params: { trackingId } });
 };
-const clearSearch = () => {
-  searchQuery.value = "";
-  // fetchData();
+const handlePaginate = (cursor: string) => {
+  inboundStore.fetchInboundData({status: 'returned_processing',cursor:cursor,startDate:startDate.value,endDate:endDate.value});
 };
-const exportExcel = () => {
-  console.log("Exporting data...");
+const handleSearch = async () => {
+  if(startDate.value !== '' && endDate.value !== ''){
+    await inboundStore.fetchInboundData({status: 'returned_processing',query:searchQuery.value,startDate:startDate.value,endDate:endDate.value});
+  }
 };
-
+const debouncedSearch = debounce(async () => {
+  if (searchQuery.value.trim()) {
+    await inboundStore.fetchInboundData({
+      status: 'success',
+      query: searchQuery.value.trim(),
+    });
+  }
+}, 300);
+const handleExport = async () => {
+  await exportStore.exportExcel({
+    startDate: startDate,
+    endDate: endDate,
+    status: 'returned_processing',
+    query: '',
+  });
+};
+const clearSearch = () =>{
+  startDate.value =<Dayjs>(dayjs());
+  endDate.value = <Dayjs>(dayjs());
+  searchQuery.value = '';
+};
+onMounted(async () => {
+  await inboundStore.fetchInboundData({status: 'returned_processing',startDate:startDate.value,endDate:endDate.value});
+});
 </script>
 
 <style scoped>

@@ -1,7 +1,7 @@
 <template>
   <div class="!bg-white px-6 pb-2">
     <!-- Breadcrumb Component -->
-    <Breadcrumb />
+    <Breadcrumb/>
   </div>
   <div class="px-3 py-2">
     <!-- Header Section -->
@@ -11,7 +11,7 @@
           <!-- Header Section -->
           <div class="flex justify-between items-center pb-3">
             <div class="flex items-center gap-2">
-              <img :src="logo" alt="Logo" class="w-12 h-12" />
+              <img :src="logo" alt="Logo" class="w-12 h-12"/>
               <div>
                 <h3 class="font-semibold text-gray-800">ຮຸ່ງອາລຸນຂົນສົ່ງດ່ວນ</h3>
                 <p class="text-xs text-gray-500">ໂນ້ຍາດ່ວນ: 1419</p>
@@ -28,26 +28,35 @@
             <div class="flex justify-between items-center">
               <span class="text-gray-500 text-sm">ເລກພັດສະດຸ</span>
               <span class="font-semibold"> {{ inboundStore.shipmentInfo.bill_number }} </span>
-              <CopyOutlined class="!text-red-500 text-lg cursor-pointer" @click="copyToClipboard(inboundStore.shipmentInfo.bill_number)"/>
+              <CopyOutlined class="!text-red-500 text-lg cursor-pointer"
+                            @click="copyToClipboard(inboundStore.shipmentInfo.bill_number)"/>
             </div>
             <div class="flex justify-center my-2">
-              <Barcode :value="inboundStore.shipmentInfo.bill_number" />
+              <Barcode :value="inboundStore.shipmentInfo.bill_number"/>
             </div>
             <div class="flex justify-between items-center text-gray-500 text-sm">
-              <span> {{ inboundStore.shipmentInfo.from_branch_code }}{{ inboundStore.shipmentInfo.from_branch_prefix }}-{{ inboundStore.shipmentInfo.from_branch }} </span>
-              <ArrowRightOutlined class="text-gray-400" />
-              <span> {{ inboundStore.shipmentInfo.destination_branch_code }}{{ inboundStore.shipmentInfo.destination_branch_prefix }}-{{ inboundStore.shipmentInfo.destination_branch }} </span>
+              <span> {{ inboundStore.shipmentInfo.from_branch_code }}{{
+                  inboundStore.shipmentInfo.from_branch_prefix
+                }}-{{ inboundStore.shipmentInfo.from_branch }} </span>
+              <ArrowRightOutlined class="text-gray-400"/>
+              <span> {{
+                  inboundStore.shipmentInfo.destination_branch_code
+                }}{{
+                  inboundStore.shipmentInfo.destination_branch_prefix
+                }}-{{ inboundStore.shipmentInfo.destination_branch }} </span>
             </div>
           </div>
 
-          <h4 class="font-semibold text-gray-700 bg-gray-100 mb-2 p-3 rounded text-center">{{inboundStore.shipmentInfo.parcel_category_name}}</h4>
+          <h4 class="font-semibold text-gray-700 bg-gray-100 mb-2 p-3 rounded text-center">
+            {{ inboundStore.shipmentInfo.parcel_category_name }}</h4>
           <!-- Sender/Receiver Info -->
           <div class="my-4 py-3">
             <div class="flex justify-between">
               <div>
                 <p class="text-gray-500 text-sm">ຜູ້ສົ່ງ</p>
                 <p class="font-semibold">{{ inboundStore.shipmentInfo.sender_name }} </p>
-                <p class="text-gray-500 text-sm"> {{ inboundStore.shipmentInfo.sender_phone_number
+                <p class="text-gray-500 text-sm"> {{
+                    inboundStore.shipmentInfo.sender_phone_number
                   }}</p>
               </div>
               <div class="text-right">
@@ -64,29 +73,39 @@
             <div class="space-y-2 text-sm">
               <div class="flex justify-between">
                 <span class="text-gray-500">ນ້ຳໜັກ</span>
-                <span class="font-semibold"> {{ inboundStore.shipmentInfo.total_weight }} {{ inboundStore.shipmentInfo.weight_unit }}  </span>
+                <span class="font-semibold"> {{
+                    inboundStore.shipmentInfo.total_weight
+                  }} {{ inboundStore.shipmentInfo.weight_unit }}  </span>
               </div>
               <div class="flex justify-between">
                 <span class="text-gray-500">ຈຳນວນ</span>
-                <span class="font-semibold"> {{ inboundStore.shipmentInfo.item_count}} </span>
+                <span class="font-semibold"> {{ inboundStore.shipmentInfo.item_count }} </span>
               </div>
               <div class="flex justify-between">
                 <span class="text-gray-500">ຂະໜາດ</span>
-                <span class="font-semibold"> {{ inboundStore.shipmentInfo.total_dimension_length }} {{ inboundStore.shipmentInfo.volume_unit }}</span>
+                <span class="font-semibold"> {{
+                    inboundStore.shipmentInfo.total_dimension_length
+                  }} {{ inboundStore.shipmentInfo.volume_unit }}</span>
               </div>
               <div class="flex justify-between">
                 <span class="text-gray-500">COD</span>
-                <span class="font-semibold"> {{ cod }}  LAK</span>
+                <span class="font-semibold"> {{
+                    inboundStore.shipmentInfo.total_price != null ? inboundStore.shipmentInfo.total_price.toLocaleString() : '-'
+                  }}  LAK</span>
               </div>
               <div class="flex justify-between">
                 <span class="text-gray-500">ຄ່າຂົນສົ່ງ</span>
-                <span class="font-semibold"> {{ inboundStore.shipmentInfo.total_freight != null ? inboundStore.shipmentInfo.total_freight.toLocaleString() : '-' }}
+                <span class="font-semibold"> {{
+                    inboundStore.shipmentInfo.total_freight != null ? inboundStore.shipmentInfo.total_freight.toLocaleString() : '-'
+                  }}
   LAK</span>
               </div>
               <div class="dashed-line"></div>
               <div class="flex justify-between">
                 <span class="text-gray-500">ຍອດທີ່ຕ້ອງຈ່າຍ</span>
-                <span class="font-semibold text-red-500"> {{ inboundStore.shipmentInfo.total_price != null ? inboundStore.shipmentInfo.total_price.toLocaleString() : '-' }}LAK</span>
+                <span class="font-semibold text-red-500"> {{
+                    inboundStore.shipmentInfo.total_price != null ? inboundStore.shipmentInfo.total_price.toLocaleString() : '-'
+                  }}LAK</span>
               </div>
             </div>
           </div>
@@ -127,88 +146,17 @@
 </template>
 
 <script setup lang="ts">
-import {watchEffect, ref,computed} from "vue";
+import {watchEffect, ref, computed} from "vue";
 import {useRoute} from "vue-router";
 import {message} from "ant-design-vue";
 import Breadcrumb from "@/components/breadcrumb.vue";
 import Barcode from "@/components/barcode.vue"
 import logo from "@/assets/images/logo.png";
-import { CopyOutlined,CopyFilled } from "@ant-design/icons-vue";
+import {CopyOutlined, CopyFilled} from "@ant-design/icons-vue";
 import {useInboundParcelStore} from "@/stores/parcel/inboundStore";
+
 const inboundStore = useInboundParcelStore();
 const route = useRoute();
-const date = ref('2024-03-03 14:14:36');
-const trackingNumber = ref('VTE1234567890');
-const fromBranch = ref('0055VTE - ດອນປາເກົາ');
-const toBranch = ref('0055VTE - ສີມຸນ');
-const sender = ref({
-  name: 'Shopping',
-  phone: '59281479'
-});
-const receiver = ref({
-  name: 'Shopping',
-  phone: '59281479'
-});
-
-const weight = ref(0.28);
-const quantity = ref(1);
-const size = ref(60);
-const cod = ref(0);
-const shippingCost = ref(11000);
-const totalAmount = ref(11000);
-
-const trackingData = ref([
-  {
-    date: '02/03/2024',
-    time: '07:01:37',
-    location: 'ສູນຄັດແຍກນະຄອນຫຼວງ',
-    details: 'ພັດສະດຸ ຖຶກຮັບເຂົ້າສູ່ສູນຄັດແຍກນະຄອນຫຼວງ',
-    isCompleted: true
-  },
-  {
-    date: '02/03/2024',
-    time: '12:05:23',
-    location: 'ສາຂາວຽງຈັນ',
-    details: 'ກຳລັງດຳເນີນງານສົ່ງພັດສະດຸ',
-    isCompleted: false
-  },
-  {
-    date: '02/03/2024',
-    time: '12:05:23',
-    location: 'ສາຂາວຽງຈັນ',
-    details: 'ພັດສະດຸຖຶກສົ່ງອອກໄປສາຂາປາຍທາງ',
-    isCompleted: false
-  },
-  {
-    date: '02/03/2024',
-    time: '12:05:22',
-    location: 'ສາຂາວຽງຈັນ',
-    details: 'ຮັບພັດສະດຸແລ້ວ',
-    isCompleted: false
-  }
-]);
-
-const data = [
-  {
-    key: "1",
-    tracking: "VTE85688364229",
-    type: "ເສື້ອຜ້າ",
-    price: "8,000 ກີບ",
-    senderBranch: "ດອນໂດກ (02055555555)",
-    receiverBranch: "ສີສັດຕະນາກ (02055665555)",
-    date: "30/01/2025",
-  },
-  {
-    key: "2",
-    tracking: "VTE85688364229",
-    type: "ເສື້ອຜ້າ",
-    price: "11,000 ກີບ",
-    senderBranch: "ດອນໂດກ (02055555555)",
-    receiverBranch: "ສີສັດຕະນາກ (02055665555)",
-    date: "30/01/2025",
-  },
-];
-
 const copyToClipboard = async (value: string) => {
   if (!value) {
     message.warning(' No value to copy');
@@ -223,7 +171,6 @@ const copyToClipboard = async (value: string) => {
 };
 watchEffect(async () => {
   const trackingId = route.params.trackingId as string;
-  console.log(trackingId)
   if (trackingId) {
     await inboundStore.fetchTrackingParcel(trackingId);
   }
