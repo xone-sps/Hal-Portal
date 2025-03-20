@@ -30,7 +30,7 @@
     <a-card class="custom-table-card">
       <div class="flex justify-between items-center !mb-4">
         <div>
-          <p class="text-lg font-semibold">ລາຍການພັດສະດຸທີ່ສຳເລັດ <span class="text-red-500">{{inboundStore.inboundList.length}}</span></p>
+          <p class="text-lg font-semibold">ລາຍການພັດສະດຸທີ່ສຳເລັດ <span class="text-red-500" v-if="inboundStore.inboundList?.length > 0">{{inboundStore.inboundList.length}}</span></p>
         </div>
         <Pagination :pagination="inboundStore.pagination"
                      @paginate="handlePaginate"/>

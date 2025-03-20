@@ -1,7 +1,7 @@
 <template>
   <div>
     <a-tabs v-model:activeKey="activeTab" @change="handleTabChange" class="custom-tab">
-      <a-tab-pane key="processing" tab="ກໍາລັງຈັສົ່ງ"/>
+      <a-tab-pane key="" tab="ກໍາລັງຈັສົ່ງ"/>
       <a-tab-pane key="arrived" tab="ຮອດສາຂາປາຍທາງ"/>
       <a-tab-pane key="delivered" tab="ຈັດສົ່ງສໍາເລັດ"/>
       <a-tab-pane key="return" tab="ຕີກັບ"/>
@@ -21,7 +21,7 @@ const router = useRouter();
 const tabMapping = ["returned", "arrived", "delivered", "return"];
 
 const getActiveTab = (path: string) => {
-  return tabMapping.find((tab) => path.includes(tab)) || "processing";
+  return tabMapping.find((tab) => path.includes(tab)) || "";
 };
 
 const activeTab = ref(getActiveTab(route.path));

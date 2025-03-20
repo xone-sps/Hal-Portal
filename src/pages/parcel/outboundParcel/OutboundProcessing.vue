@@ -13,7 +13,7 @@
           <a-date-picker v-model:value="endDate" placeholder="ມື້ສິ້ນສຸດ" class="!mr-3"
                          style="width: 200px;"
                          format="DD-MM-YYYY"/>
-          <a-button type="primary" class="search-button !text-white !mr-4" @click="searchQ">
+          <a-button type="primary" class="search-button !text-white !mr-4" @click="handleSearch">
             ຄົ້ນຫາ
           </a-button>
           <a-button type="primary" class="clear-button" @click="clearSearch">
@@ -21,7 +21,7 @@
           </a-button>
         </div>
 
-        <a-button type="primary" class="export-button !text-white" @click="exportExcel">
+        <a-button type="primary" class="export-button !text-white" @click="handleExport" :loading="exportStore.isExportLoading">
           Export Excel
         </a-button>
       </div>
@@ -32,26 +32,27 @@
         <div>
           <p class="text-lg font-semibold">ລາຍການພັດສະດຸທີ່ສຳເລັດ <span class="text-red-500">100</span></p>
         </div>
+        <Pagination  :pagination="outboundStore.pagination"
+                     @paginate="handlePaginate"/>
         <div class="flex items-center gap-4">
-          <a-pagination v-model:current="pagination.current" :total="pagination.total" :pageSize="pagination.pageSize"
-                        show-less-items/>
           <!-- Search Input -->
           <div class="relative w-90">
             <a-input-search
                 v-model:value="searchQuery"
+                @keydown.enter="debouncedSearch"
                 placeholder="Search"
                 class="!w-full !pl-10 1text-left"
             />
           </div>
         </div>
       </div>
-      <a-table :columns="columns" :data-source="data" :pagination="false"
+      <a-table :columns="columns" :data-source="outboundStore.outboundList" :pagination="false" :loading="outboundStore.loading"
                :locale="{ emptyText: $emptyText() }"
       >
         <template #bodyCell="{ column, record }">
           <!-- Customize Detail Column -->
           <template v-if="column.key === 'details'">
-            <a-button type="link" @click="viewDetails(record)">
+            <a-button type="link" @click="viewDetails(record.shipment_number)">
               <EyeOutlined class="!text-red-500 text-xl cursor-pointer" />
             </a-button>
           </template>
@@ -62,39 +63,39 @@
 </template>
 
 <script setup lang="ts">
-import {ref,computed} from "vue";
+import {ref, onMounted} from "vue";
 import { EyeOutlined } from "@ant-design/icons-vue";
+import {useOutboundParcelStore} from "@/stores/parcel/outboundStore";
 import type {Dayjs} from 'dayjs';
-import {useModalStore} from "@/stores/useModalStore";
 import {useRouter} from "vue-router";
-import empty_box from "@/assets/icons/empty.svg";
+import {useExportStore} from "@/stores/useExportStore";
+import Pagination from "@/components/pagination.vue"
+import dayjs from "dayjs";
+import { debounce } from 'lodash';
 
 const searchQuery = ref("");
-const modalStore = useModalStore();
-const startDate = ref<Dayjs>();
-const endDate = ref<Dayjs>();
 const router = useRouter();
 
-const openCODModal = () => {
-  modalStore.showModal({
-    totalAmount: "5,000,000",
-    codAmount: "5,000,000",
-    codRate: "0",
-    transferFee: "19,000",
-    bankAccount: "182120001640922001",
-    bankOwner: "Outhai VONGSA MS",
-    receiveDate: "25/01/2025",
-  });
-};
+const outboundStore = useOutboundParcelStore();
+const exportStore = useExportStore();
+const startDate= ref<Dayjs>(dayjs().subtract(3, 'month'));
+const endDate = ref<Dayjs>(dayjs());
 
 const columns = [
-  {title: "ເລກພັດສະດຸ", dataIndex: "tracking", key: "tracking"},
-  {title: "ປະເພດພັດສະດຸ", dataIndex: "type", key: "type"},
-  {title: "ລາຄາຂົນສົ່ງ", dataIndex: "price", key: "price"},
-  {title: "ລາຄາ COD", dataIndex: "cod", key: "cod"},
-  {title: "ສາຂາສົ່ງອອກ", dataIndex: "senderBranch", key: "senderBranch"},
-  {title: "ສາຂາປາຍທາງ", dataIndex: "receiverBranch", key: "receiverBranch"},
-  {title: "ວັນທີສົ່ງບິນ", dataIndex: "date", key: "date"},
+  {title: "ເລກພັດສະດຸ", dataIndex: "shipment_number", key: "shipment_number"},
+  {title: "ປະເພດພັດສະດຸ", dataIndex: ["parcel","parcel_category","name"], key: "parcel_category"},
+  {title: "ລາຄາຂົນສົ່ງ", dataIndex: "total_freight", key: "total_freight",  customRender: ({ text }: { text: number }) => `${text.toLocaleString()} ກີບ`},
+  {title: "ລາຄາ COD", dataIndex: "total_price", key: "cod",customRender: ({ text }: { text: number }) => `${text.toLocaleString()} ກີບ`},
+  {
+    title: "ສາຂາຕົ້ນທາງ",
+    key: "start_branch",
+    customRender: ({ record }: any) => {
+      return `${record.start_branch?.name || ""} (${record.start_branch?.tel || ""})`;
+    }},
+  {title: "ສາຂາປາຍທາງ", key: "end_branch", customRender: ({ record }: any) => {
+      return `${record.end_branch?.name || ""} (${record.end_branch?.tel || ""})`;
+    }},
+  {title: "ວັນທີສົ່ງບິນ", dataIndex: "start_date_actual", key: "start_date_actual"},
   {
     title: "ລາຍລະອຽດ",
     key: "details",
@@ -102,46 +103,45 @@ const columns = [
   },
 ];
 
-const data = [
-  {
-    key: "1",
-    tracking: "VTE85688364229",
-    type: "ເສື້ອຜ້າ",
-    price: "8,000 ກີບ",
-    cod: "0 ກີບ",
-    senderBranch: "ດອນໂດກ (02055555555)",
-    receiverBranch: "ສີສັດຕະນາກ (02055665555)",
-    date: "30/01/2025",
-  },
-  {
-    key: "2",
-    tracking: "VTE85688364229",
-    type: "ເສື້ອຜ້າ",
-    price: "11,000 ກີບ",
-    cod: "120,000 ກີບ",
-    senderBranch: "ດອນໂດກ (02055555555)",
-    receiverBranch: "ສີສັດຕະນາກ (02055665555)",
-    date: "30/01/2025",
-  },
-];
+const viewDetails = (trackingId: string) => {
+  router.push({ name: "inbound-detail", params: { trackingId } });
+};
 
-// const fetchData = () => {
-//   // Simulate API call
-//   data.value = []; // No data found scenario
-//   pagination.value.total = data.value.length;
-// };
-// Function to handle row detail view
-const viewDetails = (record: any) => {
-  router.push({ name: "outbound-detail", query: { transferId: record.transferId } });
+const handleExport = async () => {
+  await exportStore.exportExcel({
+    startDate: startDate.value,
+    endDate: endDate.value,
+    status: 'processing',
+    query: '',
+  });
 };
-const clearSearch = () => {
-  searchQuery.value = "";
-  // fetchData();
+const handlePaginate = (cursor: string) => {
+  outboundStore.fetchOutboundData({status: 'processing',cursor:cursor,startDate:startDate.value,endDate:endDate.value});
 };
-const exportExcel = () => {
-  console.log("Exporting data...");
+const handleSearch = () => {
+  if(startDate.value != '' && endDate.value != ''){
+    outboundStore.fetchOutboundData({status: 'processing',query:searchQuery.value,startDate:startDate.value,endDate:endDate.value},);
+  }
 };
-const pagination = {pageSize: 10, total: data.length};
+
+const debouncedSearch = debounce(async () => {
+  if (searchQuery.value.trim()) {
+    await outboundStore.fetchOutboundData({
+      status: 'processing',
+      query: searchQuery.value.trim(),
+    });
+  }
+}, 300);
+const clearSearch = () =>{
+  startDate.value =<Dayjs>(dayjs());
+  endDate.value = <Dayjs>(dayjs());
+  searchQuery.value = '';
+};
+onMounted(async () => {
+  await outboundStore.fetchOutboundData({status: 'processing',startDate:startDate.value,endDate:endDate.value});
+});
+
+
 </script>
 
 <style scoped>

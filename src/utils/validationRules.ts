@@ -8,8 +8,8 @@ export const validationRules = {
         { pattern: /^020\d{8}$/, message: "ເບີໂທຕ້ອງເປັນ 020XXXXXXXX", trigger: "blur" }
     ],
     receiverAddress: [{ required: true, message: "ກະລຸນາປ້ອນທີ່ຢູ່", trigger: "blur" }],
-    originValue: [{ required: true, message: "ກະລຸນາເລືອກສາຂາຕົ້ນທາງ", trigger: "change" }],
-    destinationValue: [{ required: true, message: "ກະລຸນາເລືອກສາຂາປາຍທາງ", trigger: "change" }],
+    originBranchValue: [{ required: true, message: "ກະລຸນາເລືອກສາຂາຕົ້ນທາງ", trigger: "change" }],
+    destinationBranchValue: [{ required: true, message: "ກະລຸນາເລືອກສາຂາປາຍທາງ", trigger: "change" }],
     parcelType: [{ required: true, message: "ເລືອກປະເພດພັດສະດຸ", trigger: "change" }],
     parcelCategoryValue: [{ required: true, message: "ກະລຸນາເລືອກປະເພດພັດສະດຸ", trigger: "change" }],
     parcelDimensions: [{ required: true, message: "ປ້ອນຂະໜາດ", trigger: "blur" }],

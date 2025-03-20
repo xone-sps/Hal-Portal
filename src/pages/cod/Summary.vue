@@ -5,7 +5,7 @@
       <div class="flex justify-between items-center">
         <div>
           <p class="text-gray-500">ຍອດ COD ທັງໝົດ</p>
-          <p class="text-red-600 text-3xl font-bold">{{codStore.codSummary.toLocaleString()}} LAK</p>
+          <p class="text-red-600 text-3xl font-bold">{{codStore.codSummary.toLocaleString() || '-'}} LAK</p>
         </div>
         <div>
           <p class="text-gray-500">ຄ່າທໍານຽມ COD</p>
@@ -13,7 +13,7 @@
         </div>
         <div>
           <p class="text-gray-500">ຄ່າທໍານຽມໂອນ</p>
-          <p class="text-xl font-bold">{{codStore.transferFee.toLocaleString()}} LAK</p>
+          <p class="text-xl font-bold">{{codStore.transferFee.toLocaleString() || '-'}} LAK</p>
         </div>
         <a-button type="primary" class="!bg-red-600 !text-white" @click="openCODModal">
           ຢືນຢັນຮັບຍອດ COD

@@ -122,12 +122,24 @@
       </div>
 
       <a-card class="!mb-2 custom-card">
+        <a-form-item v-if="form.parcelType =='document'" label="ປະເພດເອກະສານ" class="w-full" name="documentSizeValue">
+          <a-select
+              v-model:value="form.documentSizeValue"
+              :options="documentType"
+              :filter-option="filterOptionDocumentSize"
+              placeholder="ເລືອກປະເພດເອກະສານ"
+              allow-clear
+              tree-default-expand-all
+              class="w-full custom-select"
+              show-search
+          />
+        </a-form-item>
         <div class="flex items-center">
           <!-- Origin Branch Select -->
           <a-form-item label="ສາຂາຕົ້ນທາງ" class="w-full" name="originValue">
-            <a-select v-model:value="form.originValue" placeholder="ເລືອກສາຂາຕົ້ນທາງ" show-search
-                      :options="originBranch"
-                      :filter-option="filterOption"
+            <a-select v-model:value="form.originBranchValue" placeholder="ເລືອກສາຂາຕົ້ນທາງ" show-search
+                      :options="manageOrderStore.originBranches"
+                      :filter-option="filterOptionOriginBranch"
                       class="w-full custom-select"
             ></a-select>
           </a-form-item>
@@ -141,9 +153,9 @@
 
           <!-- Destination Branch Select -->
           <a-form-item label="ສາຂາປາຍທາງ" class="w-full" name="destinationValue">
-            <a-select v-model:value="form.destinationValue" placeholder="ເລືອກສາຂາປາຍທາງ" show-search
-                      :options="destinationBranch"
-                      :filter-option="filterOption"
+            <a-select v-model:value="form.destinationBranchValue" placeholder="ເລືອກສາຂາປາຍທາງ" show-search
+                      :options="manageOrderStore.destinationBranches"
+                      :filter-option="filterOptionDestinationBranch"
                       class="w-full custom-select"
             ></a-select>
           </a-form-item>
@@ -153,10 +165,13 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
           <!-- Origin Branch Select -->
           <a-form-item label="ເລືອກປະເພດພັດສະດຸ" class="w-full" name="parcelCategoryValue">
-            <a-select v-model:value="form.parcelCategoryValue" placeholder="ເລືອກປະເພດພັດສະດຸ" show-search
-                      :options="parcelCategory"
-                      :filter-option="filterOption"
-                      class="w-full custom-select"
+            <a-select
+                v-model:value="form.parcelCategoryValue"
+                placeholder="ເລືອກປະເພດພັດສະດຸ"
+                :options="manageOrderStore.parcelCategories"
+                :filter-option="filterOptionCategory"
+                show-search
+                class="w-full custom-select"
             ></a-select>
           </a-form-item>
           <a-form-item label="ກວ້າງ + ສູງ + ຍາວ" name="parcelDimensions">
@@ -199,11 +214,13 @@
 
 <script setup lang="ts">
 import {ref, onMounted} from "vue";
-import { validationRules } from "@/utils/validationRules"; // Import validation rules
+import {useManageOrderStore} from "@/stores/parcel/manageOrderStore";
+import {validationRules} from "@/utils/validationRules"; // Import validation rules
 import {EditOutlined, SaveOutlined, ArrowRightOutlined} from "@ant-design/icons-vue";
-import { notification } from "ant-design-vue";
+import {notification} from "ant-design-vue";
 import box_fill from "@/assets/icons/box-fill.svg";
 
+const manageOrderStore = useManageOrderStore();
 const formRef = ref();
 const form = ref({
   senderName: "",
@@ -213,12 +230,13 @@ const form = ref({
   receiverPhone: "",
   receiverAddress: "",
   packageType: "",
-  selectedServices:[],
-  originValue: undefined,
-  destinationValue: undefined,
-  parcelType:"",
-  originBranch:[],
-  parcelCategoryValue:undefined,
+  selectedServices: [],
+  originBranchValue: null,
+  destinationBranchValue: null,
+  parcelType: "",
+  originBranch: [],
+  documentSizeValue: null,
+  parcelCategoryValue: null,
   parcelDimensions: "",
   weight: "",
 });
@@ -229,26 +247,26 @@ const serviceMore = ref([
   {value: "cod", label: "COD", detail: "ເກັບຄ່າເຄື່ອງປາຍທາງ"},
   {value: "insurance", label: "ປະກັນໄພ", detail: "ຄຸມຄອງພັດສະດຸຂອງທ່ານ"},
 ]);
-
-
-const originBranch = ref([
-  {value: "dongdork", label: "DongDork"},
-  {value: "hongkhar", label: "HongKhar"},
-  {value: "chommarny", label: "Chommarny"},
-])
-const destinationBranch = ref([
-      {value: "svk", label: "Savannakhet"},
-      {value: "kayson", label: "Kaysone"},
-      {value: "luk5", label: "Luk 5"},
-    ])
-;
-const parcelCategory = ref([
-  {value: "cloth", label: "ເສື້ອຍຜ້າ"},
-  {value: "cosmetic", label: "ເຄື່ອງສໍາອາງ"},
+const documentType = ref([
+  {value: "A3", label: "A3"},
+  {value: "A4", label: "A4"},
+  {value: "A5", label: "A5"},
 ]);
-const filterOption = (input: string, option: any) => {
-  return option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+
+
+const filterOptionDocumentSize = (input: string, option: any) => {
+  return option.label.toLowerCase().includes(input.toLowerCase());
 };
+const filterOptionOriginBranch = (input: string, option: any) => {
+  return option.label.toLowerCase().includes(input.toLowerCase());
+};
+const filterOptionDestinationBranch = (input: string, option: any) => {
+  return option.label.toLowerCase().includes(input.toLowerCase());
+};
+const filterOptionCategory = (input: string, option: any) => {
+  return option.label.toLowerCase().includes(input.toLowerCase());
+};
+
 const rules = ref(validationRules); // Assign imported rules
 const submitForm = async () => {
   try {
@@ -270,6 +288,9 @@ const submitForm = async () => {
   }
 };
 onMounted(() => {
+      manageOrderStore.fetchFilterBranch();
+      manageOrderStore.fetchOriginBranch();
+      manageOrderStore.fetchParcelCategory();
     }
 )
 </script>
