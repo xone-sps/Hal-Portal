@@ -7,13 +7,14 @@ export const validationRules = {
         { required: true, message: "ກະລຸນາປ້ອນເບີໂທ", trigger: "blur" },
         { pattern: /^020\d{8}$/, message: "ເບີໂທຕ້ອງເປັນ 020XXXXXXXX", trigger: "blur" }
     ],
+    // receiverPhone: [{ required: true, message: "ກະລຸນາປ້ອນທີ່ຢູ່", trigger: "blur" }],
     receiverAddress: [{ required: true, message: "ກະລຸນາປ້ອນທີ່ຢູ່", trigger: "blur" }],
     originBranchValue: [{ required: true, message: "ກະລຸນາເລືອກສາຂາຕົ້ນທາງ", trigger: "change" }],
     destinationBranchValue: [{ required: true, message: "ກະລຸນາເລືອກສາຂາປາຍທາງ", trigger: "change" }],
     parcelType: [{ required: true, message: "ເລືອກປະເພດພັດສະດຸ", trigger: "change" }],
     parcelCategoryValue: [{ required: true, message: "ກະລຸນາເລືອກປະເພດພັດສະດຸ", trigger: "change" }],
     parcelDimensions: [{ required: true, message: "ປ້ອນຂະໜາດ", trigger: "blur" }],
-    parcelWeight: [{ required: true, message: "ປ້ອນນໍ້າໜັກ", trigger: "blur" }],
+    weight: [{ required: true, message: "ປ້ອນນໍ້າໜັກ", trigger: "blur" }],
     selectedServices: [
         {
             validator: (_, value) =>

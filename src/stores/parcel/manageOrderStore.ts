@@ -1,5 +1,6 @@
 import {defineStore} from 'pinia';
 import axios from '@/plugins/axios';
+
 export const useManageOrderStore = defineStore('manageOrderStore', {
     state: () => ({
         parcelCategories: [] as any [],
@@ -8,6 +9,9 @@ export const useManageOrderStore = defineStore('manageOrderStore', {
         provinces: [],
         districts: [],
         villages: [],
+        packages:[],
+        orderData:null,
+        loading: false,
         pagination: {
             nextPageUrl: null,
             prevPageUrl: null,
@@ -18,80 +22,6 @@ export const useManageOrderStore = defineStore('manageOrderStore', {
         },
     }),
     actions: {
-        async preOrder(data: {}) {
-
-            try {
-                // const data = {
-                //     sender_branch_id: parcelDetail.value.sender_branch_id,
-                //     receive_branch_id: parcelDetail.value.receive_branch_id,
-                //     receiver: {
-                //         full_name: parcelDetail.value.full_name,
-                //         phone_number: parcelDetail.value.phone_number,
-                //         location: parcelDetail.value.location,
-                //     },
-                //     payment_gateway: 'BCEL_ONE',
-                //     shipment_pay_type: parcelDetail.value.shipment_pay_type,
-                //     shipment_type: "express",
-                //     parcel_type: parcelDetail.value.parcel_type,
-                //     pieces: 1,
-                //     parcels: [
-                //         {
-                //             size: parcelDetail.value.parcel_size ? parcelDetail.value.parcel_size : null,
-                //             category_id: parcelDetail.value.category_id,
-                //             dimension_length: JSON.parse(parcelDetail.value.dimension_length),
-                //             weight: JSON.parse(parcelDetail.value.weight),
-                //             price: parcelDetail.value.package.price,
-                //             insurance_price: parcelDetail.value.insurance_price ? parcelDetail.value.insurance_price : null,
-                //             freight: JSON.parse(parcelDetail.value.freight)
-                //         }
-                //     ]
-                // }
-
-                const response = await axios.post('/v1/auth/users/me/shipments/orders/store', data);
-
-                if (response.data) {
-                    //success
-
-                }
-            } catch (error) {
-                throw error;
-            }
-        },
-
-        // ✅ Add cursor as a parameter and set a default value
-        async fetchInboundData({
-                                   status = '',
-                                   cursor = '',
-                                   query = '',
-                                   startDate = '',
-                                   endDate = '',
-                                   type = 'receive'
-                               } = {}) {
-            this.loading = true;
-            try {
-                const params: Record<string, any> = {
-                    //Query data
-                    // type,
-                    // q: query || this.query, // Use query if provided, otherwise use this.query
-                    // status,
-                    // start_date: startDate ? dayjs(startDate).format('YYYY-MM-DD') : dayjs(this.startDate).format('YYYY-MM-DD'),
-                    // end_date: endDate ? dayjs(endDate).format('YYYY-MM-DD') : dayjs(this.endDate).format('YYYY-MM-DD'),
-                    // use_cursor: true,
-                    // cursor,
-                    // limit: this.pagination.pageSize,
-                };
-
-                const response = await axios.get('v1/auth/users/me/shipments/orders', {params});
-                if (response.data && !response.data.error) {
-                    //show data
-                }
-            } catch (error) {
-                throw error;
-            } finally {
-                this.loading = false;
-            }
-        },
-
         async fetchOriginBranch() {
             this.loading = true;
             try {
@@ -120,8 +50,8 @@ export const useManageOrderStore = defineStore('manageOrderStore', {
                 if (response.data && !response.data.error) {
                     this.provinces = response.data.provinces,
                         this.districts = response.data.districts;
-                        this.villages = response.data.villages,
-                    console.log(this.provinces);
+                    this.villages = response.data.villages,
+                        console.log(this.provinces);
                 }
             } catch (error) {
                 throw error;
@@ -132,7 +62,7 @@ export const useManageOrderStore = defineStore('manageOrderStore', {
         async fetchParcelCategory() {
             this.loading = true;
             try {
-                const response = await axios.get('customer/list-parcel-categories',);
+                const response = await axios.get('customer/list-parcel-categories');
                 if (response.data && !response.data.error) {
                     this.parcelCategories = response.data.listParcelCategories.map(item => ({
                         label: item.name, // Map "name" to "label"
@@ -145,5 +75,68 @@ export const useManageOrderStore = defineStore('manageOrderStore', {
                 this.loading = false;
             }
         },
+
+        // ✅ Add cursor as a parameter and set a default value
+        async calculateFreight({
+                                   weight = '',
+                                   dimensionLength = '',
+                                   parcelSize = '',
+                                   startBranchId = '',
+                                   endBranchId = '',
+                                   calculateType = '',
+                                   shipmentPayType = ''
+                               } = {}) {
+            this.loading = true;
+            try {
+                const params: Record<string, any> = {
+                    width: 0.1,
+                    height: 0.1,
+                    length: 0.1,
+                    weight: weight || null,
+                    dimension_length: dimensionLength || null,
+                    size: parcelSize || null,
+                    start_branch_id: startBranchId || null,
+                    end_branch_id: endBranchId || null,
+                    start_province_id: null,
+                    end_province_id: null,
+                    calc_type: calculateType === 'document' ? "document" : "parcel",
+                    freight_type: shipmentPayType === "destination_freight_fees"
+                        ? "destination"
+                        : shipmentPayType === "origin_freight_fees_cod"
+                            ? "destination"
+                            : shipmentPayType === "destination_freight_fees_cod"
+                                ? "destination"
+                                : "origin",
+                };
+                const response = await axios.get('v1/calculate/freight/branches', {params});
+                if (response.data && !response.data.error) {
+                    //show data
+                    this.packages = response.data;
+                    console.log("Freight Calculation Result:", this.packages);
+                }
+            } catch (error) {
+                console.error("Freight Calculation Error:", error.message);
+                throw error;
+            } finally {
+                this.loading = false;
+            }
+        },
+// Create preorder
+        async createOrder(orderData: any) {
+            console.log(orderData)
+            try {
+                const response = await axios.post('/v1/auth/users/me/shipments/orders/store', orderData);
+                if (response.data) {
+                    console.log('Order created:', response.data);
+                    this.orderData = response.data;
+                    return response.data;
+                }
+            } catch (error) {
+                throw error;
+            } finally {
+                this.loading = false;
+            }
+        },
+
     },
 });
