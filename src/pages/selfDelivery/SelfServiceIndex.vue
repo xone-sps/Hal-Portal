@@ -1,18 +1,19 @@
 <template>
   <div>
     <a-tabs v-model:activeKey="activeTab" @change="handleTabChange">
-      <a-tab-pane key="one-parcel" tab="ຝາກເຄື່ອງເອງ" />
-      <a-tab-pane key="multiple-parcel" tab="ຝາກຫຼາຍພັດສະດຸ" />
+      <a-tab-pane key="one-parcel" tab="ຝາກເຄື່ອງເອງ"/>
+      <a-tab-pane key="multiple-parcel" tab="ຝາກຫຼາຍພັດສະດຸ"/>
+      <a-tab-pane key="my-parcel" tab="ບິນສ້າງເອງ"/>
     </a-tabs>
 
     <!-- Dynamic Content Based on Router -->
-    <router-view />
+    <router-view/>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import {ref, watch} from "vue";
+import {useRoute, useRouter} from "vue-router";
 
 const route = useRoute();
 const router = useRouter();
@@ -22,7 +23,9 @@ const activeTab = ref(
         ? "one-parcel"
         : route.path.includes("multiple-parcel")
             ? "multiple-parcel"
-            : "one-parcel"
+            : route.path.includes("my-parcel")
+                ? "my-parcel"
+                : "one-parcel"
 );
 
 watch(() => route.path, (newPath) => {
@@ -30,6 +33,8 @@ watch(() => route.path, (newPath) => {
       ? "one-parcel"
       : newPath.includes("multiple-parcel")
           ? "multiple-parcel"
+          : newPath.includes("my-parcel")
+              ? "my-parcel"
           : "one-parcel";
 });
 
@@ -50,7 +55,7 @@ const handleTabChange = (key: string) => {
 }
 
 :deep(.ant-tabs-ink-bar) {
-  height: 6px !important;  /* Thicker bottom border */
+  height: 6px !important; /* Thicker bottom border */
   background-color: #E00C16 !important; /* Custom red border */
   border-radius: 4px;
 }

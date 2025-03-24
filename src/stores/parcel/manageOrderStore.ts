@@ -1,5 +1,6 @@
 import {defineStore} from 'pinia';
 import axios from '@/plugins/axios';
+import {notification} from "ant-design-vue";
 
 export const useManageOrderStore = defineStore('manageOrderStore', {
     state: () => ({
@@ -113,6 +114,7 @@ export const useManageOrderStore = defineStore('manageOrderStore', {
                     //show data
                     this.packages = response.data;
                     console.log("Freight Calculation Result:", this.packages);
+                    return response.data;
                 }
             } catch (error) {
                 console.error("Freight Calculation Error:", error.message);
@@ -132,6 +134,44 @@ export const useManageOrderStore = defineStore('manageOrderStore', {
                     return response.data;
                 }
             } catch (error) {
+                throw error;
+            } finally {
+                this.loading = false;
+            }
+        },
+        async deleteParcel(data:any) {
+            this.loading = true;
+            try {
+                const response = await axios.post('v1/auth/users/me/shipments/orders/cancel/pre-order', data);
+                if (response.data) {
+                    return response;
+                }
+            } catch (error) {
+                notification.error({
+                    message: "ຜິດພາດ!",
+                    description: error.data.message || "ກະລຸນາກວດຄືນຂໍ້ມູນຂອງທ່ານ",
+                    placement: "topRight",
+                    duration: 5,
+                });
+                throw error;
+            } finally {
+                this.loading = false;
+            }
+        },
+        async deleteParcels(data:any) {
+            this.loading = true;
+            try {
+                const response = await axios.post('v1/auth/users/me/shipments/orders/cancel/pre-order/all', data);
+                if (response.data) {
+                    return response;
+                }
+            } catch (error) {
+                notification.error({
+                    message: "ຜິດພາດ!",
+                    description: error.data.message || "ກະລຸນາກວດຄືນຂໍ້ມູນຂອງທ່ານ",
+                    placement: "topRight",
+                    duration: 5,
+                });
                 throw error;
             } finally {
                 this.loading = false;

@@ -9,9 +9,9 @@ import PendingCod from "@/pages/cod/PendingCod.vue";
 import CompleteCod from "@/pages/cod/CompleteCod.vue";
 import PendingCodDetail from "@/pages/cod/PendingCodDetail.vue";
 import CompleteCodDetail from "@/pages/cod/CompletedCodDetail.vue";
-import SelfServiceIndex from "@/pages/selfdelivery/SelfServiceIndex.vue";
-import SelfDelivery from "@/pages/selfdelivery/SelfDelivery.vue";
-import DeliveryMoreParcel from "@/pages/selfdelivery/DeliveryMoreParcel.vue";
+import SelfServiceIndex from "@/pages/selfDelivery/SelfServiceIndex.vue";
+import SelfDelivery from "@/pages/selfDelivery/SelfDelivery.vue";
+import DeliveryMoreParcel from "@/pages/selfDelivery/DeliveryMoreParcel.vue";
 import OutboundIndex from "@/pages/parcel/outboundParcel/OutboundIndex.vue";
 import OutboundProcessing from "@/pages/parcel/outboundParcel/OutboundProcessing.vue";
 import OutboundArrived from "@/pages/parcel/outboundParcel/OutboundArrived.vue";
@@ -152,6 +152,12 @@ const routes = [
                         name: "multiple-parcel",
                         component: DeliveryMoreParcel,
                         meta: {requiresAuth: true, title: "ຝາກເຄື່ອງເອງ - ສົ່ງຫຼາຍຊິ້ນ", description: "" },
+                    },
+                    {
+                        path: "my-parcel", // ✅ Correct relative path
+                        name: "my-parcel",
+                        component: import('@/pages/selfDelivery/MyParcel.vue'),
+                        meta: {requiresAuth: true, title: "ຝາກເຄື່ອງເອງ", description: "" },
                     }
                 ]
             }

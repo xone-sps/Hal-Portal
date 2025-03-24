@@ -37,6 +37,7 @@ export const useOutboundParcelStore = defineStore('outboundStore', {
                     end_date: endDate ? dayjs(endDate).format('YYYY-MM-DD') : dayjs(this.endDate).format('YYYY-MM-DD'),
                     use_cursor: true,
                     cursor,
+                    status:status,
                     limit: this.pagination.pageSize,
                     sort_order:'asc'
                 };

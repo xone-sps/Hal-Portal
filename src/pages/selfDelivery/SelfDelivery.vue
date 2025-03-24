@@ -28,15 +28,15 @@
         <div class="mt-4 space-y-2">
           <div class="flex">
             <p class="text-gray-500 w-24">ຊື່</p>
-            <p class="font-semibold">Bebe</p>
+            <p class="font-semibold">{{ profile?.userName || 'No Name' }}</p>
           </div>
           <div class="flex">
             <p class="text-gray-500 w-24">ເບີໂທລະສັບ</p>
-            <p class="font-semibold">020 55034921</p>
+            <p class="font-semibold">{{ profile?.userTel || 'N/A' }}</p>
           </div>
           <div class="flex">
             <p class="text-gray-500 w-24">ທີ່ຢູ່</p>
-            <p class="font-semibold">ກີໂດກ, ໄຊທານີ, ມ. ຖະໜົນລາວຣັບ</p>
+            <p class="font-semibold">{{ profile?.userProfile?.addresss || 'N/A' }}</p>
           </div>
         </div>
       </a-card>
@@ -98,7 +98,7 @@
               <a-form-item label="ປະເພດພັສະດຸ" name="parcelType">
                 <a-radio-group v-model:value="form.parcelType" @change="parcelTypechange">
                   <a-radio value="parcel">ພັດສະດຸທົ່ວໄປ</a-radio>
-                  <a-radio value="document">ເອກະສານ</a-radio>
+                  <a-radio value="envelope">ເອກະສານ</a-radio>
                 </a-radio-group>
               </a-form-item>
             </div>
@@ -125,13 +125,13 @@
                     <p class="text-xs">ເກັບຄ່າຂົນສົ່ງປາຍທາງ</p>
                   </a-checkbox>
                 </div>
-                <div class="pr-6" v-if="form.parcelType !=='document'">
+                <div class="pr-6" v-if="form.parcelType !=='envelope'">
                   <a-checkbox v-model:value="form.codValue" @change="codChange">
                     COD
                     <p class="text-xs">ເກັບຄ່າເຄື່ອງປາຍທາງ</p>
                   </a-checkbox>
                 </div>
-                <div class="pr-6" v-if="form.parcelType !=='document'">
+                <div class="pr-6" v-if="form.parcelType !=='envelope'">
                   <a-checkbox v-model:value="form.insuranceValue">
                     ປະກັນໄພ
                     <p class="text-xs">ຄຸມຄອງພັດສະດຸຂອງທ່ານ</p>
@@ -144,7 +144,7 @@
       </div>
 
       <a-card class="!mb-2 custom-card">
-        <a-form-item v-if="form.parcelType =='document'" label="ປະເພດເອກະສານ" class="w-full" name="documentSizeValue">
+        <a-form-item v-if="form.parcelType =='envelope'" label="ປະເພດເອກະສານ" class="w-full" name="documentSizeValue">
           <a-select
               v-model:value="form.documentSizeValue"
               :options="documentType"
@@ -156,8 +156,13 @@
               show-search
           />
         </a-form-item>
-        <a-form-item label="ມູນຄ່າພັດສະດຸ" name="parcelWeight" v-if="codStatus">
-          <a-input placeholder="ມູນຄ່າພັດສະດຸ" v-model:value="form.parcelPrice"/>
+        <a-form-item label="ມູນຄ່າພັດສະດຸ" name="parcelWeight" v-if="codStatus"    type="number"
+                     :min="0"
+                     :max="5">
+          <a-input-number placeholder="ມູນຄ່າພັດສະດຸ"
+                   type="number" style="width: 100%"
+                   :min="0"
+                   :max="5" v-model:value="form.parcelPrice"/>
         </a-form-item>
         <div class="flex items-center">
           <!-- Origin Branch Select -->
@@ -200,10 +205,17 @@
             ></a-select>
           </a-form-item>
           <a-form-item label="ກວ້າງ + ສູງ + ຍາວ" name="parcelDimensions">
-            <a-input placeholder="ກວ້າງ + ສູງ + ຍາວ" v-model:value="form.parcelDimensions" class="custom-select"/>
+            <a-input-number placeholder="ກວ້າງ + ສູງ + ຍາວ" :min="0"
+                            type="number"
+                            :max="5" style="width: 100%" v-model:value="form.parcelDimensions" class="custom-select"/>
           </a-form-item>
           <a-form-item label="ນໍ້າໜັກ (kg)" name="weight">
-            <a-input placeholder="ນໍ້າໜັກ (kg)" v-model:value="form.weight"/>
+            <a-input-number placeholder="ນໍ້າໜັກ (kg)"
+                            type="number"
+                            :min="0"
+                            :max="5"
+                            style="width: 100%"
+                            v-model:value="form.weight"/>
           </a-form-item>
         </div>
       </a-card>
@@ -234,32 +246,62 @@
         </div>
       </div>
     </a-form>
-    <div class="text-right !mt-2">
-      <a-button type="primary" class="!bg-red-600 !text-white" @click="submitOrder">Create Order</a-button>
-    </div>
-    <ConfirmOrderModal
-        v-model="isModalOpen"
-        title="ເພີ່ມລາຍການພັດສະດຸss"
-        @confirm="submitOrder"
-    >
-    </ConfirmOrderModal>
+<!--    <ConfirmOrderModal-->
+<!--        v-model="isModalOpen"-->
+<!--        title="ເພີ່ມລາຍການພັດສະດຸss"-->
+<!--        @confirm="submitOrder"-->
+<!--    >-->
+<!--    </ConfirmOrderModal>-->
 
-<!--    <a-modal v-model:open="open" :footer="null" centered :maskClosable="false" :closable="false">-->
-<!--      <div class="flex flex-col items-center text-center p-6">-->
-<!--        <CheckCircleOutlined class="!text-green-600 text-5xl !mb-4"/>-->
-<!--        <h2 class="text-xl font-bold">ທ່ານໄດຢືນຢັນຮຽກເກັບເງິນ COD ສຳເລັດ</h2>-->
-<!--        <p class="text-gray-600 text-sm !mt-2">ຈະໄດ້ຮັບເງິນພາຍໃນ 02 ວັນ ນັບຈາກມື້ກົດຮຽກເກັບເງິນ-->
-<!--          ເປັນຕົ້ນໄປ</p>-->
-<!--        <a-button-->
-<!--            type="primary"-->
-<!--            block-->
-<!--            class="!mt-6 !bg-red-600 !text-white !text-lg w-full !h-10"-->
-<!--            @click="submitOrder"-->
-<!--        >-->
-<!--          Create-->
-<!--        </a-button>-->
-<!--      </div>-->
-<!--    </a-modal>-->
+    <a-modal v-model:open="isModalOpen" :footer="null" title="ສ້າງບິນຂົນສົ່ງລ່ວງໜ້າ" centered :maskClosable="false" :closable="true">
+      <div class="divider"></div>
+      <div class="p-2">
+      <div class="flex flex-col items-center text-center p-6">
+        <CheckCircleOutlined class="!text-green-600 text-5xl !mb-4"/>
+        <div class="flex items-center">
+          <!-- Origin Branch Select -->
+
+          <p class="text-gray-500 text-sm">  {{ selectedOriginBranch?.label || '-' }}</p>
+          <!-- Centered Arrow Icon with Reduced Space -->
+          <div class="flex justify-center arrow-button">
+            <a-avatar size="default" class="custom-avatar !bg-red-500 flex items-center justify-center">
+              <ArrowRightOutlined class="text-white text-base"/>
+            </a-avatar>
+          </div>
+
+          <!-- Destination Branch Select -->
+          <p class="text-gray-500 text-sm">  {{ selectedDestinationBranch?.label || '-' }}</p>
+        </div>
+        <div class="text-center">
+          <p class="text-gray-500 text-sm !my-2">ຄ່າຂົນສົ່ງ</p>
+          <p class="text-red-600 font-bold text-2xl">{{preview.freight.toLocaleString() || '-'}}  LAK</p>
+        </div>
+
+        <div class="dashed-line"></div>
+        <div class="space-y-2 flex justify-between">
+          <p>COD: </p>
+          <p class="mt-2 text-gray-700">0 %</p>
+        </div>
+
+        <!-- Receive Date -->
+        <div class="mt-4 space-y-2 flex justify-between rounded-lg bg-gray-100">
+          <WarningOutlined class="text-center p-3"/>
+          <p class="p-3 text-gray-500 text-center">ທ່ານຈະໄດ້ຮັບເຄື່ອງພາຍໃນ</p>
+          <div class="p-3 font-semibold text-center">
+            2-5 ວັນ
+          </div>
+        </div>
+      </div>
+        <a-button
+            type="primary"
+            block
+            class="!mt-6 !bg-red-600 !text-white !text-lg w-full !h-10"
+            @click="submitOrder"
+        >
+          ຢືນຢັນສ້າງບິນ
+        </a-button>
+      </div>
+    </a-modal>
 
   </div>
 </template>
@@ -268,11 +310,14 @@
 import {ref, onMounted, computed} from "vue";
 import {useManageOrderStore} from "@/stores/parcel/manageOrderStore";
 import {validationRules} from "@/utils/validationRules"; // Import validation rules
-import {EditOutlined, SaveOutlined, ArrowRightOutlined} from "@ant-design/icons-vue";
+import {EditOutlined, SaveOutlined, ArrowRightOutlined,CheckCircleOutlined,WarningOutlined} from "@ant-design/icons-vue";
 import {notification} from "ant-design-vue";
 import box_fill from "@/assets/icons/box-fill.svg";
-import ConfirmOrderModal from "@/components/modals/ConfirmOrderModal.vue";
 import {useModalStore} from "@/stores/useModalStore";
+import {useUserStore} from "@/stores/useUserStore";
+
+const userStore = useUserStore();
+const profile = computed(() => userStore.user);
 const modalStore = useModalStore();
 const manageOrderStore = useManageOrderStore();
 const formRef = ref();
@@ -312,6 +357,7 @@ const documentType = ref([
   {value: "A4", label: "A4"},
   {value: "A5", label: "A5"},
 ]);
+const preview = ref({});
 const openCODModal = () => {
   modalStore.showModal({
     totalAmount: "5,000,000",
@@ -330,6 +376,15 @@ const filterOptionDocumentSize = (input: string, option: any) => {
 const filterOptionOriginBranch = (input: string, option: any) => {
   return option.label.toLowerCase().includes(input.toLowerCase());
 };
+const selectedOriginBranch = computed(() => {
+  return manageOrderStore.destinationBranches.find(
+      (branch) => branch.value === form.value.originBranchValue
+  );
+});const selectedDestinationBranch = computed(() => {
+  return manageOrderStore.destinationBranches.find(
+      (branch) => branch.value === form.value.destinationBranchValue
+  );
+});
 const filterOptionDestinationBranch = (input: string, option: any) => {
   return option.label.toLowerCase().includes(input.toLowerCase());
 };
@@ -361,7 +416,6 @@ const rules = ref(validationRules); // Assign imported rules
 const submitForm = async () => {
   try {
     await formRef.value.validate();
-
     // ✅ Map form values to store parameters
     const payload = {
       weight: form.value.weight || 0,
@@ -375,21 +429,43 @@ const submitForm = async () => {
     console.log("Mapped Payload:", payload);
     // openCODModal();
     // ✅ Call store function with mapped payload
-    await manageOrderStore.calculateFreight(payload);
-    notification.success({
-      message: "ສຳເລັດ!",
-      description: "ຂໍ້ມູນຂອງທ່ານຖືກບັນທຶກສຳເລັດ",
-      placement: "topRight", // Show at top right
-      duration: 5, // Auto close in 5 seconds
-    });
+    const result = await manageOrderStore.calculateFreight(payload);
+    console.log(result);
+    preview.value = result;
+    // notification.success({
+    //   message: "ສຳເລັດ!",
+    //   description: "ຂໍ້ມູນຂອງທ່ານຖືກບັນທຶກສຳເລັດ",
+    //   placement: "topRight", // Show at top right
+    //   duration: 3, // Auto close in 5 seconds
+    // });
     isModalOpen.value = true;
   } catch (error) {
-    notification.error({
-      message: "ຜິດພາດ!",
-      description: "ກະລຸນາກວດຄືນຂໍ້ມູນຂອງທ່ານ",
-      placement: "topRight", // Show at top right
-      duration: 5, // Auto close in 5 seconds
-    });
+    if (error.response?.data) {
+      // Extract message from response
+      const errorMessage = error.response.data.message || "ກະລຸນາກວດຄືນຂໍ້ມູນຂອງທ່ານ";
+      // Extract validation errors
+      const validationErrors = Object.values(error.response.data.errors || {})
+          .flat()
+          .filter((err) => err !== errorMessage) // ✅ Filter out duplicate messages
+          .join(', ');
+      const fullErrorMessage = validationErrors
+          ? `${errorMessage}: ${validationErrors}`
+          : errorMessage;
+      notification.error({
+        message: "ຜິດພາດ!",
+        description: fullErrorMessage,
+        placement: "topRight",
+        duration: 5, // Auto close in 5 seconds
+      });
+    } else {
+      // Fallback message if no response is available
+      notification.error({
+        message: "ຜິດພາດ!",
+        description: "ກະລຸນາກວດຄືນຂໍ້ມູນຂອງທ່ານ",
+        placement: "topRight",
+        duration: 5,
+      });
+    }
   }
 };
 const submitOrder = async () =>{
@@ -409,7 +485,7 @@ const submitOrder = async () =>{
         pieces: 1,
         parcels: [
           {
-            size: manageOrderStore.packages.size.id ? manageOrderStore.packages.size.id : null,
+            size: null,
             category_id: form.value.parcelCategoryValue,
             dimension_length: JSON.parse(form.value.parcelDimensions),
             weight: JSON.parse(form.value.weight),
@@ -422,15 +498,37 @@ const submitOrder = async () =>{
     const result = await manageOrderStore.createOrder(orderData);
     notification.success({
       message: 'Order Created',
-      description: `Order ${result.order_number} created successfully!`,
+      description: `Order ${result.shipment_number} created successfully!`,
       duration: 3
     });
+    isModalOpen.value= false;
   } catch (error){
-    notification.error({
-      message: 'Order Creation Failed',
-      description: error.message || 'An error occurred while creating the order.',
-      duration: 3
-    });
+    if (error.response?.data) {
+      // Extract message from response
+      const errorMessage = error.response.data.message || "ກະລຸນາກວດຄືນຂໍ້ມູນຂອງທ່ານ";
+      // Extract validation errors
+      const validationErrors = Object.values(error.response.data.errors || {})
+          .flat()
+          .filter((err) => err !== errorMessage) // ✅ Filter out duplicate messages
+          .join(', ');
+      const fullErrorMessage = validationErrors
+          ? `${errorMessage}: ${validationErrors}`
+          : errorMessage;
+      notification.error({
+        message: "ຜິດພາດ!",
+        description: fullErrorMessage,
+        placement: "topRight",
+        duration: 5, // Auto close in 5 seconds
+      });
+    } else {
+      // Fallback message if no response is available
+      notification.error({
+        message: "ຜິດພາດ!",
+        description: "ກະລຸນາກວດຄືນຂໍ້ມູນຂອງທ່ານ",
+        placement: "topRight",
+        duration: 5,
+      });
+    }
   }
 }
 
@@ -470,4 +568,17 @@ onMounted(() => {
   padding: 0px 16px;
   border-radius: 40%;
 }
+
+.divider {
+  margin: 16px 0;
+  width: 100%;
+  height: 1px;
+  background-color: #EFEFEF;
+}
+
+.dashed-line {
+  border-top: 1px dashed #d1d5db; /* Gray color */
+  margin: 16px 0;
+}
+
 </style>
