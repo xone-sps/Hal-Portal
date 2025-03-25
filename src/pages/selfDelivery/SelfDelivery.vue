@@ -96,7 +96,7 @@
           <a-card class="!mr-2 custom-card !py-1">
             <div>
               <a-form-item label="ປະເພດພັສະດຸ" name="parcelType">
-                <a-radio-group v-model:value="form.parcelType" @change="parcelTypechange">
+                <a-radio-group v-model:value="form.parcelType" @change="parcelTypeChange">
                   <a-radio value="parcel">ພັດສະດຸທົ່ວໄປ</a-radio>
                   <a-radio value="envelope">ເອກະສານ</a-radio>
                 </a-radio-group>
@@ -106,17 +106,6 @@
         </div>
         <div class="w-3/5">
           <a-card class="custom-card">
-            <!--            <a-form-item label="ບໍລິການເສີມ" name="selectedServices">-->
-            <!-- Checkbox Group -->
-            <!--              <a-checkbox-group v-model:value="form.selectedServices" class="flex">-->
-            <!--                <div v-for="service in serviceMore" :key="service.value" class="pr-6">-->
-            <!--                  <a-checkbox :value="service.value">-->
-            <!--                    {{ service.label }}-->
-            <!--                    <p class="text-xs">{{ service.detail }}</p>-->
-            <!--                  </a-checkbox>-->
-            <!--                </div>-->
-            <!--              </a-checkbox-group>-->
-            <!--            </a-form-item>-->
             <a-form-item label="ບໍລິການເສີມ">
               <div class="flex">
                 <div class="pr-6">
@@ -156,9 +145,7 @@
               show-search
           />
         </a-form-item>
-        <a-form-item label="ມູນຄ່າພັດສະດຸ" name="parcelWeight" v-if="codStatus"    type="number"
-                     :min="0"
-                     :max="5">
+        <a-form-item label="ມູນຄ່າພັດສະດຸ" name="parcelWeight" v-if="codStatus">
           <a-input-number placeholder="ມູນຄ່າພັດສະດຸ"
                    type="number" style="width: 100%"
                    :min="0"
@@ -166,7 +153,7 @@
         </a-form-item>
         <div class="flex items-center">
           <!-- Origin Branch Select -->
-          <a-form-item label="ສາຂາຕົ້ນທາງ" class="w-full" name="originValue">
+          <a-form-item label="ສາຂາຕົ້ນທາງ" class="w-full" name="originBranchValue">
             <a-select v-model:value="form.originBranchValue" placeholder="ເລືອກສາຂາຕົ້ນທາງ" show-search
                       :options="manageOrderStore.originBranches"
                       :filter-option="filterOptionOriginBranch"
@@ -182,7 +169,7 @@
           </div>
 
           <!-- Destination Branch Select -->
-          <a-form-item label="ສາຂາປາຍທາງ" class="w-full" name="destinationValue">
+          <a-form-item label="ສາຂາປາຍທາງ" class="w-full" name="destinationBranchValue">
             <a-select v-model:value="form.destinationBranchValue" placeholder="ເລືອກສາຂາປາຍທາງ" show-search
                       :options="manageOrderStore.destinationBranches"
                       :filter-option="filterOptionDestinationBranch"
@@ -313,12 +300,10 @@ import {validationRules} from "@/utils/validationRules"; // Import validation ru
 import {EditOutlined, SaveOutlined, ArrowRightOutlined,CheckCircleOutlined,WarningOutlined} from "@ant-design/icons-vue";
 import {notification} from "ant-design-vue";
 import box_fill from "@/assets/icons/box-fill.svg";
-import {useModalStore} from "@/stores/useModalStore";
 import {useUserStore} from "@/stores/useUserStore";
 
 const userStore = useUserStore();
 const profile = computed(() => userStore.user);
-const modalStore = useModalStore();
 const manageOrderStore = useManageOrderStore();
 const formRef = ref();
 const isModalOpen = ref(false);
@@ -347,28 +332,13 @@ const form = ref({
 const codStatus = ref(false);
 const prefixPhone = ref<string>('020');
 const receiverPhone = ref<string>('');
-const serviceMore = ref([
-  {value: "destination_freight_fees", label: "CDC", detail: "ເກັບຄ່າຂົນສົ່ງປາຍທາງ"},
-  {value: "destination_freight_fees_cod", label: "COD", detail: "ເກັບຄ່າເຄື່ອງປາຍທາງ"},
-  {value: "insurance", label: "ປະກັນໄພ", detail: "ຄຸມຄອງພັດສະດຸຂອງທ່ານ"},
-]);
+
 const documentType = ref([
   {value: "A3", label: "A3"},
   {value: "A4", label: "A4"},
   {value: "A5", label: "A5"},
 ]);
 const preview = ref({});
-const openCODModal = () => {
-  modalStore.showModal({
-    totalAmount: "5,000,000",
-    codAmount: "5,000,000",
-    codRate: "0",
-    transferFee: "19,000",
-    bankAccount: "182120001640922001",
-    bankOwner: "Outhai VONGSA MS",
-    receiveDate: "25/01/2025",
-  });
-};
 
 const filterOptionDocumentSize = (input: string, option: any) => {
   return option.label.toLowerCase().includes(input.toLowerCase());
@@ -391,7 +361,7 @@ const filterOptionDestinationBranch = (input: string, option: any) => {
 const filterOptionCategory = (input: string, option: any) => {
   return option.label.toLowerCase().includes(input.toLowerCase());
 };
-const parcelTypechange = (value) => {
+const parcelTypeChange = (value) => {
   if(value.target.value){
     form.value.parcelType = value.target.value;
   } else {
@@ -402,6 +372,7 @@ const codChange = (value) => {
   if (value.target.checked == true) {
     codStatus.value = true;
   } else {
+    form.value.parcelPrice = '';
     codStatus.value = false;
   }
 }
@@ -426,18 +397,8 @@ const submitForm = async () => {
       calculateType: form.value.parcelType === 'document' ? 'document' : 'parcel',
       shipmentPayType: form.value.shipmentPayType || 'origin_freight_fees',
     };
-    console.log("Mapped Payload:", payload);
-    // openCODModal();
-    // ✅ Call store function with mapped payload
     const result = await manageOrderStore.calculateFreight(payload);
-    console.log(result);
     preview.value = result;
-    // notification.success({
-    //   message: "ສຳເລັດ!",
-    //   description: "ຂໍ້ມູນຂອງທ່ານຖືກບັນທຶກສຳເລັດ",
-    //   placement: "topRight", // Show at top right
-    //   duration: 3, // Auto close in 5 seconds
-    // });
     isModalOpen.value = true;
   } catch (error) {
     if (error.response?.data) {
@@ -538,10 +499,10 @@ const combinedPhone = computed(() => {
   }
   return '';
 });
-onMounted(() => {
-      manageOrderStore.fetchFilterBranch();
-      manageOrderStore.fetchOriginBranch();
-      manageOrderStore.fetchParcelCategory();
+onMounted(async () => {
+   await manageOrderStore.fetchFilterBranch();
+     await manageOrderStore.fetchOriginBranch();
+     await manageOrderStore.fetchParcelCategory();
     }
 )
 </script>

@@ -1,7 +1,7 @@
 <template>
   <div class="flex justify-content-between align-items-center">
     <!-- Previous Button -->
-    <p class="!mr-2 flex !my-auto">ສະແດງ {{pagination.currentPage}} - {{pagination.pageSize}} ຈາກ {{pagination.totalItems}} ລາຍການ</p>
+<!--    <p class="!mr-2 flex !my-auto">ສະແດງ {{pagination.currentPage}} - {{pagination.pageSize}} ຈາກ {{pagination.totalItems}} ລາຍການ</p>-->
     <a-button
         :disabled="pagination.prevPageUrl == null"
         class="p-button-sm btn-pre !mr-1"

@@ -38,7 +38,8 @@
     <a-card class="custom-table-card">
       <div class="flex justify-between items-center !mb-4">
         <div>
-          <p class="text-lg font-semibold">ລາຍການບິນຂົນສົ່ງ <span class="text-red-500">{{outboundStore.outboundList.length}}</span></p>
+          <p class="text-lg font-semibold">ລາຍການບິນຂົນສົ່ງ <span
+              class="text-red-500">{{ outboundStore.outboundList.length }}</span></p>
         </div>
         <Pagination :pagination="outboundStore.pagination"
                     @paginate="handlePaginate"/>
@@ -134,7 +135,7 @@ import {notification} from "ant-design-vue";
 import type {Dayjs} from 'dayjs';
 import {useRouter} from "vue-router";
 import {useExportStore} from "@/stores/useExportStore";
-import Pagination from "@/components/pagination.vue"
+import Pagination from "@/components/pagination.vue";
 import dayjs from "dayjs";
 import {debounce} from 'lodash';
 
@@ -167,7 +168,7 @@ const hasSelected = computed(() => state.selectedRowKeys.length > 0);
 
 const columns = [
   {title: "ເລກພັດສະດຸ", dataIndex: "shipment_number", key: "shipment_number"},
-  {title: "ປະເພດພັດສະດຸ", dataIndex: ["parcel", "parcel_category", "name"], key: "parcel_category"},
+  {title: "ປະເພດພັດສະດຸ", dataIndex: ["parcel", "parcel_category", "name"], key: "parcel_category",},
   {
     title: "ລາຄາຂົນສົ່ງ",
     dataIndex: "total_freight",
@@ -192,7 +193,9 @@ const columns = [
       return `${record.end_branch?.name || ""} (${record.end_branch?.tel || ""})`;
     }
   },
-  {title: "ວັນທີສົ່ງບິນ", dataIndex: "start_date_actual", key: "start_date_actual"},
+  {title: "ວັນທີສົ່ງບິນ", dataIndex: "start_date_actual", key: "start_date_actual",
+    sorter: (a, b) => new Date(a.start_date_actual).getTime() - new Date(b.start_date_actual).getTime(),
+  },
   {
     title: "ລາຍລະອຽດ",
     key: "action",
@@ -216,7 +219,7 @@ const handleExport = async () => {
 const handlePaginate = (cursor: string) => {
   outboundStore.fetchOutboundData({
     status: 'pending',
-    cursor: cursor,
+    // cursor: cursor,
     startDate: startDate.value,
     endDate: endDate.value
   });
@@ -246,14 +249,14 @@ const clearSearch = () => {
   searchQuery.value = '';
 };
 
-const ConfirmDelete = async (id,items) => {
+const ConfirmDelete = async (id, items) => {
   isModalOpen.value = true;
   deleteMore.value = items;
   billId.value = id;
 };
 const deleteItemOption = async () => {
-  if(deleteMore.value == true){
-   await deleteItems();
+  if (deleteMore.value == true) {
+    await deleteItems();
   } else {
     await deleteItem();
   }
@@ -275,8 +278,7 @@ const deleteItem = async () => {
       duration: 3, // Auto close in 5 seconds
     });
     await outboundStore.fetchOutboundData({
-      status: 'pending',  // Ensure the correct status is used
-      cursor: cursor || '',  // Handle undefined or null values properly
+      status: 'pending',
       startDate: startDate.value || '',
       endDate: endDate.value || ''
     });
@@ -308,8 +310,7 @@ const deleteItems = async () => {
     state.selectedRowKeys = [];
     isModalOpen.value = false;
     await outboundStore.fetchOutboundData({
-      status: 'pending',  // Ensure the correct status is used
-      cursor: cursor || '',  // Handle undefined or null values properly
+      status: 'pending',
       startDate: startDate.value || '',
       endDate: endDate.value || ''
     });

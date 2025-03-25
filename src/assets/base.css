@@ -41,7 +41,6 @@
 }
 .u-receiver{
   background-color: #F0A420;
-;
 }
 .custom-select .ant-select-selector, .custom-select .ant-input-number .ant-input-number-input {
   display: flex !important;
@@ -53,6 +52,9 @@
   align-items: center !important;
   height: 32px !important; /* Match input height */
    width: 100%;
+}
+.custom-select-phone .ant-input-number .ant-input-number-input {
+   width: 60%;
 }
 .ant-select .ant-select-arrow {
   top: 50% !important;

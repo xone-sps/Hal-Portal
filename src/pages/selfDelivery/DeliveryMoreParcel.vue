@@ -28,15 +28,15 @@
         <div class="mt-4 space-y-2">
           <div class="flex">
             <p class="text-gray-500 w-24">ຊື່</p>
-            <p class="font-semibold">Bebe</p>
+            <p class="font-semibold">{{ profile?.userName || 'No Name' }}</p>
           </div>
           <div class="flex">
             <p class="text-gray-500 w-24">ເບີໂທລະສັບ</p>
-            <p class="font-semibold">020 55034921</p>
+            <p class="font-semibold">{{ profile?.userTel || 'N/A' }}</p>
           </div>
           <div class="flex">
             <p class="text-gray-500 w-24">ທີ່ຢູ່</p>
-            <p class="font-semibold">ກີໂດກ, ໄຊທານີ, ມ. ຖະໜົນລາວຣັບ</p>
+            <p class="font-semibold">{{ profile?.userProfile?.addresss || 'N/A' }}</p>
           </div>
         </div>
       </a-card>
@@ -61,11 +61,13 @@
           </div>
         </div>
 
-        <div class="flex justify-between items-center !mb-4" v-if="data.length">
+        <div class="flex justify-between items-center !mb-4" v-if="outboundStore.outboundList.length">
           <div class="flex items-center">
-            <p class="text-gray-500">ສະແດງ 1-10 ຈາກ 100 ລາຍການ</p>
-            <a-pagination v-model:current="pagination.current" :total="pagination.total" :pageSize="pagination.pageSize"
-                          show-less-items/>
+            <div>
+              <p class="text-gray-500 !mr-4">ສະແດງ {{outboundStore.outboundList.length}} ລາຍການ</p>
+            </div>
+            <Pagination :pagination="outboundStore.pagination"
+                        @paginate="handlePaginate"/>
           </div>
           <!-- Pagination & Search -->
           <div class="relative w-80">
@@ -77,7 +79,8 @@
         </div>
 
         <!-- Table -->
-        <a-table v-if="data.length" :columns="columns" :data-source="data" :pagination="false" :locale="{ emptyText: $emptyText() }">
+        <a-table v-if="outboundStore.outboundList.length" :columns="columns" :data-source="outboundStore.outboundList"
+                 :pagination="false" :locale="{ emptyText: $emptyText() }">
 
           <template #bodyCell="{ column, record }">
             <!-- Customize Detail Column -->
@@ -91,9 +94,9 @@
             </template>
           </template>
         </a-table>
-        <div v-if="data.length == 0">
+        <div v-if="outboundStore.outboundList == 0">
           <div class="flex flex-col items-center justify-center p-6">
-            <img :src="empty_box" alt="No Data" class="w-22 h-22 mb-2" />
+            <img :src="empty_box" alt="No Data" class="w-22 h-22 mb-2"/>
             <a-button type="dashed" class="!text-red-500 !mr-1 " @click="openAddModal">
               <PlusOutlined class="!text-red-500 text-l cursor-pointer pr-1"/>
               ເພີມລາຍການ
@@ -112,7 +115,6 @@
         <a-button>Mobile Printer</a-button>
       </div>
     </a-card>
-
     <div class="flex justify-between items-center">
       <!-- Remark Info -->
       <div class="flex items-center gap-3">
@@ -139,15 +141,24 @@
 </template>
 
 <script setup lang="ts">
-import {ref, onMounted} from "vue";
-import {validationRules} from "@/utils/validationRules"; // Import validation rules
-import {EditOutlined, SaveOutlined, PlusOutlined, FileExcelOutlined} from "@ant-design/icons-vue";
+import {ref, onMounted, computed} from "vue";
+import {validationRules} from "@/utils/validationRules";
+import {EditOutlined, SaveOutlined, PlusOutlined, FileExcelOutlined,DeleteOutlined} from "@ant-design/icons-vue";
+import Pagination from "@/components/pagination.vue"
+import {useOutboundParcelStore} from "@/stores/parcel/outboundStore";
 import {notification} from "ant-design-vue";
 import empty_box from "@/assets/icons/empty.svg";
-import AddAddressSenderModal from "@/components/modals/AddAddressParcelModal.vue"
+import AddAddressSenderModal from "@/components/modals/AddParcelModal.vue";
+import {useUserStore} from "@/stores/useUserStore";
+import dayjs, {Dayjs} from "dayjs";
 
 const formRef = ref();
 const isModalOpen = ref(false);
+const outboundStore = useOutboundParcelStore();
+const userStore = useUserStore();
+const startDate = ref<Dayjs>(dayjs().subtract(3, 'month'));
+const endDate = ref<Dayjs>(dayjs());
+const profile = computed(() => userStore.user);
 const form = ref({
   senderName: "",
   senderPhone: "",
@@ -175,30 +186,54 @@ const serviceMore = ref([
 
 
 const columns = [
-  {title: "ລໍາດັບ", dataIndex: "key", key: "key"},
-  {title: "ຊື່", dataIndex: "name", key: "name"},
-  {title: "ເບີໂທ", dataIndex: "phone", key: "phone"},
-  {title: "ທີ່ຢູ່", dataIndex: "address", key: "address"},
-  {title: "ສາຂາຈັດສົ່ງ", dataIndex: "receiverBranch", key: "receiverBranch"},
+  {title: "ເລກພັດສະດຸ", dataIndex: "shipment_number", key: "shipment_number"},
+  {title: "ປະເພດພັດສະດຸ", dataIndex: ["parcel", "parcel_category", "name"], key: "parcel_category",},
+  {
+    title: "ລາຄາຂົນສົ່ງ",
+    dataIndex: "total_freight",
+    key: "total_freight",
+    customRender: ({text}: { text: number }) => `${text.toLocaleString()} ກີບ`
+  },
+  {
+    title: "ລາຄາ COD",
+    dataIndex: "total_price",
+    key: "cod",
+    customRender: ({text}: { text: number }) => `${text.toLocaleString()} ກີບ`
+  },
+  {
+    title: "ສາຂາຕົ້ນທາງ",
+    key: "start_branch",
+    customRender: ({record}: any) => {
+      return `${record.start_branch?.name || ""} (${record.start_branch?.tel || ""})`;
+    }
+  },
+  {
+    title: "ສາຂາປາຍທາງ", key: "end_branch", customRender: ({record}: any) => {
+      return `${record.end_branch?.name || ""} (${record.end_branch?.tel || ""})`;
+    }
+  },
+  {
+    title: "ວັນທີສົ່ງບິນ", dataIndex: "start_date_actual", key: "start_date_actual",
+    sorter: (a, b) => new Date(a.start_date_actual).getTime() - new Date(b.start_date_actual).getTime(),
+  },
   {
     title: "ຈັດການຂໍ້ມູນ",
     key: "action",
     align: "center",
-    dataIndex: "action"
   },
 ];
-
-const data = [];
-const pagination = ref({
-  current: 1,
-  total: 100,
-  pageSize: 30,
-});
-
 const openAddModal = () => {
-
   isModalOpen.value = true;
 }
+const handlePaginate = (cursor: string) => {
+  outboundStore.fetchOutboundData({
+    status: 'pending',
+    // cursor: cursor,
+    startDate: startDate.value,
+    endDate: endDate.value
+  });
+};
+
 const originBranch = ref([
   {value: "dongdork", label: "DongDork"},
   {value: "hongkhar", label: "HongKhar"},
@@ -237,7 +272,8 @@ const submitForm = async () => {
     });
   }
 };
-onMounted(() => {
+onMounted(async () => {
+      await outboundStore.fetchOutboundData({status: 'pending', startDate: startDate.value, endDate: endDate.value});
     }
 )
 
