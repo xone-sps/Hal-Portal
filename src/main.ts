@@ -6,7 +6,7 @@ import Antd from "ant-design-vue";
 import "ant-design-vue/dist/reset.css";
 import "@/assets/main.css";
 import pinia from './stores';
-import axios from './plugins/axios';
+import {api} from './plugins/axios.ts';
 import { useNotificationStore } from '@/stores/useNotificationStore';
 import { useUserStore } from '@/stores/useUserStore';
 
@@ -19,7 +19,7 @@ app.use(Antd);
 const notification = useNotificationStore();
 // Provide them under unique keys
 app.provide('notification', notification);
-app.provide('axios', axios);
+app.provide('axios', api);
 // ✅ Load user data on app startup
 const userStore = useUserStore();
 userStore.loadUser();

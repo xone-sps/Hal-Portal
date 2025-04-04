@@ -1,6 +1,5 @@
 import {defineStore} from 'pinia';
-import axios from '@/plugins/axios';
-import {ref} from "vue";
+import {api} from '@/plugins/axios.ts';
 import dayjs, {Dayjs} from "dayjs";
 
 export const useOutboundParcelStore = defineStore('outboundStore', {
@@ -41,7 +40,7 @@ export const useOutboundParcelStore = defineStore('outboundStore', {
                     limit: this.pagination.pageSize,
                     sort_order:'asc'
                 };
-                const response = await axios.get('v1/auth/users/me/shipments/orders', {params});
+                const response = await api.get('v1/auth/users/me/shipments/orders', {params});
                 if (response.data && !response.data.error) {
                     const data = response.data;
                     this.totalQty = data.per_page;
@@ -62,7 +61,7 @@ export const useOutboundParcelStore = defineStore('outboundStore', {
         async fetchTrackingParcel(trackingId: string) {
             this.loading = true;
             try {
-                const response = await axios.get('v1/orders/tracking/' + trackingId,);
+                const response = await api.get('v1/orders/tracking/' + trackingId,);
                 if (response.data && !response.data.error) {
                     this.shipmentInfo = response.data.shipment_info;
                     this.trackingEvent = response.data.tracking_events;

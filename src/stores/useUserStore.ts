@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import axios from '@/plugins/axios';
+import {api} from '@/plugins/axios.ts';
 
 export const useUserStore = defineStore('user', {
     state: () => ({
@@ -11,7 +11,7 @@ export const useUserStore = defineStore('user', {
     actions: {
         async signIn(data: { phone: string; password: string }) {
             try {
-                const response = await axios.post('/sign-in', {
+                const response = await api.post('/sign-in', {
                     tel: data.phone,
                     password: data.password,
                 });
@@ -30,8 +30,8 @@ export const useUserStore = defineStore('user', {
                     localStorage.setItem('user', JSON.stringify(authUser));
                     localStorage.setItem('permissions', JSON.stringify(permissionRole));
 
-                    // ✅ Set axios header
-                    axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
+                    // ✅ Set api header
+                    api.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
                 }
             } catch (error) {
                 throw error;
@@ -50,7 +50,7 @@ export const useUserStore = defineStore('user', {
             localStorage.removeItem('user');
             localStorage.removeItem('permissions');
 
-            delete axios.defaults.headers.common['Authorization'];
+            delete api.defaults.headers.common['Authorization'];
         },
 
         // ✅ Restore user data from localStorage on app startup
@@ -66,8 +66,8 @@ export const useUserStore = defineStore('user', {
                 this.user = JSON.parse(user);
                 this.permissions = JSON.parse(permissions || '[]');
 
-                // ✅ Set token in axios
-                axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+                // ✅ Set token in api
+                api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
             }
         },
     },

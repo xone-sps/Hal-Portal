@@ -132,10 +132,10 @@ const routes = [
         path: "/self-service",
         component: DefaultLayout,
         children: [
-            {
-                path: "", // Empty path for `/self-service`
-                redirect: "/self-service/one-parcel", // ✅ Always redirect to first tab
-            },
+            // {
+            //     path: "",
+            //     redirect: "/self-service/one-parcel",
+            // },
             {
                 path: "",
                 component: SelfServiceIndex, // ✅ This should be a wrapper component with <router-view />
@@ -158,6 +158,12 @@ const routes = [
                         name: "my-parcel",
                         component: import('@/pages/selfDelivery/MyParcel.vue'),
                         meta: {requiresAuth: true, title: "ຝາກເຄື່ອງເອງ", description: "" },
+                    },
+                    {
+                        path: "import-excel", // ✅ Correct relative path
+                        name: "import-excel",
+                        component: import('@/pages/selfDelivery/ImportExcel.vue'),
+                        meta: {requiresAuth: true, title: "Import Excel", description: "" },
                     }
                 ]
             }

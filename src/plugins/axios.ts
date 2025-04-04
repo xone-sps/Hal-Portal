@@ -2,13 +2,15 @@ import axios from 'axios';
 import { useUserStore } from '@/stores/useUserStore';
 
 const api = axios.create({
-    baseURL: import.meta.env.VITE_BASE_API_URL
+    baseURL: import.meta.env.VITE_BASE_API_URL,
 });
 
-// Flag to prevent infinite loop
+export const apiUrl = import.meta.env.VITE_BASE_API_URL;
+
+// Token refreshing logic...
+// 👇 Already correct in your code, so keep it here
 let isRefreshing = false;
 let failedQueue: any[] = [];
-
 const processQueue = (error: any, token: string | null = null) => {
     failedQueue.forEach(prom => {
         if (token) {
@@ -20,8 +22,7 @@ const processQueue = (error: any, token: string | null = null) => {
     failedQueue = [];
 };
 
-// Interceptor for requests
-api.interceptors.request.use(
+axios.interceptors.request.use(
     (config) => {
         const userStore = useUserStore();
         if (userStore.token) {
@@ -29,13 +30,10 @@ api.interceptors.request.use(
         }
         return config;
     },
-    (error) => {
-        return Promise.reject(error);
-    }
+    (error) => Promise.reject(error)
 );
 
-// Interceptor for responses
-api.interceptors.response.use(
+axios.interceptors.response.use(
     (response) => response,
     async (error) => {
         const originalRequest = error.config;
@@ -48,7 +46,7 @@ api.interceptors.response.use(
                         failedQueue.push({ resolve, reject });
                     });
                     originalRequest.headers['Authorization'] = `Bearer ${newToken}`;
-                    return api(originalRequest);
+                    return axios(originalRequest);
                 } catch (err) {
                     return Promise.reject(err);
                 }
@@ -62,7 +60,7 @@ api.interceptors.response.use(
                 if (success) {
                     originalRequest.headers['Authorization'] = `Bearer ${userStore.token}`;
                     processQueue(null, userStore.token);
-                    return api(originalRequest);
+                    return axios(originalRequest);
                 } else {
                     processQueue(new Error('Refresh token failed'));
                     return Promise.reject(error);
@@ -78,5 +76,4 @@ api.interceptors.response.use(
         return Promise.reject(error);
     }
 );
-
-export default api;
+export { api };

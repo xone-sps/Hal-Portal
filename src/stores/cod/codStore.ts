@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import axios from '@/plugins/axios';
+import {api} from '@/plugins/axios.ts';
 import {ref} from "vue";
 import dayjs,{Dayjs} from "dayjs";
 
@@ -29,7 +29,7 @@ export const useCodStore = defineStore('cod', {
         async fetchCodData(cursor = '') {
             this.loading = true;
             try {
-                const response = await axios.get('/summarize/cod/owner/list', {
+                const response = await api.get('/summarize/cod/owner/list', {
                     params: {
                         use_cursor: true,
                         cursor,
@@ -61,7 +61,7 @@ export const useCodStore = defineStore('cod', {
         async fetchCodStatusData(status: string,cursor = '') {
             this.loading = true;
             try {
-                const response = await axios.get('/cod/shipment/owner/list', {
+                const response = await api.get('/cod/shipment/owner/list', {
                     params: {
                         status:status,
                         start_date: dayjs(this.startDate).format('YYYY-MM-DD'),

@@ -1,5 +1,5 @@
 import {defineStore} from 'pinia';
-import axios from '@/plugins/axios';
+import {api} from '@/plugins/axios.ts';
 import {notification} from "ant-design-vue";
 
 export const useManageOrderStore = defineStore('manageOrderStore', {
@@ -26,7 +26,7 @@ export const useManageOrderStore = defineStore('manageOrderStore', {
         async fetchOriginBranch() {
             this.loading = true;
             try {
-                const response = await axios.get('v1/listing/branches',);
+                const response = await api.get('v1/listing/branches',);
                 if (response.data && !response.data.error) {
                     this.originBranches = response.data.map(item => ({
                         label: item.name, // Map "name" to "label"
@@ -47,7 +47,7 @@ export const useManageOrderStore = defineStore('manageOrderStore', {
         async fetchFilterBranch() {
             this.loading = true;
             try {
-                const response = await axios.get('filter-branch',);
+                const response = await api.get('filter-branch',);
                 if (response.data && !response.data.error) {
                     this.provinces = response.data.provinces,
                         this.districts = response.data.districts;
@@ -63,7 +63,7 @@ export const useManageOrderStore = defineStore('manageOrderStore', {
         async fetchParcelCategory() {
             this.loading = true;
             try {
-                const response = await axios.get('customer/list-parcel-categories');
+                const response = await api.get('customer/list-parcel-categories');
                 if (response.data && !response.data.error) {
                     this.parcelCategories = response.data.listParcelCategories.map(item => ({
                         label: item.name, // Map "name" to "label"
@@ -109,7 +109,7 @@ export const useManageOrderStore = defineStore('manageOrderStore', {
                                 ? "destination"
                                 : "origin",
                 };
-                const response = await axios.get('v1/calculate/freight/branches', {params});
+                const response = await api.get('v1/calculate/freight/branches', {params});
                 if (response.data && !response.data.error) {
                     //show data
                     this.packages = response.data;
@@ -127,7 +127,7 @@ export const useManageOrderStore = defineStore('manageOrderStore', {
         async createOrder(orderData: any) {
             console.log(orderData)
             try {
-                const response = await axios.post('/v1/auth/users/me/shipments/orders/store', orderData);
+                const response = await api.post('/v1/auth/users/me/shipments/orders/store', orderData);
                 if (response.data) {
                     console.log('Order created:', response.data);
                     this.orderData = response.data;
@@ -142,7 +142,7 @@ export const useManageOrderStore = defineStore('manageOrderStore', {
         async deleteParcel(data:any) {
             this.loading = true;
             try {
-                const response = await axios.post('v1/auth/users/me/shipments/orders/cancel/pre-order', data);
+                const response = await api.post('v1/auth/users/me/shipments/orders/cancel/pre-order', data);
                 if (response.data) {
                     return response;
                 }
@@ -161,7 +161,7 @@ export const useManageOrderStore = defineStore('manageOrderStore', {
         async deleteParcels(data:any) {
             this.loading = true;
             try {
-                const response = await axios.post('v1/auth/users/me/shipments/orders/cancel/pre-order/all', data);
+                const response = await api.post('v1/auth/users/me/shipments/orders/cancel/pre-order/all', data);
                 if (response.data) {
                     return response;
                 }

@@ -4,6 +4,7 @@
       <a-tab-pane key="one-parcel" tab="ຝາກເຄື່ອງເອງ"/>
       <a-tab-pane key="multiple-parcel" tab="ຝາກຫຼາຍພັດສະດຸ"/>
       <a-tab-pane key="my-parcel" tab="ບິນສ້າງເອງ"/>
+      <a-tab-pane key="import-excel" tab="Import Excel"/>
     </a-tabs>
 
     <!-- Dynamic Content Based on Router -->
@@ -25,6 +26,8 @@ const activeTab = ref(
             ? "multiple-parcel"
             : route.path.includes("my-parcel")
                 ? "my-parcel"
+                : route.path.includes("import-excel")
+                    ? "import-excel"
                 : "one-parcel"
 );
 
@@ -35,6 +38,8 @@ watch(() => route.path, (newPath) => {
           ? "multiple-parcel"
           : newPath.includes("my-parcel")
               ? "my-parcel"
+              : route.path.includes("import-excel")
+                  ? "import-excel"
           : "one-parcel";
 });
 

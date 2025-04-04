@@ -16,18 +16,19 @@
           <a-button type="primary" class="search-button !text-white !mr-4" @click="handleSearch">
             ຄົ້ນຫາ
           </a-button>
-          <a-button type="primary" class="clear-button" @click="clearSearch">
-            ລົບການຄົ້ນຫາ
+          <a-button type="primary" class="clear-button !mr-2" @click="clearSearch">
+            ລົບຄົ້ນຫາ
           </a-button>
         </div>
 
         <div class="flex">
-          <a-button type="primary" class="export-button !text-white !mr-2" @click="handleExport"
-                    :loading="exportStore.isExportLoading">
+          <a-button type="primary" class="export-button !text-white !mr-2" @click="gotoImportExcel">
+            <FileExcelOutlined class="!mr-1"/>
             Import Excel
           </a-button>
-          <a-button type="primary" class="export-button !text-white" @click="handleExport"
-                    :loading="exportStore.isExportLoading">
+          <a-button type="primary" class="export-button !text-white" @click="exportTemplate"
+                    :loading="exportStore.isExportTemplate">
+            <FileExcelOutlined class="!mr-1"/>
             Export Template
           </a-button>
         </div>
@@ -106,29 +107,73 @@
           <a-button
               type="primary"
               block
-              class="!mt-6 !bg-red-600 !text-white !text-lg w-full !h-10 !mr-2"
-              @click="deleteItemOption"
-          >
-            ລຶບ
-          </a-button>
-          <a-button
-              type="primary"
-              block
               class="!mt-6 !text-white !text-lg w-full !h-10"
               @click="Cancel"
           >
             ຍົກເລີກ
           </a-button>
+          <a-button
+              type="primary"
+              block
+              class="!mt-6 !bg-red-600 !text-white !text-lg w-full !h-10 !mr-2"
+              @click="deleteItemOption"
+          >
+            ລຶບ
+          </a-button>
         </div>
 
       </div>
     </a-modal>
+
+<!--Import Excel-->
+    <a-modal v-model:open="isModalImportExcel" :footer="null" title="ນໍາຂໍ້ມູນເຂົ້າ" centered :maskClosable="false"
+             :closable="true">
+      <div class="divider"></div>
+      <div class="p-2">
+        <div class="flex flex-col items-center text-center p-6">
+          <a-upload-dragger
+              :max-count="1"
+              v-model:fileList="fileList"
+              name="file"
+              :multiple="false"
+              @change="handleChange"
+              @drop="handleRemove"
+              :custom-request="handleUpload"
+          >
+            <p class="ant-upload-drag-icon">
+              <FileExcelOutlined class="!text-green-600"/>
+            </p>
+            <p class="ant-upload-text !p-3">Click or drag file to this area to upload</p>
+          </a-upload-dragger>
+        </div>
+        <div class="flex">
+          <a-button
+              type="primary"
+              block
+              class="!mt-6 !text-white !text-lg w-full !h-10"
+              @click="ImportExcel"
+          >
+            Import
+          </a-button>
+<!--          <a-button-->
+<!--              type="primary"-->
+<!--              block-->
+<!--              class="!mt-6 !bg-red-600 !text-white !text-lg w-full !h-10 !mr-2"-->
+<!--              @click="deleteItemOption"-->
+<!--          >-->
+<!--            ລຶບ-->
+<!--          </a-button>-->
+        </div>
+
+      </div>
+    </a-modal>
+
   </div>
 </template>
 
 <script setup lang="ts">
 import {ref, onMounted, reactive, computed} from "vue";
-import {EyeOutlined, DeleteOutlined} from "@ant-design/icons-vue";
+import {EyeOutlined, DeleteOutlined,FileExcelOutlined,InboxOutlined} from "@ant-design/icons-vue";
 import {useOutboundParcelStore} from "@/stores/parcel/outboundStore";
 import {useManageOrderStore} from "@/stores/parcel/manageOrderStore";
 import {notification} from "ant-design-vue";
@@ -138,6 +183,8 @@ import {useExportStore} from "@/stores/useExportStore";
 import Pagination from "@/components/pagination.vue";
 import dayjs from "dayjs";
 import {debounce} from 'lodash';
+import type { UploadChangeParam } from 'ant-design-vue';
+import {v4 as uuidv4} from 'uuid';
 
 const searchQuery = ref("");
 const router = useRouter();
@@ -148,8 +195,10 @@ const exportStore = useExportStore();
 const startDate = ref<Dayjs>(dayjs().subtract(3, 'month'));
 const endDate = ref<Dayjs>(dayjs());
 const isModalOpen = ref(false);
+const isModalImportExcel = ref(false);
 const deleteMore = ref(false);
 const billId = ref("");
+const fileList = ref([]);
 
 type Key = string | number;
 const state = reactive<{
@@ -159,6 +208,22 @@ const state = reactive<{
   selectedRowKeys: [],
   loading: false,
 });
+
+
+const handleChange = (info: UploadChangeParam) => {
+  const status = info.file.status;
+  if (status !== 'uploading') {
+    console.log(info.file, info.fileList);
+  }
+  if (status === 'done') {
+    message.success(`${info.file.name} file uploaded successfully.`);
+  } else if (status === 'error') {
+    message.error(`${info.file.name} file upload failed.`);
+  }
+};
+function handleRemove() {
+  fileList.value = [];
+}
 
 const onSelectChange = (selectedRowKeys: Key[]) => {
   state.selectedRowKeys = selectedRowKeys;
@@ -193,7 +258,8 @@ const columns = [
       return `${record.end_branch?.name || ""} (${record.end_branch?.tel || ""})`;
     }
   },
-  {title: "ວັນທີສົ່ງບິນ", dataIndex: "start_date_actual", key: "start_date_actual",
+  {
+    title: "ວັນທີສົ່ງບິນ", dataIndex: "start_date_actual", key: "start_date_actual",
     sorter: (a, b) => new Date(a.start_date_actual).getTime() - new Date(b.start_date_actual).getTime(),
   },
   {
@@ -208,6 +274,10 @@ const viewDetails = (trackingId: string) => {
   router.push({name: "inbound-detail", params: {trackingId}});
 };
 
+const gotoImportExcel = () => {
+  router.push({name: "import-excel"});
+};
+
 const handleExport = async () => {
   await exportStore.exportExcel({
     startDate: startDate.value,
@@ -216,6 +286,48 @@ const handleExport = async () => {
     query: '',
   });
 };
+function handleUpload (){
+  ImportExcel();
+}
+
+const ImportExcel = async () => {
+  const importId = uuidv4()
+  try {
+    const payload = {
+      shipment_file: fileList.value,
+      import_id:importId,
+      formData:true,
+      download: true,
+    };
+    const res = await exportStore.importExcel(payload);
+    if (res) {
+      notification.success({
+        message: "ສຳເລັດ!",
+        description: res.data.message || "ດາວໂຫຼດສສໍາເລັດ",
+        placement: "topRight", // Show at top right
+        duration: 3, // Auto close in 5 seconds
+      });
+    }
+  } catch (e) {
+    console.error("Error downloading the Excel template:", e);
+  }
+};
+const exportTemplate = async () => {
+  try {
+    const res = await exportStore.exportTemplate();
+    if (res) {
+      notification.success({
+        message: "ສຳເລັດ!",
+        description: res.data.message || "ດາວໂຫຼດສສໍາເລັດ",
+        placement: "topRight", // Show at top right
+        duration: 3, // Auto close in 5 seconds
+      });
+    }
+  } catch (e) {
+    console.error("Error downloading the Excel template:", e);
+  }
+};
+
 const handlePaginate = (cursor: string) => {
   outboundStore.fetchOutboundData({
     status: 'pending',
@@ -243,6 +355,7 @@ const debouncedSearch = debounce(async () => {
     });
   }
 }, 300);
+
 const clearSearch = () => {
   startDate.value = <Dayjs>(dayjs());
   endDate.value = <Dayjs>(dayjs());
@@ -254,6 +367,7 @@ const ConfirmDelete = async (id, items) => {
   deleteMore.value = items;
   billId.value = id;
 };
+
 const deleteItemOption = async () => {
   if (deleteMore.value == true) {
     await deleteItems();
@@ -261,6 +375,11 @@ const deleteItemOption = async () => {
     await deleteItem();
   }
 };
+
+const ImportExcelModal = () => {
+  isModalImportExcel.value = true;
+};
+
 const Cancel = () => {
   isModalOpen.value = false;
   billId.value = '';
