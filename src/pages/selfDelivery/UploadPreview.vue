@@ -1,5 +1,13 @@
 <template>
   <div class="py-2">
+      <div>
+                <span style="border-radius: 2px;" class="!px-2 !py-1 !mb-2 font-bold rounded-full bg-blue-600 text-white text-md">
+            {{
+                    Intl.NumberFormat().format(validFormCount)
+                  }}/{{ Intl.NumberFormat().format(importExcelStore.groupedRows?.length) }}
+          </span>
+        <span class="!ml-2">ລາຍການ</span>
+      </div>
     <div class="mt-1 ml-2 min-h-screen">
       <table class="min-w-full border-collapse border">
         <thead>
@@ -25,28 +33,26 @@
           <td class="font-bold">
             <div class="flex align-items-center">
               <span>{{ groupItem.data[0] }}</span>
-              <i v-if="groupItem.isValid" class="pi pi-check-circle text-green-500 ml-1"></i>
+              <CheckOutlined v-if="groupItem.isValid" class="!text-green-600 pl-2" />
             </div>
           </td>
           <td>
-            <a-input v-model="groupItem.data[1]" class="h-1rem"/>
+            <a-input v-model:value="groupItem.data[1]" class="h-1rem"/>
             <div v-if="groupItem.colErrors[1]" class="text-red-600" style="font-size: 11px;">
               {{ groupItem.colErrors[1] }}
             </div>
           </td>
           <td>
-            <InputText v-model="groupItem.data[2]" class="h-1rem w-full w-8rem"/>
+            <a-input v-model:value="groupItem.data[2]" class="h-1rem w-full w-8rem"/>
             <div v-if="groupItem.colErrors[2]" class="text-red-600 text-xs">
               {{ groupItem.colErrors[2] }}
             </div>
           </td>
           <td>
             <div class="flex items-center">
-              <a-input v-model="groupItem.data[3]" class="h-1rem w-full w-8rem"/>
-              <div class="flex align-items-center" style="cursor: pointer"
-                   @click.stop="copyToClipboard(groupItem.data[3])">
-                <i v-if="groupItem.data[3]" style="font-size: 18px !important;cursor: pointer"
-                   class="pi pi-copy text-primary ml-2"></i>
+              <a-input v-model:value="groupItem.data[3]" class="h-1rem w-full w-8rem"/>
+              <div class="flex align-items-center" style="cursor: pointer">
+                <CopyOutlined class="!text-blue-500 !ml-2" v-if="groupItem.data[3]" @click.stop="copyToClipboard(groupItem.data[3])"/>
               </div>
             </div>
             <div v-if="groupItem.colErrors[3]" class="text-red-600 text-xs">
@@ -75,8 +81,7 @@
                 </div>
                 <div @click="openModalSelectedBranchWithPhoneAndName(groupItem.data, groupItem.rowIndex)">
                   <FileSearchOutlined
-                                 @click="clearDestinationBranch(groupItem.rowIndex, $event)"
-                                      :style="{
+                      :style="{
                       'font-size': '18px',
                       'color': groupItem.data[5] ? 'dodgerblue' : '#f44336',
                       'margin-top': '0px',
@@ -89,9 +94,8 @@
           </td>
           <td>
             <a-select
-                v-model="groupItem.data[6]"
-                optionLabel="name"
-                optionValue="code"
+                v-model:value="groupItem.data[6]"
+                :field-names="{ label: 'name', value: 'code' }"
                 class="w-full w-7rem custom-select"
                 :options="documentTypeOptions"
                 placeholder="ເລືອກ"
@@ -107,38 +111,37 @@
             </div>
           </td>
           <td>
-            <a-input v-model="groupItem.data[8]" class="h-1rem w-full w-4rem"/>
+            <a-input v-model:value="groupItem.data[8]" class="h-1rem w-full w-4rem"/>
             <div v-if="groupItem.colErrors[8]" class="text-red-600 text-xs">
               {{ groupItem.colErrors[8] }}
             </div>
           </td>
           <td>
-            <a-input v-model="groupItem.data[9]" class="h-1rem w-full w-4rem"/>
+            <a-input v-model:value="groupItem.data[9]" class="h-1rem w-full w-4rem"/>
             <div v-if="groupItem.colErrors[9]" class="text-red-600 text-xs">
               {{ groupItem.colErrors[9] }}
             </div>
           </td>
           <td>
-                        <a-select
-                            v-model="groupItem.data[10]"
-                            optionLabel="name"
-                            optionValue="code"
-                            class="w-full w-9rem custom-select"
-                            :options="paymentTypeOptions"
-                            placeholder="ເລືອກ"
-                        />
+            <a-select
+                v-model:value="groupItem.data[10]"
+                class="w-full w-9rem custom-select"
+                :options="paymentTypeOptions"
+                :field-names="{ label: 'name', value: 'code' }"
+                placeholder="ເລືອກ"
+            />
             <div v-if="groupItem.colErrors[10]" class="text-red-600 text-xs">
               {{ groupItem.colErrors[10] }}
             </div>
           </td>
           <td>
-            <a-input v-model="groupItem.data[11]" class="h-1rem"/>
+            <a-input v-model:value="groupItem.data[11]" class="h-1rem"/>
             <div v-if="groupItem.colErrors[11]" class="text-red-600 text-xs">
               {{ groupItem.colErrors[11] }}
             </div>
           </td>
           <td>
-            <a-input v-model="groupItem.data[12]" class="h-1rem"/>
+            <a-input v-model:value="groupItem.data[12]" class="h-1rem"/>
             <div v-if="groupItem.colErrors[12]" class="text-red-600 text-xs">
               {{ groupItem.colErrors[12] }}
             </div>
@@ -190,20 +193,21 @@
   </div>
 
 
-    <ModalSelectedBranchWithPhoneAndBranchName
-        @setNewBranch="setNewBranch"
-        @close="() => isVisibleSelectedBranchWithPhoneAndName = false"
-        :selectedReceiverPhoneNumber="selectedReceiverPhoneNumber"
-        :selectedReceiverAddress="selectedReceiverAddress"
-        :isVisible="isVisibleSelectedBranchWithPhoneAndName"/>
+  <ModalSelectedBranchWithPhoneAndBranchName
+      @setNewBranch="setNewBranch"
+      @close="() => isVisibleSelectedBranchWithPhoneAndName = false"
+      :selectedReceiverPhoneNumber="selectedReceiverPhoneNumber"
+      :selectedReceiverAddress="selectedReceiverAddress"
+      :isVisible="isVisibleSelectedBranchWithPhoneAndName"/>
 </template>
 
 <script setup>
 import {computed, defineEmits, defineProps, onBeforeUnmount, onMounted, onUnmounted, ref, watch} from "vue";
 import {useImportExcelStore} from "@/stores/parcel/useImportExcelStore";
 import {Modal, notification, message} from 'ant-design-vue';
-import {CloseOutlined,FileSearchOutlined,DeleteOutlined} from "@ant-design/icons-vue";
-import ModalSelectedBranchWithPhoneAndBranchName from "@/components/modals/ModalSelectedBranchWithPhoneAndBranchName.vue"
+import {CloseOutlined, FileSearchOutlined, DeleteOutlined, CiCircleOutlined,CopyOutlined,CheckOutlined} from "@ant-design/icons-vue";
+import ModalSelectedBranchWithPhoneAndBranchName
+  from "@/components/modals/ModalSelectedBranchWithPhoneAndBranchName.vue"
 
 import {useRouter} from 'vue-router';
 
@@ -261,6 +265,11 @@ function handleBeforeUnload(event) {
   event.returnValue = "ທ່ານຍັງບໍ່ໄດ້ບັນທຶກການປ່ຽນແປງ. ທ່ານແນ່ໃຈບໍທີ່ຈະອອກຈາກໜ້ານີ້?";
 }
 
+function saveData(){
+
+}
+
+
 // Handle browser back/forward navigation
 const handleLeavePage = () => {
   isDirty.value = false;
@@ -271,7 +280,7 @@ const handleLeavePage = () => {
 
 // Using navigation guards
 const unregisterGuard = router.beforeEach((to, from, next) => {
-  if (from.path === '/parcel/shipment/status/out' && isDirty.value) {
+  if (from.path === '/self-service/import-excel' && isDirty.value) {
     // Handle navigation away from this route
     const confirmNavigation = confirm('ທ່ານຍັງບໍ່ໄດ້ບັນທຶກການປ່ຽນແປງ. ທ່ານແນ່ໃຈບໍທີ່ຈະອອກຈາກໜ້ານີ້?');
     if (confirmNavigation) {
@@ -299,14 +308,11 @@ function openModalSelectedBranchWithPhoneAndName(data, rowIndex) {
   selectedReceiverAddress.value = data[4];
 }
 
-const copyToClipboard = (message) => {
-  if (message) {
-    navigator.clipboard.writeText(message)
+const copyToClipboard = (ms) => {
+  if (ms) {
+    navigator.clipboard.writeText(ms)
         .then(() => {
-          message.success({
-            title: "ຄັດລອກຂໍ້ມູນສຳເລັດ",
-            detail: "ການຄັດລອກຂໍ້ມູນ ສຳເລັດ."
-          })
+          message.success("ຄັດລອກຂໍ້ມູນສຳເລັດ, ການຄັດລອກຂໍ້ມູນ ສຳເລັດ.")
         })
         .catch((err) => {
           console.error('Failed to copy text: ', err)
@@ -402,7 +408,7 @@ const deleteRow = (rowIndex) => {
 
 // 3. Create a method to update the data for a specific row and index
 function updateData(rowIndex, columnIndex, value) {
-  const row = importExcelStore.groupedRows.value.find(row => row.rowIndex === rowIndex);
+  const row = importExcelStore.groupedRows.find(row => row.rowIndex === rowIndex);
   if (row) {
     // Create a new array to ensure Vue detects the change
     const newData = [...row.data];
@@ -489,6 +495,7 @@ const validateRow = (row) => {
 
   // After processing all validations, update the row's validity status
   row.isValid = isRowValid(row);
+  // row.isValid = importExcelStore.isRowValid(row);
 };
 
 // Check if a row is valid

@@ -1,6 +1,6 @@
 <template>
   <div class="w-full minh-screen  bg-white h-full flex  justify-content-start align-items-start">
-    <div class="flex flex-1 px-2 border-right-1 h-full">
+    <div class="flex flex-1 px-2 border-right-1 h-full py-3">
       <PhoneSearching
           ref="searchPhone"
           :excelSearch="excelSearch"

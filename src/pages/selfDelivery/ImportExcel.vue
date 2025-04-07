@@ -23,9 +23,9 @@ import {v4 as uuidv4} from "uuid";
 const importExcelStore = useImportExcelStore();
 
 const steps = [
-  { title: 'Upload', component: UploadExcel },
-  { title: 'Review', component: UploadPreview },
-  { title: 'Confirm', component: UploadPreview },
+  { title: 'ອັບໂຫຼດໄຟ', component: UploadExcel },
+  { title: 'ກວດສອບຂໍ້ມູນ', component: UploadPreview },
+  { title: 'ສໍາເລັດ', component: UploadPreview },
 ];
 const next = () => {
   importExcelStore.current++;

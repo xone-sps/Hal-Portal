@@ -2,7 +2,7 @@ import {defineStore, StoreDefinition} from 'pinia';
 import {api, apiUrl} from '@/plugins/axios.ts';
 import {notification, message} from "ant-design-vue";
 import {v4 as uuidv4} from 'uuid';
-import {ref,reactive} from "vue";
+import {ref, reactive, computed} from "vue";
 import AuthenticationEventSource from "@/hooks/custom-eventsource";
 import { useDataResourcesStore } from '@/stores/dataResourcesStore';
 import { useUserStore } from '@/stores/useUserStore';
@@ -58,8 +58,6 @@ export const useImportExcelStore = defineStore('importExcelStore', {
             }
             try {
                 this.isImportLoading = true;
-
-                console.log("📤 Sending data:", payload);
                 const res = await api.post(
                     "v1/auth/users/me/shipments/management/imports/pre-shipment",
                     payload,
@@ -69,7 +67,6 @@ export const useImportExcelStore = defineStore('importExcelStore', {
                         },
                     }
                 );
-                console.log("✅ Response:", res);
                 this.onUploadValidateData(payload);
                 return res?.data;
             } catch (error) {
@@ -108,7 +105,7 @@ export const useImportExcelStore = defineStore('importExcelStore', {
                     }
 
                     if (data.error) {
-                        this.isLoading.value = false;
+                        this.isLoading = false;
                         console.log('Import progress failed:', data.error)
                     }
 
@@ -149,13 +146,13 @@ export const useImportExcelStore = defineStore('importExcelStore', {
                 );
                 // const response = await dataResourcesStore.manage(body);
                 const validateData = res.data;
-                console.log('error',validateData)
                 this.excelErrors.column_names = validateData.data.column_names || [];
                 this.excelErrors.rows = validateData.data.rows || [];
                 // Reset map watcher
                 this.rowWatchers = new Map();
                 this.showValidateDialogExcel();
                 this.groupedRows = this.mapGroupedRows(this.excelErrors.rows);
+                console.log(this.groupedRows)
             } catch (e) {
                 let mes = "ມີບາງຢ່າງຜິດພາດໃນການອັບໂຫລດ.";
                 if (e?.response?.data?.data) {
@@ -181,7 +178,7 @@ export const useImportExcelStore = defineStore('importExcelStore', {
                 return;
             }
 
-            const payload = this.groupedRows.value.map(row => {
+            const payload = this.groupedRows.map(row => {
                 return row.data;
             });
 
@@ -191,9 +188,6 @@ export const useImportExcelStore = defineStore('importExcelStore', {
             const method = "post";
 
             const body = {
-                method: "post",
-                _method: method,
-                actionUri: uri,
                 formData: false,
                 shipment_filename: this.excelFilename,
                 shipment_payload: payload,
@@ -215,21 +209,21 @@ export const useImportExcelStore = defineStore('importExcelStore', {
                 );
 
                 this.eventSource.addEventListener('starting', () => {
-                    this.isInitialImportProgress.value = true;
+                    this.isInitialImportProgress = true;
                 })
 
                 this.eventSource.addEventListener('progress', (event) => {
                     const data = JSON.parse(event.data)
                     if (data.use_validate) {
-                        this.isInitialImportProgress.value = true;
-                        this.importValidateProgress.value = data.validate_progress;
+                        this.isInitialImportProgress = true;
+                        this.importValidateProgress = data.validate_progress;
                     } else {
-                        this.isInitialImportProgress.value = false;
-                        this.importProgress.value = data.progress;
+                        this.isInitialImportProgress = false;
+                        this.importProgress = data.progress;
                     }
 
                     if (data.error) {
-                        this.isLoading.value = false;
+                        this.isLoading = false;
                         console.log('Data payload progress failed:', data.error)
                     }
 
@@ -240,11 +234,11 @@ export const useImportExcelStore = defineStore('importExcelStore', {
                             placement: "topRight",
                             duration: 3,
                         });
-                        this.excelErrors.value = {column_names: [], rows: []};
+                        this.excelErrors = {column_names: [], rows: []};
                         // Reset map watcher
                         this.rowWatchers = new Map();
-                        this.showErrorDialog.value = false;
-                        this.excelFilename.value = null;
+                        this.showErrorDialog = false;
+                        this.excelFilename = null;
                         this.setModalImportExcel(false);
                         this.emit('success')
                         console.log('Data payload progress completed at:', data.completed_at)
@@ -265,9 +259,9 @@ export const useImportExcelStore = defineStore('importExcelStore', {
             }
 
             try {
-                this.isLoading.value = true;
+                this.isLoading = true;
                 const res = await api.post(
-                    "v1/auth/users/me/shipments/management/imports/pre-shipment",
+                    "v1/auth/users/me/shipments/management/imports/pre-shipment/payload",
                     body,
                     {
                         headers: {
@@ -275,7 +269,8 @@ export const useImportExcelStore = defineStore('importExcelStore', {
                         },
                     }
                 );
-                this.isDirty.value = false;
+                console.log(res)
+                this.isDirty = false;
                 notification.success({
                     message: "ສຳເລັດ!",
                     description: "ການບັນທຶກຂໍ້ມູນ ສຳເລັດ.",
@@ -283,24 +278,21 @@ export const useImportExcelStore = defineStore('importExcelStore', {
                     duration: 3,
                 });
             } catch (e) {
-                let message = "ມີບາງຢ່າງຜິດພາດໃນການບັນທຶກຂໍ້ມູນ.";
+                let ms = "ມີບາງຢ່າງຜິດພາດໃນການບັນທຶກຂໍ້ມູນ.";
                 const errorData = e?.response?.data?.data;
                 if (errorData) {
                     if (!errorData.shipment_file) {
-                        this.excelErrors.value.column_names = errorData.column_names || [];
+                        this.excelErrors.column_names = errorData.column_names || [];
                         // Update rows array in-place so its reference stays the same:
-                        this.excelErrors.value.rows.splice(0, this.excelErrors.value.rows.length, ...(errorData.rows || []));
+                        this.excelErrors.rows.splice(0, this.excelErrors.rows.length, ...(errorData.rows || []));
                         // Reset map watcher
                         this.rowWatchers = new Map();
                     }
                 } else if (e?.response?.data) {
-                    message = e?.response?.data?.message ?? message;
+                    ms = e?.response?.data?.message ?? ms;
                 }
 
-                message.error({
-                    title: "ຜິດພາດ",
-                    detail: message
-                }, {life: 3000});
+                message.error("ມີບາງຢ່າງຜິດພາດໃນການບັນທຶກຂໍ້ມູນ");
 
                 this.cleanup()
             }
@@ -325,7 +317,7 @@ export const useImportExcelStore = defineStore('importExcelStore', {
             this.showErrorDialog = true;
             this.isDirty = true;
             try {
-                this.refModalError.value.maximizable = true;
+                this.refModalError.maximizable = true;
             } catch (e) {
                 console.log('showValidateDialogExcel: ', e);
             }
@@ -363,57 +355,28 @@ export const useImportExcelStore = defineStore('importExcelStore', {
 
             items.sort((a, b) => b.has_error - a.has_error);
             return items;
-        }
+        },
+        // Computed property to check if the entire form is valid
+         isFormValid (){
+            const rows = this.groupedRows || [];
+            if (rows.length === 0) return false;
+            const validStates = rows.map(row => this.isRowValid(row));
+            return validStates.every(valid => valid);
+        },
+
+        // Check if a row is valid
+         isRowValid (row){
+            const hasErrors = row.colErrors && Object.values(row.colErrors).some((error) => {
+                    return error !== null && error !== undefined && error !== ''
+                }
+            );
+
+            const requiredIndices = [2, 3, 5, 6, 7, 8, 9];
+            const hasAllRequiredFields = requiredIndices.every(index => row.data[index]);
+            return !hasErrors && hasAllRequiredFields;
+        },
 
     },
     getters: {
-    //     computedGroupedRows(state) {
-    //         console.error('row')
-    //         const mapByRowIndex: Record<number, any> = {};
-    //         state.excelErrors.rows.forEach((errorObj) => {
-    //             const rIdx = errorObj?.row_index;
-    //             if (rIdx === undefined || rIdx === null) return;
-    //
-    //             if (!mapByRowIndex[rIdx]) {
-    //                 mapByRowIndex[rIdx] = reactive({
-    //                     data: [...(errorObj?.data || [])],
-    //                     origin_data: [...(errorObj?.data || [])],
-    //                     colErrors: {},
-    //                     errorMessage: errorObj.message || "",
-    //                     has_error: errorObj.has_error || false,
-    //                 });
-    //             }
-    //
-    //             if (errorObj.column_index !== undefined && errorObj.column_index !== null) {
-    //                 mapByRowIndex[rIdx].colErrors[errorObj.column_index] = errorObj.message;
-    //             }
-    //
-    //             if (errorObj.message) {
-    //                 if (mapByRowIndex[rIdx].errorMessage) {
-    //                     if (!mapByRowIndex[rIdx].errorMessage.includes(errorObj.message)) {
-    //                         mapByRowIndex[rIdx].errorMessage += ` | ${errorObj.message}`;
-    //                     }
-    //                 } else {
-    //                     mapByRowIndex[rIdx].errorMessage = errorObj.message;
-    //                 }
-    //             }
-    //         });
-    //
-    //         const items = Object.entries(mapByRowIndex)
-    //             .map(([rowIndex, rowData]) => {
-    //                 return reactive({
-    //                     rowIndex: Number(rowIndex),
-    //                     data: rowData.data,
-    //                     origin_data: rowData.origin_data,
-    //                     colErrors: rowData.colErrors ?? {},
-    //                     errorMessage: rowData.errorMessage,
-    //                     isValid: false,
-    //                     has_error: rowData.has_error || false,
-    //                 });
-    //             });
-    //
-    //         items.sort((a, b) => b.has_error - a.has_error);
-    //         return items;
-    //     }
     },
 });

@@ -2,31 +2,29 @@
   <div class="branch-search !w-full">
     <h2 class="text-xl">ຄົ້ນຫາດ້ວຍຊື່ສາຂາ</h2>
     <div class="w-full flex justify-content-center">
-      <div class="w-12">
+      <div class="w-full">
         <div class="formgrid grid text-base">
           <div class="field col-6 md:col-6 lg:col-6">
-            <label for="province">ເລືອກແຂວງ</label>
+            <label name="province">ເລືອກແຂວງ</label>
             <a-select
                 class="w-full"
-                v-model="selectedProvince"
+                v-model:value="selectedProvince"
                 :options="provinces"
-                option-label="name"
-                option-value="id"
+                :field-names="{ label: 'name', value: 'id' }"
                 @change="handleChangeProvince"
                 show-clear
                 clear-icon="pi pi-times-circle"
                 placeholder="ເລືອກແຂວງ"
             />
           </div>
-          <div class="field col-6 md:col-6 lg:col-6">
-            <label for="district">ເລືອກເມືອງ</label>
+          <div class="field">
+            <label name="district">ເລືອກເມືອງ</label>
             <a-select
-                v-model="selectedDistrict"
+                v-model:value="selectedDistrict"
                 show-clear
                 class="w-full"
                 :options="district"
-                option-value="id"
-                option-label="name"
+                :field-names="{ label: 'name', value: 'id' }"
                 @change="handleChangeDistrict"
                 clear-icon="pi pi-times-circle"
                 placeholder="ເລືອກເມືອງ"
@@ -34,8 +32,8 @@
             />
           </div>
           <div class="field col-12 md:col-12 lg:col-12">
-            <label for="branch">ຄົ້ນຫາຕາມຊື່ສາຂາ</label>
-            <InputText
+            <label name="branch">ຄົ້ນຫາຕາມຊື່ສາຂາ</label>
+            <a-input
                 v-model="selectBranch"
                 @input="filterBranch"
                 placeholder="ປ້ອນຊື່ສາຂາ..."
@@ -81,6 +79,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { api } from '@/plugins/axios';
+import {message} from "ant-design-vue";
 
 const emit = defineEmits(['change', 'selectedStartBranch'])
 const props = defineProps(['excelSearch'])
@@ -142,13 +141,13 @@ function storeBranchesInIndexedDB(data) {
 }
 
 function handleChangeProvince(province) {
-  if (province && province.value) {
+  if (province) {
     selectedDistrict.value = null
     district.value = []
     selectBranch.value = ''
     allBranches.value = []
     allBranchesOriginal.value = []
-    const provinceId = province.value
+    const provinceId = province
     listingBranch(provinceId)
     getAllBranch(provinceId, null)
   } else {
@@ -160,8 +159,8 @@ function handleChangeProvince(province) {
   }
 }
 
-function handleChangeDistrict(event) {
-  const districtId = event.value
+function handleChangeDistrict(district) {
+  const districtId = district
   const provinceId = selectedProvince.value
   getAllBranch(provinceId, districtId)
 }
@@ -169,7 +168,7 @@ function handleChangeDistrict(event) {
 const copyToClipboard = (branch) => {
   const formattedText = `ສາຂາ.${branch.name} | ຂ.${branch?.province?.name} | ມ.${branch?.district?.name} | ບ.${branch?.village?.name} | ລະຫັດສາຂາ.${branch?.code}`
   navigator.clipboard.writeText(formattedText).then(() => {
-    messageSuccess({title: 'ຄັດລອກຂໍ້ມູນສຳເລັດ', detail: 'ການຄັດລອກຂໍ້ມູນ ສຳເລັດ.'})
+    message.success('ຄັດລອກຂໍ້ມູນສຳເລັດ, ການຄັດລອກຂໍ້ມູນ ສຳເລັດ.')
   })
   if (props.excelSearch) {
     emit('close', formattedText)
@@ -179,11 +178,13 @@ const copyToClipboard = (branch) => {
 async function getAllBranch(provinceId = null, districtId = null) {
   isLoading.value = true
   try {
-    const res = await api.post('v1/listing/branches', {
+    const query = {
       is_active: 'true',
-      ...(provinceId && { province: provinceId }),
-      ...(districtId && { district: districtId })
-    });
+      ...(provinceId !== undefined && provinceId !== null && { province: provinceId }),
+      ...(districtId !== undefined && districtId !== null && { district: districtId })
+    };
+    console.log(query)
+    const res = await api.get('v1/listing/branches', {params: query});
     allBranchesOriginal.value = res.data
     allBranches.value = res.data
     storeBranchesInIndexedDB(res.data)
@@ -196,9 +197,10 @@ async function getAllBranch(provinceId = null, districtId = null) {
 
 async function listingBranch(provinceId = null) {
   try {
-    const res = await api.post('filter-branch', {
+
+    const res = await api.get('filter-branch', {params:{
       ...(provinceId && { province_id: provinceId })
-    });
+    }});
     provinces.value = res.data.provinces;
     allDistrict.value = res.data.districts;
     district.value = provinceId

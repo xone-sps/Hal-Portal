@@ -4,7 +4,7 @@
     <div class="input-group">
       <a-input
           style="width:400px"
-          v-model="phoneQuery"
+          v-model:value="phoneQuery"
           placeholder="ປ້ອນເບີໂທລະສັບ"
           class="p-inputtext p-component"
           type="number"
@@ -123,8 +123,10 @@ function doSearchPhone(phoneNumber) {
 }
 
 async function onPhoneSearch() {
+  console.log("Phone"+phoneQuery.value)
   const trimmedPhone = phoneQuery.value.trim();
   const isDigits = /^\d+$/.test(trimmedPhone);
+  console.log(trimmedPhone)
 
   if (!isDigits || trimmedPhone.length < 6 || trimmedPhone.length > 14) {
     phoneError.value = "ເບີຕ້ອງ 6-14 ຕົວເລກ.";
@@ -136,12 +138,17 @@ async function onPhoneSearch() {
   isLoading.value = true;
 
   try {
-    const body = bodyHelper([
-      { phone_number: trimmedPhone },
-      { is_active: 'true' },
-    ]);
+    // const body = bodyHelper([
+    //   { phone_number: trimmedPhone },
+    //   { is_active: 'true' },
+    // ]);
 
-    const res = await api.post('v2/auth/customer/store/search-branches', body);
+    const query = {
+      phone_number:trimmedPhone,
+      is_active:true,
+    }
+
+    const res = await api.get('v2/auth/customer/store/search-branches',{params:query});
 
     if (res?.data?.length) {
       customerData.value = res.data;
