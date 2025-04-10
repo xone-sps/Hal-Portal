@@ -31,6 +31,7 @@ import  AllAddress from "@/pages/address/AllAddress.vue";
 import  SenderAddress from "@/pages/address/Sender.vue";
 import  ReceiverAddress from "@/pages/address/Receiver.vue";
 import  Login from "@/pages/auth/Login.vue";
+import ImportExcel from "@/pages/selfDelivery/ImportExcel.vue";
 
 
 
@@ -162,8 +163,21 @@ const routes = [
                     {
                         path: "import-excel", // ✅ Correct relative path
                         name: "import-excel",
-                        component: import('@/pages/selfDelivery/ImportExcel.vue'),
+                        component: ImportExcel,
+                        // component: import('@/pages/selfDelivery/ImportExcel.vue'),
                         meta: {requiresAuth: true, title: "Import Excel", description: "" },
+                    },
+                    {
+                        path: "import-excel/upload-preview", // ✅ Correct relative path
+                        name: "import-excel-preview",
+                        component: import('@/pages/selfDelivery/UploadPreview.vue'),
+                        meta: {requiresAuth: true, title: "Import Excel Preview", description: "" },
+                    },
+                    {
+                        path: "import-excel/upload-success", // ✅ Correct relative path
+                        name: "import-excel-success",
+                        component: import('@/pages/selfDelivery/Success.vue'),
+                        meta: {requiresAuth: true, title: "Import Excel Success", description: "" },
                     }
                 ]
             }

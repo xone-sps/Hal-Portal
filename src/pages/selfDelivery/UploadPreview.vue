@@ -8,13 +8,30 @@
           </span>
         <span class="!ml-2">ລາຍການ</span>
       </div>
-    <div class="mt-1 ml-2 min-h-screen">
-      <table class="min-w-full border-collapse border">
+    <div class="!mt-1 !ml-2 w-full overflow-x-auto scrollbar-thin rounded shadow">
+      <table class="border-collapse border min-w-[1900px]" :loading="importExcelStore.isImportLoading">
+        <colgroup>
+          <col style="width: 90px" />
+          <col style="width: 160px" />
+          <col style="width: 360px" />
+          <col style="width: 230px" />
+          <col style="width: 120px" />
+          <col style="width: 480px" />
+          <col style="width: 140px" />
+          <col style="width: 180px" />
+          <col style="width: 100px" />
+          <col style="width: 100px" />
+          <col style="width: 150px" />
+          <col style="width: 150px" />
+          <col style="width: 180px" />
+          <col style="width: 80px" />
+        </colgroup>
+
         <thead>
         <tr>
           <th>ລໍາດັບ</th>
           <th>ເລກບິນຈາກລະບົບລູກຄ້າ</th>
-          <th>ຊື່ຜູ້ຮັບ*</th>
+          <th >ຊື່ຜູ້ຮັບ*</th>
           <th>ເບີຜູ້ຮັບ*</th>
           <th>ທີ່ຢູ່ຜູ້ຮັບ</th>
           <th>ສາຂາປາຍທາງ*</th>
@@ -59,7 +76,7 @@
               {{ groupItem.colErrors[3] }}
             </div>
           </td>
-          <td style="min-width: 200px; max-width: 200px; white-space: pre-wrap;">
+          <td style="min-width: 150px; max-width: 200px;">
             {{ groupItem.data[4] }}
             <div v-if="groupItem.colErrors[4]" class="text-red-600 text-xs">
               {{ groupItem.colErrors[4] }}
@@ -148,7 +165,7 @@
           </td>
           <td class="text-center">
             <div class="w-4rem">
-              <ConfirmPopup></ConfirmPopup>
+<!--              <ConfirmPopup></ConfirmPopup>-->
               <a-button
                   class=" p-button-rounded p-button-danger p-button-sm delete-button"
                   @click="confirmDelete(groupItem.rowIndex, $event)"
@@ -165,25 +182,24 @@
       </table>
     </div>
 
-    <div class="flex justify-content-end border-top-1 surface-border pt-1">
+    <div class="flex justify-end border-top-1 surface-border !pt-1 !my-2">
       <a-button @click="importExcelStore.saveUploadedData"
-                :class="{'opacity-50 cursor-not-allowed': !isFormValid, 'bg-blue-500': isFormValid}"
-                class="base-height bg-green-500 px-4 py-2 border-none rounded text-white flex items-center"
-                severity="primary">
+                :class="{'opacity-50 cursor-not-allowed': !isFormValid, '!bg-blue-500': isFormValid}"
+                class="base-height !bg-green-500 px-4 py-2 border-none rounded !text-white flex items-center">
         <template #default>
           <span v-if="!importExcelStore.isLoading">ບັນທຶກຂໍ້ມູນ</span>
           <span v-else-if="importExcelStore.isInitialImportProgress && importExcelStore.importValidateProgress === 0"
                 class="flex items-center align-items-center">
-              <i class="pi pi-spinner animate-spin mr-2"></i>
+              <LoadingOutlined class="!mr-2"/>
               ກໍາລັງກວດສອບ...</span>
           <span v-else-if="importExcelStore.isInitialImportProgress && importExcelStore.importValidateProgress < 100"
                 class="flex items-center align-items-center">
-              <i class="pi pi-spinner animate-spin mr-2"></i>
+        <RotateRightOutlined/>
               {{ importExcelStore.importValidateProgress }}% ກວດສອບແລ້ວ
             </span>
           <span v-else-if="!importExcelStore.isInitialImportProgress && importExcelStore.importProgress < 100"
                 class="flex items-center align-items-center">
-              <i class="pi pi-spinner animate-spin mr-2"></i>
+               <RotateRightOutlined/>
               {{ importExcelStore.importProgress }}% ກະກຽມສໍາເລັດ
             </span>
           <span v-else>{{ importExcelStore.isInitialImportProgress ? 'ກວດສອບຂັ້ນສຸດທ້າຍ' : 'ບັນທຶກຂໍ້ມູນ' }}...</span>
@@ -205,7 +221,7 @@
 import {computed, defineEmits, defineProps, onBeforeUnmount, onMounted, onUnmounted, ref, watch} from "vue";
 import {useImportExcelStore} from "@/stores/parcel/useImportExcelStore";
 import {Modal, notification, message} from 'ant-design-vue';
-import {CloseOutlined, FileSearchOutlined, DeleteOutlined, CiCircleOutlined,CopyOutlined,CheckOutlined} from "@ant-design/icons-vue";
+import {CloseOutlined, FileSearchOutlined, DeleteOutlined, RotateRightOutlined,LoadingOutlined,CopyOutlined,CheckOutlined} from "@ant-design/icons-vue";
 import ModalSelectedBranchWithPhoneAndBranchName
   from "@/components/modals/ModalSelectedBranchWithPhoneAndBranchName.vue"
 
@@ -228,16 +244,9 @@ const selectedReceiverPhoneNumber = ref('');
 const selectedReceiverAddress = ref('');
 
 const isVisibleSelectedBranchWithPhoneAndName = ref(false)
-const refModalError = ref(null);
 const modalImportExcel = ref(false);
 
 const showErrorDialog = ref(true);
-const excelErrors = ref({
-  column_names: [],
-  rows: []
-});
-
-const isDirty = ref(false);
 
 // Define document type options
 const documentTypeOptions = ref([
@@ -255,36 +264,21 @@ const paymentTypeOptions = ref([
   {name: 'COD-ປະກັນໄພ', code: 'COD-ປະກັນໄພ'}
 ]);
 // Create a Map to store unwatch functions for each row keyed by a unique row identifier (e.g., rowIndex)
-let rowWatchers = new Map();
 
 function handleBeforeUnload(event) {
-  if (!isDirty.value) {
+  if (!importExcelStore.isDirty) {
     return;
   }
   event.preventDefault();
   event.returnValue = "ທ່ານຍັງບໍ່ໄດ້ບັນທຶກການປ່ຽນແປງ. ທ່ານແນ່ໃຈບໍທີ່ຈະອອກຈາກໜ້ານີ້?";
 }
 
-function saveData(){
-
-}
-
-
-// Handle browser back/forward navigation
-const handleLeavePage = () => {
-  isDirty.value = false;
-  isVisibleSelectedBranchWithPhoneAndName.value = false;
-  setModalImportExcel(false);
-  showErrorDialog.value = false;
-};
-
 // Using navigation guards
 const unregisterGuard = router.beforeEach((to, from, next) => {
-  if (from.path === '/self-service/import-excel' && isDirty.value) {
+  if (from.path === '/self-service/import-excel' && importExcelStore.isDirty) {
     // Handle navigation away from this route
     const confirmNavigation = confirm('ທ່ານຍັງບໍ່ໄດ້ບັນທຶກການປ່ຽນແປງ. ທ່ານແນ່ໃຈບໍທີ່ຈະອອກຈາກໜ້ານີ້?');
     if (confirmNavigation) {
-      handleLeavePage();
       next();
     } else {
       next(false);
@@ -294,12 +288,12 @@ const unregisterGuard = router.beforeEach((to, from, next) => {
   }
 });
 
-function confirmExcelModalClose() {
-  // Ask for confirmation before closing
-  if (isDirty.value && confirm('ທ່ານຍັງບໍ່ໄດ້ບັນທຶກການປ່ຽນແປງ. ທ່ານແນ່ໃຈບໍທີ່ຈະອອກຈາກໜ້ານີ້?')) {
-    showErrorDialog.value = false;
-  }
-}
+// function confirmExcelModalClose() {
+//   // Ask for confirmation before closing
+//   if (importExcelStore.isDirty && confirm('ທ່ານຍັງບໍ່ໄດ້ບັນທຶກການປ່ຽນແປງ. ທ່ານແນ່ໃຈບໍທີ່ຈະອອກຈາກໜ້ານີ້?')) {
+//     showErrorDialog.value = false;
+//   }
+// }
 
 function openModalSelectedBranchWithPhoneAndName(data, rowIndex) {
   selectedRowIndexForBranch.value = rowIndex;
@@ -322,7 +316,6 @@ const copyToClipboard = (ms) => {
 
 function setNewBranch(branch) {
   updateData(selectedRowIndexForBranch.value, 5, branch?.name ?? branch);
-
   isVisibleSelectedBranchWithPhoneAndName.value = false;
   selectedRowIndexForBranch.value = null;
   selectedReceiverPhoneNumber.value = '';
@@ -344,27 +337,6 @@ const clearDestinationBranch = (rowIndex) => {
     },
   });
 };
-
-function setModalImportExcel(isVisible) {
-  modalImportExcel.value = isVisible;
-  excelErrors.value = {column_names: [], rows: []};
-  // Reset dirty fields
-  isDirty.value = false;
-  // Reset map watcher
-  rowWatchers = new Map();
-  emit("change", isVisible);
-  importExcelStore.cleanup();
-}
-
-function showValidateDialogExcel() {
-  showErrorDialog.value = true;
-  isDirty.value = true;
-  try {
-    refModalError.value.maximizable = true;
-  } catch (e) {
-    console.log('showValidateDialogExcel: ', e);
-  }
-}
 
 // Initialize groupedRows State
 // importExcelStore.groupedRows = importExcelStore.computedGroupedRows;
@@ -421,7 +393,7 @@ function updateData(rowIndex, columnIndex, value) {
 const isFormValid = computed(() => {
   const rows = importExcelStore.groupedRows || [];
   if (rows.length === 0) return false;
-  const validStates = rows.map(row => isRowValid(row));
+  const validStates = rows.map(row => importExcelStore.isRowValid(row));
   return validStates.every(valid => valid);
 });
 
@@ -431,103 +403,22 @@ const validFormCount = computed(() => {
   return validStates.length;
 });
 
-const watchRowsData = () => {
-  // Remove watchers for rows that no longer exist
-  rowWatchers.forEach((unwatch, rowId) => {
-    if (!importExcelStore.groupedRows.some(row => row.rowIndex === rowId)) {
-      unwatch(); // Unregister the watcher
-      rowWatchers.delete(rowId);
-    }
-  });
-
-  // Register watchers for new rows that don't have a watcher yet
-  importExcelStore.groupedRows.forEach(row => {
-    if (!rowWatchers.has(row.rowIndex)) {
-      // Create a watcher for row.data
-      const unwatch = watch(
-          () => row.data,
-          () => {
-            validateRow(row);
-          },
-          {deep: true}
-      );
-      rowWatchers.set(row.rowIndex, unwatch);
-    }
-  });
-};
 
 // form validation function
-
-const validateRow = (row) => {
-  // Set is dirty to true
-  isDirty.value = true;
-  // Clear errors if conditions are met
-  const requiredIndices = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12];
-
-  // Special handling for index 11 (COD related field)
-  if (row.data[10] && typeof row.data[10] === 'string' && row.data[10].includes('COD')) {
-    // Index 11 is required if index 10 contains "COD"
-    if (!row.data[11]) {
-      row.colErrors[11] = 'ຕ້ອງການຂໍ້ມູນເມື່ອເລືອກ COD';
-      row.isValid = false;
-    } else if (row.colErrors[11]) {
-      // Clear error if value exists
-      row.colErrors[11] = '';
-    }
-  } else {
-    // If index 10 does not contain "COD", clear any errors for index 11
-    row.colErrors[11] = '';
-  }
-
-  // Handle other required fields
-  for (const index of requiredIndices) {
-    // Skip if no data or no error for this column
-    if (!row.data[index] || !row.colErrors[index]) continue;
-
-    // Clear error if there's no original data or if data has changed
-    const hasOriginalData = !!row.origin_data[index];
-    const dataHasChanged = hasOriginalData && row.data[index] !== row.origin_data[index];
-
-    if (!hasOriginalData || dataHasChanged) {
-      row.colErrors[index] = '';
-    }
-  }
-
-  // After processing all validations, update the row's validity status
-  row.isValid = isRowValid(row);
-  // row.isValid = importExcelStore.isRowValid(row);
-};
-
-// Check if a row is valid
-const isRowValid = (row) => {
-  const hasErrors = row.colErrors && Object.values(row.colErrors).some((error) => {
-        return error !== null && error !== undefined && error !== ''
-      }
-  );
-
-  const requiredIndices = [2, 3, 5, 6, 7, 8, 9];
-  const hasAllRequiredFields = requiredIndices.every(index => row.data[index]);
-  return !hasErrors && hasAllRequiredFields;
-};
 
 watch(() => props.visible,
     (value) => {
       modalImportExcel.value = value;
       if (!value) {
-        importExcelStore.cleanup();
+        importExcelStore.cleanUp();
       }
     },
     {deep: true}
 );
 
-// Watch the groupedRows array deeply to re-run watchRowsData when new rows are added/removed
-watch(
-    importExcelStore.groupedRows,
-    () => {
-      watchRowsData();
-    },
-    {deep: true}
-);
+watch(() => importExcelStore.groupedRows, () => {
+  importExcelStore.watchRowsData();
+}, { deep: true });
 
 watch(
     computedGroupedRows,
@@ -538,7 +429,7 @@ watch(
 );
 
 onUnmounted(() => {
-  importExcelStore.cleanup()
+  importExcelStore.cleanUp()
 })
 
 onBeforeUnmount(() => {
@@ -547,9 +438,8 @@ onBeforeUnmount(() => {
 });
 
 onMounted(() => {
-  console.log('Hi', importExcelStore.groupedRows?.length);
-  console.log('beforeunload', handleBeforeUnload);
   window.addEventListener("beforeunload", handleBeforeUnload);
+  importExcelStore.watchRowsData();
 })
 
 </script>
@@ -598,9 +488,9 @@ onMounted(() => {
 table {
   width: 100%;
   border-collapse: collapse;
-  white-space: nowrap;
+  white-space: normal;
   border: 1px solid #dddddd;
-  font-size: 13px;
+  font-size: 12px;
 }
 
 th, td {

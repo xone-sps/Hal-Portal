@@ -2,11 +2,13 @@ import {defineStore, StoreDefinition} from 'pinia';
 import {api, apiUrl} from '@/plugins/axios.ts';
 import {notification, message} from "ant-design-vue";
 import {v4 as uuidv4} from 'uuid';
-import {ref, reactive, computed} from "vue";
+import {reactive, watch} from "vue";
 import AuthenticationEventSource from "@/hooks/custom-eventsource";
-import { useDataResourcesStore } from '@/stores/dataResourcesStore';
-import { useUserStore } from '@/stores/useUserStore';
-const dataResourcesStore = useDataResourcesStore();
+// import { useDataResourcesStore } from '@/stores/dataResourcesStore';
+import {useUserStore} from '@/stores/useUserStore';
+import {useRouter} from "vue-router";
+// const dataResourcesStore = useDataResourcesStore();
+
 
 export const useImportExcelStore = defineStore('importExcelStore', {
     state: () => ({
@@ -14,12 +16,13 @@ export const useImportExcelStore = defineStore('importExcelStore', {
         isExportLoading: false,
         isExportTemplate: false,
         isImportLoading: false,
-        isDirty:false,
+        isDirty: false,
         importId: null as File | null,
         fileExcel: null as File | null,
         excelFilename: '',
         groupedRows: [] as any[],
-        current:0,
+        rowWatchers: new Map(),
+        current: 0,
         excelErrors: {
             column_names: [],
             rows: [],
@@ -28,15 +31,14 @@ export const useImportExcelStore = defineStore('importExcelStore', {
         importProgress: 0,
         importValidateProgress: 0,
         isInitialImportProgress: false,
-         userStore: useUserStore(),
+        userStore: useUserStore(),
     }),
 
     actions: {
-        async previewExcelUpload({file}: { file: File }) {
+        async previewExcelUpload({file, router}: { file: File, router: any }) {
             const allowedExtensions = [".xls", ".xlsx"];
             const lowerName = file.name.toLowerCase();
             const isExcelFile = allowedExtensions.some(ext => lowerName.endsWith(ext));
-
             if (!isExcelFile) {
                 this.fileExcel = null;
                 this.excelFilename = '';
@@ -58,22 +60,16 @@ export const useImportExcelStore = defineStore('importExcelStore', {
             }
             try {
                 this.isImportLoading = true;
-                const res = await api.post(
-                    "v1/auth/users/me/shipments/management/imports/pre-shipment",
-                    payload,
-                    {
-                        headers: {
-                            "Content-Type": "multipart/form-data", // Ensure it's multipart
-                        },
-                    }
-                );
                 this.onUploadValidateData(payload);
-                return res?.data;
+                // this.current++;
+                router.push({
+                    name: 'import-excel-preview',
+                    query: {step: this.current} // force change
+                });
             } catch (error) {
                 message.error("ຜິດພາດໃນການອັບໂຫລດ Excel");
                 throw error;
             } finally {
-                this.current++;
                 this.isImportLoading = false;
             }
             // this.onUploadValidateData(payload);
@@ -97,6 +93,7 @@ export const useImportExcelStore = defineStore('importExcelStore', {
                 this.eventSource.addEventListener('progress', (event) => {
                     const data = JSON.parse(event.data)
                     if (data.use_validate) {
+                        console.log(data)
                         this.isInitialImportProgress = true;
                         this.importValidateProgress = data.validate_progress;
                     } else {
@@ -108,7 +105,6 @@ export const useImportExcelStore = defineStore('importExcelStore', {
                         this.isLoading = false;
                         console.log('Import progress failed:', data.error)
                     }
-
                     if (data.status === 'completed') {
                         notification.success({
                             message: "ສຳເລັດ!",
@@ -117,7 +113,7 @@ export const useImportExcelStore = defineStore('importExcelStore', {
                             duration: 3,
                         });
                         console.log('Import progress completed at:', data.completed_at)
-                        this.cleanup()
+                        this.cleanUp()
                     }
                 })
 
@@ -125,7 +121,7 @@ export const useImportExcelStore = defineStore('importExcelStore', {
                     const data = JSON.parse(event.data)
                     console.log('Import progress error check:', data)
                     if (data.status_code !== 404) {
-                        this.cleanup()
+                        this.cleanUp()
                     }
                 })
 
@@ -152,21 +148,30 @@ export const useImportExcelStore = defineStore('importExcelStore', {
                 this.rowWatchers = new Map();
                 this.showValidateDialogExcel();
                 this.groupedRows = this.mapGroupedRows(this.excelErrors.rows);
-                console.log(this.groupedRows)
             } catch (e) {
                 let mes = "ມີບາງຢ່າງຜິດພາດໃນການອັບໂຫລດ.";
-                if (e?.response?.data?.data) {
-                    const errorData = e.response.data.data;
-                    this.excelErrors.column_names = errorData.column_names || [];
-                    // Update rows array in-place so its reference stays the same:
-                    this.excelErrors.rows.splice(0, this.excelErrors.rows.length, ...(errorData.rows || []));
-                    // Reset map watcher
+                const responseData = e?.response?.data;
+
+                if (responseData) {
+                    const errorData = responseData.data;
+
+                    if (errorData?.shipment_file?.invalid_file_columns) {
+                        mes = "ໄຟລ Excel ບໍ່ຖືກຮູບແບບ: ຄໍລຳບໍ່ຖືກຕ້ອງ.";
+                    }
+                    // Optionally handle column_names and rows if present
+                    this.excelErrors.column_names = errorData?.column_names || [];
+                    this.excelErrors.rows.splice(0, this.excelErrors.rows.length, ...(errorData?.rows || []));
                     this.rowWatchers = new Map();
-                } else if (e?.response?.data) {
-                    mes = e?.response?.data?.message ?? mes;
+                    // Or use the main message if exists
+                    mes = responseData.message || mes;
                 }
-                message.error(mes);
-                this.cleanup()
+                notification.error({
+                    message: "ຜິດພາດ!",
+                    description: mes,
+                    placement: "topRight",
+                    duration: 3,
+                });
+                this.cleanUp();
             }
             // this.groupedRows = this.mapGroupedRows(this.excelErrors.rows);
         },
@@ -184,9 +189,6 @@ export const useImportExcelStore = defineStore('importExcelStore', {
 
             // Generate unique import id
             const importId = uuidv4()
-            const uri = `v1/auth/users/me/shipments/management/imports/pre-shipment/payload`;
-            const method = "post";
-
             const body = {
                 formData: false,
                 shipment_filename: this.excelFilename,
@@ -197,7 +199,7 @@ export const useImportExcelStore = defineStore('importExcelStore', {
         },
 
         async onSavePayloadData(body) {
-
+            const router = useRouter();
             this.importProgress = 0;
             this.importValidateProgress = 0;
             this.isInitialImportProgress = true;
@@ -226,7 +228,6 @@ export const useImportExcelStore = defineStore('importExcelStore', {
                         this.isLoading = false;
                         console.log('Data payload progress failed:', data.error)
                     }
-
                     if (data.status === 'completed') {
                         notification.success({
                             message: "ສຳເລັດ!",
@@ -237,12 +238,14 @@ export const useImportExcelStore = defineStore('importExcelStore', {
                         this.excelErrors = {column_names: [], rows: []};
                         // Reset map watcher
                         this.rowWatchers = new Map();
-                        this.showErrorDialog = false;
                         this.excelFilename = null;
-                        this.setModalImportExcel(false);
-                        this.emit('success')
                         console.log('Data payload progress completed at:', data.completed_at)
-                        this.cleanup()
+                        this.cleanUp()
+                        this.current++;
+                        router.push({
+                            name: 'import-excel-success',
+                            query: {step: this.current} // force change
+                        });
                     }
                 })
 
@@ -250,26 +253,19 @@ export const useImportExcelStore = defineStore('importExcelStore', {
                     const data = JSON.parse(event.data)
                     console.log('Data payload progress error check:', data)
                     if (data.status_code !== 404) {
-                        this.cleanup()
+                        this.cleanUp()
                     }
                 })
 
             } catch (error) {
                 console.log('Check data payload progress axios errors: ', error);
             }
-
             try {
                 this.isLoading = true;
                 const res = await api.post(
                     "v1/auth/users/me/shipments/management/imports/pre-shipment/payload",
                     body,
-                    {
-                        headers: {
-                            "Content-Type": "multipart/form-data", // Ensure it's multipart
-                        },
-                    }
                 );
-                console.log(res)
                 this.isDirty = false;
                 notification.success({
                     message: "ສຳເລັດ!",
@@ -277,6 +273,12 @@ export const useImportExcelStore = defineStore('importExcelStore', {
                     placement: "topRight",
                     duration: 3,
                 });
+                this.current++;
+                await router.push({
+                    name: 'import-excel-success',
+                    query: {step: this.current}
+                });
+                this.cleanUp();
             } catch (e) {
                 let ms = "ມີບາງຢ່າງຜິດພາດໃນການບັນທຶກຂໍ້ມູນ.";
                 const errorData = e?.response?.data?.data;
@@ -291,10 +293,8 @@ export const useImportExcelStore = defineStore('importExcelStore', {
                 } else if (e?.response?.data) {
                     ms = e?.response?.data?.message ?? ms;
                 }
-
                 message.error("ມີບາງຢ່າງຜິດພາດໃນການບັນທຶກຂໍ້ມູນ");
-
-                this.cleanup()
+                this.cleanUp()
             }
         },
 
@@ -303,7 +303,7 @@ export const useImportExcelStore = defineStore('importExcelStore', {
             this.excelFilename = '';
         },
 
-        async cleanup() {
+        async cleanUp() {
             if (this.eventSource) {
                 this.eventSource.close()
                 this.eventSource = null
@@ -312,15 +312,17 @@ export const useImportExcelStore = defineStore('importExcelStore', {
             this.importValidateProgress = 0;
             this.isLoading = false;
             this.isInitialImportProgress = false;
+            this.fileExcel = null;
+            this.excelFilename = '';
         },
         async showValidateDialogExcel() {
-            this.showErrorDialog = true;
-            this.isDirty = true;
-            try {
-                this.refModalError.maximizable = true;
-            } catch (e) {
-                console.log('showValidateDialogExcel: ', e);
-            }
+            // this.showErrorDialog = true;
+            // this.isDirty = true;
+            // try {
+            //     this.refModalError.maximizable = true;
+            // } catch (e) {
+            //     console.log('showValidateDialogExcel: ', e);
+            // }
         },
 
         mapGroupedRows(rows) {
@@ -357,7 +359,7 @@ export const useImportExcelStore = defineStore('importExcelStore', {
             return items;
         },
         // Computed property to check if the entire form is valid
-         isFormValid (){
+        isFormValid() {
             const rows = this.groupedRows || [];
             if (rows.length === 0) return false;
             const validStates = rows.map(row => this.isRowValid(row));
@@ -365,7 +367,7 @@ export const useImportExcelStore = defineStore('importExcelStore', {
         },
 
         // Check if a row is valid
-         isRowValid (row){
+        isRowValid(row) {
             const hasErrors = row.colErrors && Object.values(row.colErrors).some((error) => {
                     return error !== null && error !== undefined && error !== ''
                 }
@@ -375,8 +377,66 @@ export const useImportExcelStore = defineStore('importExcelStore', {
             const hasAllRequiredFields = requiredIndices.every(index => row.data[index]);
             return !hasErrors && hasAllRequiredFields;
         },
+        validateRow(row) {
+            this.isDirty = true;
+            // Clear errors if conditions are met
+            const requiredIndices = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12];
 
-    },
-    getters: {
+            // Special handling for index 11 (COD related field)
+            if (row.data[10] && typeof row.data[10] === 'string' && row.data[10].includes('COD')) {
+                // Index 11 is required if index 10 contains "COD"
+                if (!row.data[11]) {
+                    row.colErrors[11] = 'ຕ້ອງການຂໍ້ມູນເມື່ອເລືອກ COD';
+                    row.isValid = false;
+                } else if (row.colErrors[11]) {
+                    // Clear error if value exists
+                    row.colErrors[11] = '';
+                }
+            } else {
+                // If index 10 does not contain "COD", clear any errors for index 11
+                row.colErrors[11] = '';
+            }
+
+            // Handle other required fields
+            for (const index of requiredIndices) {
+                // Skip if no data or no error for this column
+                if (!row.data[index] || !row.colErrors[index]) continue;
+
+                // Clear error if there's no original data or if data has changed
+                const hasOriginalData = !!row.origin_data[index];
+                const dataHasChanged = hasOriginalData && row.data[index] !== row.origin_data[index];
+
+                if (!hasOriginalData || dataHasChanged) {
+                    row.colErrors[index] = '';
+                }
+            }
+
+            // After processing all validations, update the row's validity status
+            row.isValid = this.isRowValid(row);
+            console.log('isValid' + row.isValid)
+            // row.isValid = importExcelStore.isRowValid(row);
+        },
+        watchRowsData() {
+            // Clean up old watchers
+            this.rowWatchers.forEach((unwatch, rowId) => {
+                if (!this.groupedRows.some(row => row.rowIndex === rowId)) {
+                    unwatch();
+                    this.rowWatchers.delete(rowId);
+                }
+            });
+
+            // Register new watchers
+            this.groupedRows.forEach(row => {
+                if (!this.rowWatchers.has(row.rowIndex)) {
+                    const unwatch = watch(
+                        () => [...row.data],
+                        () => this.validateRow(row),
+                        {deep: true}
+                    );
+                    this.rowWatchers.set(row.rowIndex, unwatch);
+                }
+            });
+        },
+
     },
 });

@@ -55,8 +55,8 @@
           </router-link>
         </a-menu-item>
 
-        <a-menu-item key="/self-service">
-          <router-link to="/self-service" class="flex items-center gap-2">
+        <a-menu-item key="/self-service/one-parcel">
+          <router-link to="/self-service/one-parcel" class="flex items-center gap-2">
             <img :src="self_delivery" alt="Self Delivery" class="w-6 h-6"/>
             <span v-if="!collapsed" class="text-menu">ຝາກເຄື່ອງເອງ</span>
           </router-link>

@@ -1,5 +1,4 @@
 import { useUserStore } from '@/stores/useUserStore';
-const userStore = useUserStore();
 export default class AuthenticationEventSource {
     constructor(url, accessToken, options = {}) {
         this.url = url;
@@ -10,6 +9,7 @@ export default class AuthenticationEventSource {
     }
 
     connect() {
+        const userStore = useUserStore();
         fetch(this.url, {
             headers: {
                 'Authorization': `Bearer ${userStore.token}`,
