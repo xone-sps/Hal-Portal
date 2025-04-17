@@ -1,13 +1,17 @@
 <template>
   <div class="!py-8 p-6">
-      <div class="!text-black">
-                <span class="!px-2 !py-1 !mb-2 rounded-full text-md">
-            ອັບໂຫຼດສໍາເລັດ {{ Intl.NumberFormat().format(importExcelStore.groupedRows?.length) }}
+       <div class="flex justify-center">
+         <CheckCircleOutlined class="!text-green-600 text-5xl !mb-4"/>
+       </div>
+      <div class="!text-black flex justify-center text-xl">
+        ອັບໂຫຼດສໍາເລັດ
+                <span class="!px-2 text-red-500">
+            {{ Intl.NumberFormat().format(importExcelStore.groupedRows?.length) }}
           </span>
         <span class="!ml-2">ລາຍການ</span>
       </div>
 
-    <div class="flex justify-center border-top-1 pt-1 !mt-6">
+    <div class="flex justify-center !border-top-1 pt-1 !mt-8">
       <a-button @click="BackImport"
                 class="base-height !bg-green-500 px-4 py-2 border-none rounded !text-white flex items-center !mr-2"
                 severity="primary">ນໍາເຂົ້າພັດສະດຸ
@@ -24,17 +28,22 @@
 <script setup>
 import {onMounted} from "vue";
 import {useImportExcelStore} from "@/stores/parcel/useImportExcelStore";
-import {useRouter} from 'vue-router';
+import {useRouter,useRoute} from 'vue-router';
+import {CheckCircleOutlined,} from "@ant-design/icons-vue";
+
 
 const importExcelStore = useImportExcelStore();
 const router = useRouter();
+const route = useRoute();
 
 const BackImport = () => {
+  importExcelStore.cleanUp();
   router.push({
     name: 'import-excel',
   });
 };
 const listParcel = () => {
+  importExcelStore.cleanUp();
   router.push({
     name: 'my-parcel'
   });
@@ -42,8 +51,14 @@ const listParcel = () => {
 };
 
 onMounted(() => {
+  importExcelStore.watchRowsData();
+  if (
+      route.path === '/self-service/import-excel/upload-success' &&
+      importExcelStore.groupedRows.length === 0
+  ) {
+    router.replace('/self-service/import-excel'); // Redirect to upload page
+  }
 })
-
 </script>
 
 <style scoped lang="scss">

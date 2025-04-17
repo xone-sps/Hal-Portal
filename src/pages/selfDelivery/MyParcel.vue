@@ -107,7 +107,7 @@
           <a-button
               type="primary"
               block
-              class="!mt-6 !text-white !text-lg w-full !h-10"
+              class="!mt-6 !text-white !text-lg w-full !h-10 !mr-3"
               @click="Cancel"
           >
             ຍົກເລີກ

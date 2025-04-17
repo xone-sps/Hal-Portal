@@ -183,25 +183,25 @@
     </div>
 
     <div class="flex justify-end border-top-1 surface-border !pt-1 !my-2">
-      <a-button @click="importExcelStore.saveUploadedData"
+      <a-button @click="importExcelStore.saveUploadedData(router)"
                 :class="{'opacity-50 cursor-not-allowed': !isFormValid, '!bg-blue-500': isFormValid}"
                 class="base-height !bg-green-500 px-4 py-2 border-none rounded !text-white flex items-center">
         <template #default>
           <span v-if="!importExcelStore.isLoading">ບັນທຶກຂໍ້ມູນ</span>
-          <span v-else-if="importExcelStore.isInitialImportProgress && importExcelStore.importValidateProgress === 0"
-                class="flex items-center align-items-center">
-              <LoadingOutlined class="!mr-2"/>
-              ກໍາລັງກວດສອບ...</span>
-          <span v-else-if="importExcelStore.isInitialImportProgress && importExcelStore.importValidateProgress < 100"
-                class="flex items-center align-items-center">
-        <RotateRightOutlined/>
-              {{ importExcelStore.importValidateProgress }}% ກວດສອບແລ້ວ
-            </span>
-          <span v-else-if="!importExcelStore.isInitialImportProgress && importExcelStore.importProgress < 100"
-                class="flex items-center align-items-center">
-               <RotateRightOutlined/>
-              {{ importExcelStore.importProgress }}% ກະກຽມສໍາເລັດ
-            </span>
+<!--          <span v-else-if="importExcelStore.isInitialImportProgress && importExcelStore.importValidateProgress === 0"-->
+<!--                class="flex items-center align-items-center">-->
+<!--&lt;!&ndash;              <LoadingOutlined class="!mr-2"/>&ndash;&gt;-->
+<!--              ກໍາລັງກວດສອບ...</span>-->
+<!--          <span v-else-if="importExcelStore.isInitialImportProgress && importExcelStore.importValidateProgress < 100"-->
+<!--                class="flex items-center align-items-center">-->
+<!--        <RotateRightOutlined/>-->
+<!--              {{ importExcelStore.importValidateProgress }}% ກວດສອບແລ້ວ-->
+<!--            </span>-->
+<!--          <span v-else-if="!importExcelStore.isInitialImportProgress && importExcelStore.importProgress < 100"-->
+<!--                class="flex items-center align-items-center">-->
+<!--               <RotateRightOutlined/>-->
+<!--              {{ importExcelStore.importProgress }}% ກະກຽມສໍາເລັດ-->
+<!--            </span>-->
           <span v-else>{{ importExcelStore.isInitialImportProgress ? 'ກວດສອບຂັ້ນສຸດທ້າຍ' : 'ບັນທຶກຂໍ້ມູນ' }}...</span>
         </template>
       </a-button>
@@ -221,14 +221,15 @@
 import {computed, defineEmits, defineProps, onBeforeUnmount, onMounted, onUnmounted, ref, watch} from "vue";
 import {useImportExcelStore} from "@/stores/parcel/useImportExcelStore";
 import {Modal, notification, message} from 'ant-design-vue';
-import {CloseOutlined, FileSearchOutlined, DeleteOutlined, RotateRightOutlined,LoadingOutlined,CopyOutlined,CheckOutlined} from "@ant-design/icons-vue";
+import {CloseOutlined, FileSearchOutlined, DeleteOutlined,CopyOutlined,CheckOutlined} from "@ant-design/icons-vue";
 import ModalSelectedBranchWithPhoneAndBranchName
   from "@/components/modals/ModalSelectedBranchWithPhoneAndBranchName.vue"
 
-import {useRouter} from 'vue-router';
+import {useRouter,useRoute} from 'vue-router';
 
 const importExcelStore = useImportExcelStore();
 const router = useRouter();
+const route = useRoute();
 const computedGroupedRows = computed(() => importExcelStore.computedGroupedRows);
 
 const emit = defineEmits(["change", 'success']);
@@ -275,7 +276,7 @@ function handleBeforeUnload(event) {
 
 // Using navigation guards
 const unregisterGuard = router.beforeEach((to, from, next) => {
-  if (from.path === '/self-service/import-excel' && importExcelStore.isDirty) {
+  if (from.path === '/self-service/import-excel/upload-preview' && importExcelStore.isDirty) {
     // Handle navigation away from this route
     const confirmNavigation = confirm('ທ່ານຍັງບໍ່ໄດ້ບັນທຶກການປ່ຽນແປງ. ທ່ານແນ່ໃຈບໍທີ່ຈະອອກຈາກໜ້ານີ້?');
     if (confirmNavigation) {
@@ -440,6 +441,12 @@ onBeforeUnmount(() => {
 onMounted(() => {
   window.addEventListener("beforeunload", handleBeforeUnload);
   importExcelStore.watchRowsData();
+  if (
+      route.path === '/self-service/import-excel/upload-preview' &&
+      importExcelStore.groupedRows.length === 0
+  ) {
+    router.replace('/self-service/import-excel'); // Redirect to upload page
+  }
 })
 
 </script>

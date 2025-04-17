@@ -2,7 +2,7 @@
   <div class="p-2">
     <div class="flex flex-col items-center text-center p-6">
       <a-upload
-          :before-upload="(file) => { importExcelStore.previewExcelUpload({ file }); return false; }"
+          :before-upload="(file) => { importExcelStore.previewExcelUpload(file,router); return false; }"
           :file-list="importExcelStore.fileExcel ? [importExcelStore.fileExcel] : []"
           :max-count="1"
           name="file"
@@ -38,7 +38,7 @@ const router = useRouter();
 
 const importExcelStore = useImportExcelStore();
 const handleUpload = async (file: File) => {
-  await importExcelStore.previewExcelUpload({ file, router });
+  await importExcelStore.previewExcelUpload(file,router);
 };
 </script>
 

@@ -1,13 +1,11 @@
-import {defineStore, StoreDefinition} from 'pinia';
+import {defineStore} from 'pinia';
 import {api, apiUrl} from '@/plugins/axios.ts';
 import {notification, message} from "ant-design-vue";
 import {v4 as uuidv4} from 'uuid';
 import {reactive, watch} from "vue";
 import AuthenticationEventSource from "@/hooks/custom-eventsource";
-// import { useDataResourcesStore } from '@/stores/dataResourcesStore';
 import {useUserStore} from '@/stores/useUserStore';
 import {useRouter} from "vue-router";
-// const dataResourcesStore = useDataResourcesStore();
 
 
 export const useImportExcelStore = defineStore('importExcelStore', {
@@ -35,10 +33,13 @@ export const useImportExcelStore = defineStore('importExcelStore', {
     }),
 
     actions: {
-        async previewExcelUpload({file, router}: { file: File, router: any }) {
+        async previewExcelUpload(file: File,router:any) {
+            // const router = useRouter(); // ✅ moved inside the function
+
             const allowedExtensions = [".xls", ".xlsx"];
             const lowerName = file.name.toLowerCase();
             const isExcelFile = allowedExtensions.some(ext => lowerName.endsWith(ext));
+
             if (!isExcelFile) {
                 this.fileExcel = null;
                 this.excelFilename = '';
@@ -50,9 +51,11 @@ export const useImportExcelStore = defineStore('importExcelStore', {
                 });
                 return;
             }
+
             this.fileExcel = file;
             this.importId = file.uid;
             this.excelFilename = file.name;
+
             const payload = {
                 formData: true,
                 shipment_file: file,
@@ -60,22 +63,17 @@ export const useImportExcelStore = defineStore('importExcelStore', {
             }
             try {
                 this.isImportLoading = true;
-                this.onUploadValidateData(payload);
                 // this.current++;
-                router.push({
+                await this.onUploadValidateData(payload);
+                 router.push({
                     name: 'import-excel-preview',
-                    query: {step: this.current} // force change
                 });
             } catch (error) {
                 message.error("ຜິດພາດໃນການອັບໂຫລດ Excel");
-                throw error;
             } finally {
                 this.isImportLoading = false;
             }
-            // this.onUploadValidateData(payload);
         },
-
-
         async onUploadValidateData(body) {
             this.importProgress = 0;
             this.importValidateProgress = 0;
@@ -177,7 +175,7 @@ export const useImportExcelStore = defineStore('importExcelStore', {
         },
 
 
-        async saveUploadedData() {
+        async saveUploadedData(router:any) {
             if (!this.isFormValid) {
                 message.warning("ຂໍ້ມູນບໍ່ຖືກຕ້ອງ ກະລຸນາກວດສອບ ກ່ອນບັນທຶກ.",);
                 return;
@@ -195,11 +193,11 @@ export const useImportExcelStore = defineStore('importExcelStore', {
                 shipment_payload: payload,
                 import_id: importId,
             };
-            this.onSavePayloadData(body);
+            this.onSavePayloadData(body,router);
         },
 
-        async onSavePayloadData(body) {
-            const router = useRouter();
+        async onSavePayloadData(body,router) {
+            // const router = useRouter();
             this.importProgress = 0;
             this.importValidateProgress = 0;
             this.isInitialImportProgress = true;
@@ -243,8 +241,7 @@ export const useImportExcelStore = defineStore('importExcelStore', {
                         this.cleanUp()
                         this.current++;
                         router.push({
-                            name: 'import-excel-success',
-                            query: {step: this.current} // force change
+                            name: 'import-excel-success', // force change
                         });
                     }
                 })
@@ -266,6 +263,7 @@ export const useImportExcelStore = defineStore('importExcelStore', {
                     "v1/auth/users/me/shipments/management/imports/pre-shipment/payload",
                     body,
                 );
+                console.log(res)
                 this.isDirty = false;
                 notification.success({
                     message: "ສຳເລັດ!",
@@ -273,10 +271,8 @@ export const useImportExcelStore = defineStore('importExcelStore', {
                     placement: "topRight",
                     duration: 3,
                 });
-                this.current++;
-                await router.push({
+                router.push({
                     name: 'import-excel-success',
-                    query: {step: this.current}
                 });
                 this.cleanUp();
             } catch (e) {
@@ -413,7 +409,6 @@ export const useImportExcelStore = defineStore('importExcelStore', {
 
             // After processing all validations, update the row's validity status
             row.isValid = this.isRowValid(row);
-            console.log('isValid' + row.isValid)
             // row.isValid = importExcelStore.isRowValid(row);
         },
         watchRowsData() {
