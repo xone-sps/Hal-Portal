@@ -333,7 +333,6 @@
 <script setup lang="ts">
 import {ref, onMounted, computed} from "vue";
 import {useManageOrderStore} from "@/stores/parcel/manageOrderStore";
-import {validationRules} from "@/utils/validationRules"; // Import validation rules
 import {
   EditOutlined,
   SaveOutlined,
