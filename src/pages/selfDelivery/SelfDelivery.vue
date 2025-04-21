@@ -60,19 +60,55 @@
           <a-form-item label="ຊື່" name="receiverName">
             <a-input placeholder="ຊື່ຜູ້ສົ່ງ" v-model:value="form.receiverName"/>
           </a-form-item>
-          <a-form-item label="ເບີໂທ" class="!pl-2" name="combinedPhone">
+          <!--          <a-form-item label="ເບີໂທ" class="!pl-2" name="combinedPhone">-->
+          <!--            <a-input-group compact>-->
+          <!--              <a-select v-model:value="prefixPhone" class="custom-select">-->
+          <!--                <a-select-option value="020">020</a-select-option>-->
+          <!--                <a-select-option value="030">030</a-select-option>-->
+          <!--              </a-select>-->
+          <!--              <a-input-->
+          <!--                  v-model:value="receiverPhone"-->
+          <!--                  type="tel"-->
+          <!--                  :maxlength="8"-->
+          <!--                  style="width:380px;"-->
+          <!--                  placeholder="ເບີໂທ"-->
+          <!--              />-->
+          <!--            </a-input-group>-->
+          <!--          </a-form-item>-->
+
+          <!--          <a-input-group compact>-->
+          <!--            <a-form-item name="prefixPhone" label="ເບີໂທ" class="!pl-2">-->
+          <!--              <a-select v-model:value="prefixPhone" class="custom-select" style="width:80px;">-->
+          <!--                <a-select-option value="020">020</a-select-option>-->
+          <!--                <a-select-option value="030">030</a-select-option>-->
+          <!--              </a-select>-->
+          <!--            </a-form-item>-->
+
+          <!--            <a-form-item name="receiverPhone" label="ເບີໂທ">-->
+          <!--              <a-input-->
+          <!--                  v-model:value="receiverPhone"-->
+          <!--                  :maxlength="8"-->
+          <!--                  placeholder="ເບີໂທ"-->
+          <!--                  style="width:380px;"-->
+          <!--              />-->
+          <!--            </a-form-item>-->
+          <!--          </a-input-group>-->
+
+          <a-form-item label="ເບີໂທ" name="receiverPhone">
             <a-input-group compact>
-              <a-select v-model:value="prefixPhone" class="custom-select">
+              <a-select v-model:value="prefixPhone" style="width: 80px;">
                 <a-select-option value="020">020</a-select-option>
                 <a-select-option value="030">030</a-select-option>
               </a-select>
               <a-input
                   v-model:value="receiverPhone"
-                  style="width: 410px;"
+                  :maxlength="8"
+                  style="width: 380px;"
                   placeholder="ເບີໂທ"
               />
             </a-input-group>
           </a-form-item>
+
           <a-form-item label="ທີ່ຢູ່ຜູ້ສົ່ງ" name="receiverAddress">
             <a-input placeholder="ທີ່ຢູ່ຜູ້ສົ່ງ" v-model:value="form.receiverAddress"/>
           </a-form-item>
@@ -147,9 +183,9 @@
         </a-form-item>
         <a-form-item label="ມູນຄ່າພັດສະດຸ" name="parcelWeight" v-if="codStatus">
           <a-input-number placeholder="ມູນຄ່າພັດສະດຸ"
-                   type="number" style="width: 100%"
-                   :min="0"
-                   :max="5" v-model:value="form.parcelPrice"/>
+                          type="number" style="width: 100%"
+                          :min="0"
+                          :max="5" v-model:value="form.parcelPrice"/>
         </a-form-item>
         <div class="flex items-center">
           <!-- Origin Branch Select -->
@@ -233,52 +269,53 @@
         </div>
       </div>
     </a-form>
-<!--    <ConfirmOrderModal-->
-<!--        v-model="isModalOpen"-->
-<!--        title="ເພີ່ມລາຍການພັດສະດຸss"-->
-<!--        @confirm="submitOrder"-->
-<!--    >-->
-<!--    </ConfirmOrderModal>-->
+    <!--    <ConfirmOrderModal-->
+    <!--        v-model="isModalOpen"-->
+    <!--        title="ເພີ່ມລາຍການພັດສະດຸss"-->
+    <!--        @confirm="submitOrder"-->
+    <!--    >-->
+    <!--    </ConfirmOrderModal>-->
 
-    <a-modal v-model:open="isModalOpen" :footer="null" title="ສ້າງບິນຂົນສົ່ງລ່ວງໜ້າ" centered :maskClosable="false" :closable="true">
+    <a-modal v-model:open="isModalOpen" :footer="null" title="ສ້າງບິນຂົນສົ່ງລ່ວງໜ້າ" centered :maskClosable="false"
+             :closable="true">
       <div class="divider"></div>
       <div class="p-2">
-      <div class="flex flex-col items-center text-center p-6">
-        <CheckCircleOutlined class="!text-green-600 text-5xl !mb-4"/>
-        <div class="flex items-center">
-          <!-- Origin Branch Select -->
+        <div class="flex flex-col items-center text-center p-6">
+          <CheckCircleOutlined class="!text-green-600 text-5xl !mb-4"/>
+          <div class="flex items-center">
+            <!-- Origin Branch Select -->
 
-          <p class="text-gray-500 text-sm">  {{ selectedOriginBranch?.label || '-' }}</p>
-          <!-- Centered Arrow Icon with Reduced Space -->
-          <div class="flex justify-center arrow-button">
-            <a-avatar size="default" class="custom-avatar !bg-red-500 flex items-center justify-center">
-              <ArrowRightOutlined class="text-white text-base"/>
-            </a-avatar>
+            <p class="text-gray-500 text-sm"> {{ selectedOriginBranch?.label || '-' }}</p>
+            <!-- Centered Arrow Icon with Reduced Space -->
+            <div class="flex justify-center arrow-button">
+              <a-avatar size="default" class="custom-avatar !bg-red-500 flex items-center justify-center">
+                <ArrowRightOutlined class="text-white text-base"/>
+              </a-avatar>
+            </div>
+
+            <!-- Destination Branch Select -->
+            <p class="text-gray-500 text-sm"> {{ selectedDestinationBranch?.label || '-' }}</p>
+          </div>
+          <div class="text-center">
+            <p class="text-gray-500 text-sm !my-2">ຄ່າຂົນສົ່ງ</p>
+            <p class="text-red-600 font-bold text-2xl">{{ preview.freight.toLocaleString() || '-' }} LAK</p>
           </div>
 
-          <!-- Destination Branch Select -->
-          <p class="text-gray-500 text-sm">  {{ selectedDestinationBranch?.label || '-' }}</p>
-        </div>
-        <div class="text-center">
-          <p class="text-gray-500 text-sm !my-2">ຄ່າຂົນສົ່ງ</p>
-          <p class="text-red-600 font-bold text-2xl">{{preview.freight.toLocaleString() || '-'}}  LAK</p>
-        </div>
+          <div class="dashed-line"></div>
+          <div class="space-y-2 flex justify-between">
+            <p>COD: </p>
+            <p class="mt-2 text-gray-700">0 %</p>
+          </div>
 
-        <div class="dashed-line"></div>
-        <div class="space-y-2 flex justify-between">
-          <p>COD: </p>
-          <p class="mt-2 text-gray-700">0 %</p>
-        </div>
-
-        <!-- Receive Date -->
-        <div class="mt-4 space-y-2 flex justify-between rounded-lg bg-gray-100">
-          <WarningOutlined class="text-center p-3"/>
-          <p class="p-3 text-gray-500 text-center">ທ່ານຈະໄດ້ຮັບເຄື່ອງພາຍໃນ</p>
-          <div class="p-3 font-semibold text-center">
-            2-5 ວັນ
+          <!-- Receive Date -->
+          <div class="mt-4 space-y-2 flex justify-between rounded-lg bg-gray-100">
+            <WarningOutlined class="text-center p-3"/>
+            <p class="p-3 text-gray-500 text-center">ທ່ານຈະໄດ້ຮັບເຄື່ອງພາຍໃນ</p>
+            <div class="p-3 font-semibold text-center">
+              2-5 ວັນ
+            </div>
           </div>
         </div>
-      </div>
         <a-button
             type="primary"
             block
@@ -297,7 +334,13 @@
 import {ref, onMounted, computed} from "vue";
 import {useManageOrderStore} from "@/stores/parcel/manageOrderStore";
 import {validationRules} from "@/utils/validationRules"; // Import validation rules
-import {EditOutlined, SaveOutlined, ArrowRightOutlined,CheckCircleOutlined,WarningOutlined} from "@ant-design/icons-vue";
+import {
+  EditOutlined,
+  SaveOutlined,
+  ArrowRightOutlined,
+  CheckCircleOutlined,
+  WarningOutlined
+} from "@ant-design/icons-vue";
 import {notification} from "ant-design-vue";
 import box_fill from "@/assets/icons/box-fill.svg";
 import {useUserStore} from "@/stores/useUserStore";
@@ -332,7 +375,7 @@ const form = ref({
 const codStatus = ref(false);
 const prefixPhone = ref<string>('020');
 const receiverPhone = ref<string>('');
-
+const validationRules = getValidationRules(() => prefixPhone.value);
 const documentType = ref([
   {value: "A3", label: "A3"},
   {value: "A4", label: "A4"},
@@ -350,7 +393,8 @@ const selectedOriginBranch = computed(() => {
   return manageOrderStore.destinationBranches.find(
       (branch) => branch.value === form.value.originBranchValue
   );
-});const selectedDestinationBranch = computed(() => {
+});
+const selectedDestinationBranch = computed(() => {
   return manageOrderStore.destinationBranches.find(
       (branch) => branch.value === form.value.destinationBranchValue
   );
@@ -362,7 +406,7 @@ const filterOptionCategory = (input: string, option: any) => {
   return option.label.toLowerCase().includes(input.toLowerCase());
 };
 const parcelTypeChange = (value) => {
-  if(value.target.value){
+  if (value.target.value) {
     form.value.parcelType = value.target.value;
   } else {
     form.value.parcelType.value = 'parcel';
@@ -429,32 +473,32 @@ const submitForm = async () => {
     }
   }
 };
-const submitOrder = async () =>{
+const submitOrder = async () => {
   try {
-      const orderData = {
-        sender_branch_id: form.value.originBranchValue,
-        receive_branch_id: form.value.destinationBranchValue,
-        receiver: {
-          full_name: form.value.receiverName,
-          phone_number: `${receiverPhone.value}`,
-          location: form.value.receiverAddress,
-        },
-        payment_gateway: 'BCEL_ONE',
-        shipment_pay_type: form.value.shipmentPayType,
-        shipment_type: "express",
-        parcel_type: form.value.parcelType,
-        pieces: 1,
-        parcels: [
-          {
-            size: null,
-            category_id: form.value.parcelCategoryValue,
-            dimension_length: JSON.parse(form.value.parcelDimensions),
-            weight: JSON.parse(form.value.weight),
-            price: form.value.parcelPrice,
-            insurance_price: form.value.insuranceValue ? form.value.insuranceValue : null,
-            freight: JSON.parse(manageOrderStore.packages.freight)
-          }
-        ]
+    const orderData = {
+      sender_branch_id: form.value.originBranchValue,
+      receive_branch_id: form.value.destinationBranchValue,
+      receiver: {
+        full_name: form.value.receiverName,
+        phone_number: `${receiverPhone.value}`,
+        location: form.value.receiverAddress,
+      },
+      payment_gateway: 'BCEL_ONE',
+      shipment_pay_type: form.value.shipmentPayType,
+      shipment_type: "express",
+      parcel_type: form.value.parcelType,
+      pieces: 1,
+      parcels: [
+        {
+          size: null,
+          category_id: form.value.parcelCategoryValue,
+          dimension_length: JSON.parse(form.value.parcelDimensions),
+          weight: JSON.parse(form.value.weight),
+          price: form.value.parcelPrice,
+          insurance_price: form.value.insuranceValue ? form.value.insuranceValue : null,
+          freight: JSON.parse(manageOrderStore.packages.freight)
+        }
+      ]
     }
     const result = await manageOrderStore.createOrder(orderData);
     notification.success({
@@ -462,8 +506,8 @@ const submitOrder = async () =>{
       description: `Order ${result.shipment_number} created successfully!`,
       duration: 3
     });
-    isModalOpen.value= false;
-  } catch (error){
+    isModalOpen.value = false;
+  } catch (error) {
     if (error.response?.data) {
       // Extract message from response
       const errorMessage = error.response.data.message || "ກະລຸນາກວດຄືນຂໍ້ມູນຂອງທ່ານ";
@@ -500,9 +544,9 @@ const combinedPhone = computed(() => {
   return '';
 });
 onMounted(async () => {
-   await manageOrderStore.fetchFilterBranch();
-     await manageOrderStore.fetchOriginBranch();
-     await manageOrderStore.fetchParcelCategory();
+      await manageOrderStore.fetchFilterBranch();
+      await manageOrderStore.fetchOriginBranch();
+      await manageOrderStore.fetchParcelCategory();
     }
 )
 </script>

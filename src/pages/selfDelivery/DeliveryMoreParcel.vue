@@ -262,7 +262,6 @@ const submitForm = async () => {
       placement: "topRight", // Show at top right
       duration: 5, // Auto close in 5 seconds
     });
-    console.log("Form Data:", form.value);
   } catch (error) {
     notification.error({
       message: "ຜິດພາດ!",
@@ -282,9 +281,6 @@ const deleteItem = () => {
 }
 const viewDetails = (record: any) => {
   isModalOpen.value = true;
-};
-const onConfirm = () => {
-  console.log('Confirmed!');
 };
 </script>
 

@@ -51,8 +51,7 @@ export const useManageOrderStore = defineStore('manageOrderStore', {
                 if (response.data && !response.data.error) {
                     this.provinces = response.data.provinces,
                         this.districts = response.data.districts;
-                    this.villages = response.data.villages,
-                        console.log(this.provinces);
+                    this.villages = response.data.villages;
                 }
             } catch (error) {
                 throw error;
@@ -113,7 +112,6 @@ export const useManageOrderStore = defineStore('manageOrderStore', {
                 if (response.data && !response.data.error) {
                     //show data
                     this.packages = response.data;
-                    console.log("Freight Calculation Result:", this.packages);
                     return response.data;
                 }
             } catch (error) {
@@ -125,11 +123,9 @@ export const useManageOrderStore = defineStore('manageOrderStore', {
         },
 // Create preorder
         async createOrder(orderData: any) {
-            console.log(orderData)
             try {
                 const response = await api.post('/v1/auth/users/me/shipments/orders/store', orderData);
                 if (response.data) {
-                    console.log('Order created:', response.data);
                     this.orderData = response.data;
                     return response.data;
                 }

@@ -36,11 +36,13 @@
           <a-form-item label="ເບີໂທ" class="!pl-2" name="combinedPhone">
             <a-input-group compact>
               <a-select v-model:value="prefixPhone" class="custom-select-phone">
-                <a-select-option value="Sign Up">020</a-select-option>
-                <a-select-option value="Sign In">030</a-select-option>
+                <a-select-option value="020">020</a-select-option>
+                <a-select-option value="030">030</a-select-option>
               </a-select>
               <a-input
                   v-model:value="receiverPhone"
+                  type="tel"
+                  :maxlength="8"
                   style="width:190px;"
                   placeholder="ເບີໂທ"
               />
@@ -166,7 +168,7 @@
                             :min="0"
                             :max="1000"
                             style="width: 100%"
-                            v-model:value="form.weight" @keydown.enter="calculateFreight"/>
+                            v-model:value="form.weight" @keydown.enter="calculateFreight"  @change="calculateFreight"/>
           </a-form-item>
           <div class="" v-if="preview.freight">
             <p class="text-red-600 font-bold text-2xl">ຄ່າຂົນສົ່ງ: {{ preview.freight.toLocaleString() || '-' }} LAK</p>
@@ -182,61 +184,63 @@
         <a-button type="primary" class="export-button w-full" @click="submitOrder">ເພີ່ມບິນ</a-button>
       </div>
     </template>
-    <a-modal v-model:open="isModalOpen" :footer="null" title="ສ້າງບິນຂົນສົ່ງລ່ວງໜ້າ" centered :maskClosable="false"
-             :closable="true">
-      <div class="divider"></div>
-      <div class="p-2">
-        <div class="flex flex-col items-center text-center p-6">
-          <CheckCircleOutlined class="!text-green-600 text-5xl !mb-4"/>
-          <div class="flex items-center">
-            <!-- Origin Branch Select -->
+<!--Notify Success Orders-->
+<!--    <a-modal v-model:open="isModalOpen" :footer="null" title="ສ້າງບິນຂົນສົ່ງລ່ວງໜ້າ" centered :maskClosable="false"-->
+<!--             :closable="true">-->
+<!--      <div class="divider"></div>-->
+<!--      <div class="p-2">-->
+<!--        <div class="flex flex-col items-center text-center p-6">-->
+<!--          <CheckCircleOutlined class="!text-green-600 text-5xl !mb-4"/>-->
+<!--          <div class="flex items-center">-->
+<!--            &lt;!&ndash; Origin Branch Select &ndash;&gt;-->
 
-            <p class="text-gray-500 text-sm"> {{ selectedOriginBranch?.label || '-' }}</p>
-            <!-- Centered Arrow Icon with Reduced Space -->
-            <div class="flex justify-center arrow-button">
-              <a-avatar size="default" class="custom-avatar !bg-red-500 flex items-center justify-center">
-                <ArrowRightOutlined class="text-white text-base"/>
-              </a-avatar>
-            </div>
+<!--            <p class="text-gray-500 text-sm"> {{ selectedOriginBranch?.label || '-' }}</p>-->
+<!--            &lt;!&ndash; Centered Arrow Icon with Reduced Space &ndash;&gt;-->
+<!--            <div class="flex justify-center arrow-button">-->
+<!--              <a-avatar size="default" class="custom-avatar !bg-red-500 flex items-center justify-center">-->
+<!--                <ArrowRightOutlined class="text-white text-base"/>-->
+<!--              </a-avatar>-->
+<!--            </div>-->
 
-            <!-- Destination Branch Select -->
-            <p class="text-gray-500 text-sm"> {{ selectedDestinationBranch?.label || '-' }}</p>
-          </div>
-          <div class="text-center">
-            <p class="text-gray-500 text-sm !my-2">ຄ່າຂົນສົ່ງ</p>
-            <p class="text-red-600 font-bold text-2xl">{{ preview.freight.toLocaleString() || '-' }} LAK</p>
-          </div>
+<!--            &lt;!&ndash; Destination Branch Select &ndash;&gt;-->
+<!--            <p class="text-gray-500 text-sm"> {{ selectedDestinationBranch?.label || '-' }}</p>-->
+<!--          </div>-->
+<!--          <div class="text-center">-->
+<!--            <p class="text-gray-500 text-sm !my-2">ຄ່າຂົນສົ່ງ</p>-->
+<!--            <p class="text-red-600 font-bold text-2xl">{{ preview.freight.toLocaleString() || '-' }} LAK</p>-->
+<!--          </div>-->
 
-          <div class="dashed-line"></div>
-          <div class="space-y-2 flex justify-between">
-            <p>COD: </p>
-            <p class="mt-2 text-gray-700">0 %</p>
-          </div>
+<!--          <div class="dashed-line"></div>-->
+<!--          <div class="space-y-2 flex justify-between">-->
+<!--            <p>COD: </p>-->
+<!--            <p class="mt-2 text-gray-700">0 %</p>-->
+<!--          </div>-->
 
-          <!-- Receive Date -->
-          <div class="mt-4 space-y-2 flex justify-between rounded-lg bg-gray-100">
-            <WarningOutlined class="text-center p-3"/>
-            <p class="p-3 text-gray-500 text-center">ທ່ານຈະໄດ້ຮັບເຄື່ອງພາຍໃນ</p>
-            <div class="p-3 font-semibold text-center">
-              2-5 ວັນ
-            </div>
-          </div>
-        </div>
-        <a-button
-            type="primary"
-            block
-            class="!mt-6 !bg-red-600 !text-white !text-lg w-full !h-10"
-            @click="submitOrder"
-        >
-          ຢືນຢັນສ້າງບິນ
-        </a-button>
-      </div>
-    </a-modal>
+<!--          &lt;!&ndash; Receive Date &ndash;&gt;-->
+<!--          <div class="mt-4 space-y-2 flex justify-between rounded-lg bg-gray-100">-->
+<!--            <WarningOutlined class="text-center p-3"/>-->
+<!--            <p class="p-3 text-gray-500 text-center">ທ່ານຈະໄດ້ຮັບເຄື່ອງພາຍໃນ</p>-->
+<!--            <div class="p-3 font-semibold text-center">-->
+<!--              2-5 ວັນ-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--        <a-button-->
+<!--            type="primary"-->
+<!--            block-->
+<!--            class="!mt-6 !bg-red-600 !text-white !text-lg w-full !h-10"-->
+<!--            @click="submitOrder"-->
+<!--        >-->
+<!--          ຢືນຢັນສ້າງບິນ-->
+<!--        </a-button>-->
+<!--      </div>-->
+<!--    </a-modal>-->
+
   </a-drawer>
 </template>
 
 <script setup lang="ts">
-import {CloseOutlined, ArrowRightOutlined} from '@ant-design/icons-vue';
+import {CloseOutlined} from '@ant-design/icons-vue';
 import {computed, onMounted, ref} from "vue";
 import {notification} from "ant-design-vue";
 import {validationRules} from "@/utils/validationRules";
@@ -500,6 +504,15 @@ const submitOrder = async () => {
   }
 }
 
+const debouncedFreight = debounce(async () => {
+  if (searchQuery.value.trim()) {
+    await inboundStore.fetchInboundData({
+      status: 'arrived_status',
+      query: searchQuery.value.trim(),
+    });
+  }
+}, 300);
+
 const combinedPhone = computed(() => {
   if (receiverPhone.value) {
     return `${prefixPhone.value}${receiverPhone.value}`;
@@ -531,6 +544,7 @@ const resetForm = () => {
     parcelPrice: "",
   };
   receiverPhone.value = '';
+  preview.value = '',
   notification.success({
     message: "Success!",
     description: "Form has been cleared.",
