@@ -2,7 +2,7 @@ name: 🚀 Frontend Deploy to DigitalOcean
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
 
 jobs:
   deploy:
@@ -44,3 +44,9 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             nginx -t && systemctl reload nginx
+      - name: ♻️ Cache node_modules
+  uses: actions/cache@v3
+  with:
+    path: node_modules
+    key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+
