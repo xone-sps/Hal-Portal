@@ -77,7 +77,7 @@
 <script setup lang="ts">
 import {ref, inject} from "vue";
 import {LockOutlined, PhoneOutlined} from "@ant-design/icons-vue";
-import brandImage from "@/assets/images/brandimage.jpeg";
+import brandImage from "@/assets/images/brandImage.jpg";
 import logo from "@/assets/images/logo.png";
 import {validationRules} from "@/utils/validationRules";
 import {useUserStore} from '@/stores/useUserStore';
