@@ -21,8 +21,11 @@ jobs:
       - name: 📦 Install dependencies
         run: npm install
 
-      - name: 🛠️ Build project
-        run: npm run build -- --mode production
+      - name: 🛠️ Build project with production env
+        run: |
+          echo "Loaded .env.production:"
+          cat .env.production
+          NODE_ENV=production npm run build -- --mode production
 
       - name: 📂 Deploy to DigitalOcean via SSH
         uses: appleboy/scp-action@v0.1.6
