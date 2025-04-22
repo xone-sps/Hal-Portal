@@ -22,7 +22,7 @@ jobs:
         run: npm install
 
       - name: 🛠️ Build project
-        run: npm run build
+        run: npm run build -- --mode production
 
       - name: 📂 Deploy to DigitalOcean via SSH
         uses: appleboy/scp-action@v0.1.6
