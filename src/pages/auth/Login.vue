@@ -75,7 +75,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, inject} from "vue";
+import {ref, inject, onMounted} from "vue";
 import {LockOutlined, PhoneOutlined} from "@ant-design/icons-vue";
 import brandImage from "@/assets/images/brandImage.jpg";
 import logo from "@/assets/images/logo.png";
@@ -118,6 +118,9 @@ const onSubmit = async () => {
     loading.value = false;
   }
 };
+onMounted(()=>{
+  console.log('✅ BASE API URL:', import.meta.env.VITE_BASE_API_URL);
+})
 
 </script>
 
