@@ -7,10 +7,10 @@ const api = axios.create({
 
 export const apiUrl = import.meta.env.VITE_BASE_API_URL;
 
-// Token refreshing logic...
-// 👇 Already correct in your code, so keep it here
+// Token refresh logic
 let isRefreshing = false;
 let failedQueue: any[] = [];
+
 const processQueue = (error: any, token: string | null = null) => {
     failedQueue.forEach(prom => {
         if (token) {
@@ -22,7 +22,8 @@ const processQueue = (error: any, token: string | null = null) => {
     failedQueue = [];
 };
 
-axios.interceptors.request.use(
+// ✅ Use the api instance here instead of axios
+api.interceptors.request.use(
     (config) => {
         const userStore = useUserStore();
         if (userStore.token) {
@@ -33,7 +34,7 @@ axios.interceptors.request.use(
     (error) => Promise.reject(error)
 );
 
-axios.interceptors.response.use(
+api.interceptors.response.use(
     (response) => response,
     async (error) => {
         const originalRequest = error.config;
@@ -46,7 +47,7 @@ axios.interceptors.response.use(
                         failedQueue.push({ resolve, reject });
                     });
                     originalRequest.headers['Authorization'] = `Bearer ${newToken}`;
-                    return axios(originalRequest);
+                    return api(originalRequest); // 🔄 retry with api instance
                 } catch (err) {
                     return Promise.reject(err);
                 }
@@ -60,7 +61,7 @@ axios.interceptors.response.use(
                 if (success) {
                     originalRequest.headers['Authorization'] = `Bearer ${userStore.token}`;
                     processQueue(null, userStore.token);
-                    return axios(originalRequest);
+                    return api(originalRequest);
                 } else {
                     processQueue(new Error('Refresh token failed'));
                     return Promise.reject(error);
@@ -76,4 +77,5 @@ axios.interceptors.response.use(
         return Promise.reject(error);
     }
 );
+
 export { api };
