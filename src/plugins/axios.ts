@@ -4,7 +4,6 @@ import { useUserStore } from '@/stores/useUserStore';
 const api = axios.create({
     baseURL: import.meta.env.VITE_BASE_API_URL,
 });
-
 export const apiUrl = import.meta.env.VITE_BASE_API_URL;
 
 // Token refresh logic

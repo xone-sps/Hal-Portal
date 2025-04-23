@@ -9,5 +9,5 @@ export default defineConfig({
       '@': path.resolve(__dirname, 'src'), // ✅ absolute path
     },
   },
-  envPrefix: 'VITE_', // ✅ Make sure VITE_ prefix is set
+  envPrefix: 'VITE_',
 });
