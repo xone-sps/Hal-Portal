@@ -134,7 +134,6 @@
   <AddAddressSenderModal
       v-model="isModalOpen"
       title="ເພີ່ມລາຍການພັດສະດຸ"
-      @confirm="onConfirm"
   >
   </AddAddressSenderModal>
 

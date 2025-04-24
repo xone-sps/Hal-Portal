@@ -57,7 +57,7 @@
         </div>
 
         <div class="grid grid-cols-2 md:grid-cols-2 mt-4">
-          <a-form-item label="ຊື່" name="receiverName">
+          <a-form-item label="ຊື່" name="receiverName" class="!mr-2">
             <a-input placeholder="ຊື່ຜູ້ສົ່ງ" v-model:value="form.receiverName"/>
           </a-form-item>
           <!--          <a-form-item label="ເບີໂທ" class="!pl-2" name="combinedPhone">-->
@@ -94,16 +94,36 @@
           <!--            </a-form-item>-->
           <!--          </a-input-group>-->
 
+<!--          <a-form-item label="ເບີໂທ" name="receiverPhone">-->
+<!--            <a-input-group compact>-->
+<!--              <a-select v-model:value="prefixPhone" style="width: 80px;">-->
+<!--                <a-select-option value="020">020</a-select-option>-->
+<!--                <a-select-option value="030">030</a-select-option>-->
+<!--              </a-select>-->
+<!--              <a-input-->
+<!--                  v-model:value="receiverPhone"-->
+<!--                  :maxlength="8"-->
+<!--                  style="width: 380px;"-->
+<!--                  placeholder="ເບີໂທ"-->
+<!--              />-->
+<!--            </a-input-group>-->
+<!--          </a-form-item>-->
+
           <a-form-item label="ເບີໂທ" name="receiverPhone">
             <a-input-group compact>
-              <a-select v-model:value="prefixPhone" style="width: 80px;">
-                <a-select-option value="020">020</a-select-option>
-                <a-select-option value="030">030</a-select-option>
-              </a-select>
+              <!-- ASelect OUTSIDE of validation scope -->
+              <a-form-item-rest>
+                <a-select v-model:value="prefixPhone" style="width: 80px;">
+                  <a-select-option value="020">020</a-select-option>
+                  <a-select-option value="030">030</a-select-option>
+                </a-select>
+              </a-form-item-rest>
+
+              <!-- AInput INSIDE the validation form-item -->
               <a-input
                   v-model:value="receiverPhone"
                   :maxlength="8"
-                  style="width: 380px;"
+                  style="width: 195px;"
                   placeholder="ເບີໂທ"
               />
             </a-input-group>
@@ -343,6 +363,7 @@ import {
 import {notification} from "ant-design-vue";
 import box_fill from "@/assets/icons/box-fill.svg";
 import {useUserStore} from "@/stores/useUserStore";
+import {validationRules} from "@/utils/validationRules";
 
 const userStore = useUserStore();
 const profile = computed(() => userStore.user);
@@ -374,7 +395,7 @@ const form = ref({
 const codStatus = ref(false);
 const prefixPhone = ref<string>('020');
 const receiverPhone = ref<string>('');
-const validationRules = getValidationRules(() => prefixPhone.value);
+// const validationRules = getValidationRules(() => prefixPhone.value);
 const documentType = ref([
   {value: "A3", label: "A3"},
   {value: "A4", label: "A4"},

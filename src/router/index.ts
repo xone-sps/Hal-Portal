@@ -149,13 +149,13 @@ const routes = [
                         path: "one-parcel", // ✅ Correct relative path
                         name: "one-parcel",
                         component: SelfDelivery,
-                        meta: {requiresAuth: true, title: "ຝາກເຄື່ອງເອງ - ສົ່ງ 1 ຊິ້ນ", description: "" },
+                        meta: {requiresAuth: true, title: "ຝາກເຄື່ອງເອງ", description: "" },
                     },
                     {
                         path: "multiple-parcel", // ✅ Correct relative path
                         name: "multiple-parcel",
                         component: DeliveryMoreParcel,
-                        meta: {requiresAuth: true, title: "ຝາກເຄື່ອງເອງ - ສົ່ງຫຼາຍຊິ້ນ", description: "" },
+                        meta: {requiresAuth: true, title: "ຝາກເຄື່ອງເອງ - ຝາກຫຼາຍພັດສະດຸ", description: "" },
                     },
                     {
                         path: "my-parcel", // ✅ Correct relative path

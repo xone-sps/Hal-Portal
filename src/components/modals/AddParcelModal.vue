@@ -30,24 +30,46 @@
         </div>
 
         <div class="grid grid-cols-2 md:grid-cols-2 mt-1">
-          <a-form-item label="ຊື່" name="receiverName">
+          <a-form-item label="ຊື່" name="receiverName" class="!mr-2">
             <a-input placeholder="ຊື່ຜູ້ສົ່ງ" v-model:value="form.receiverName"/>
           </a-form-item>
-          <a-form-item label="ເບີໂທ" class="!pl-2" name="combinedPhone">
+
+          <a-form-item label="ເບີໂທ" name="receiverPhone">
             <a-input-group compact>
-              <a-select v-model:value="prefixPhone" class="custom-select-phone">
-                <a-select-option value="020">020</a-select-option>
-                <a-select-option value="030">030</a-select-option>
-              </a-select>
+              <!-- ASelect OUTSIDE of validation scope -->
+              <a-form-item-rest>
+                <a-select v-model:value="prefixPhone" style="width: 80px;">
+                  <a-select-option value="020">020</a-select-option>
+                  <a-select-option value="030">030</a-select-option>
+                </a-select>
+              </a-form-item-rest>
+
+              <!-- AInput INSIDE the validation form-item -->
               <a-input
                   v-model:value="receiverPhone"
-                  type="tel"
                   :maxlength="8"
-                  style="width:190px;"
+                  style="width: 195px;"
                   placeholder="ເບີໂທ"
               />
             </a-input-group>
           </a-form-item>
+
+<!--          <a-form-item label="ເບີໂທ" class="!pl-2" name="combinedPhone">-->
+<!--            <a-input-group compact>-->
+<!--              <a-select v-model:value="prefixPhone" class="custom-select-phone">-->
+<!--                <a-select-option value="020">020</a-select-option>-->
+<!--                <a-select-option value="030">030</a-select-option>-->
+<!--              </a-select>-->
+<!--              <a-input-->
+<!--                  v-model:value="receiverPhone"-->
+<!--                  type="tel"-->
+<!--                  :maxlength="8"-->
+<!--                  style="width:190px;"-->
+<!--                  placeholder="ເບີໂທ"-->
+<!--              />-->
+<!--            </a-input-group>-->
+<!--          </a-form-item>-->
+
         </div>
         <a-form-item label="ທີ່ຢູ່ຜູ້ສົ່ງ" name="receiverAddress">
           <a-input placeholder="ທີ່ຢູ່ຜູ້ສົ່ງ" v-model:value="form.receiverAddress"/>
@@ -477,7 +499,7 @@ const submitOrder = async () => {
   } catch (error) {
     if (error.response?.data) {
       // Extract message from response
-      const errorMessage = error.response.data.message || "ກະລຸນາກວດຄືນຂໍ້ມູນຂອງທ່ານ";
+      const errorMessage = error.response.data.message || "ກະລຸນາຕື່ມຂໍ້ມູນ";
       // Extract validation errors
       const validationErrors = Object.values(error.response.data.errors || {})
           .flat()
@@ -496,7 +518,7 @@ const submitOrder = async () => {
       // Fallback message if no response is available
       notification.error({
         message: "ຜິດພາດ!",
-        description: "ກະລຸນາກວດຄືນຂໍ້ມູນຂອງທ່ານ",
+        description: "ກະລຸນາຕື່ມຂໍ້ມູນຂອງທ່ານ",
         placement: "topRight",
         duration: 5,
       });
