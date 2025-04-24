@@ -20,11 +20,11 @@ jobs:
 
       - name: 📦 Install dependencies
         run: npm install
-      - name: 📝 Create .env.production
-        run: |
-          echo "NODE_ENV=production" > .env.production
-          echo "VITE_BASE_URL=${{ secrets.VITE_BASE_URL }}" >> .env.production
-          echo "VITE_BASE_API_URL=${{ secrets.VITE_BASE_API_URL }}" >> .env.production
+      # - name: 📝 Create .env.production
+      #   run: |
+      #     echo "NODE_ENV=production" > .env.production
+      #     echo "VITE_BASE_URL=${{ secrets.VITE_BASE_URL }}" >> .env.production
+      #     echo "VITE_BASE_API_URL=${{ secrets.VITE_BASE_API_URL }}" >> .env.production
       - name: 🛠️ Build project
         run: npm run build -- --mode production
 
