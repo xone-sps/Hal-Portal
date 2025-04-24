@@ -26,7 +26,7 @@ jobs:
           echo "VITE_BASE_URL=${{ secrets.VITE_BASE_URL }}" >> .env.production
           echo "VITE_BASE_API_URL=${{ secrets.VITE_BASE_API_URL }}" >> .env.production
       - name: 🛠️ Build project
-        run: npm run build -- --mode production
+        run: npm vite build -- --mode production
 
       - name: 📂 Deploy to DigitalOcean via SSH
         uses: appleboy/scp-action@v0.1.6
