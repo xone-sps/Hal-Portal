@@ -18,6 +18,8 @@ export const useInboundParcelStore = defineStore('inboundStore', {
             pageSize: 50,     // ✅ Add pageSize
             totalItems: 0,
         },
+        startDate: dayjs().subtract(3, "month") as Dayjs | null, // ✅ Initialize as Dayjs object
+        endDate: dayjs() as Dayjs | null, // ✅ Initialize as Dayjs object
     }),
     actions: {
         // ✅ Add cursor as a parameter and set a default value

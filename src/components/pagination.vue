@@ -1,36 +1,41 @@
 <template>
-  <div class="flex justify-content-between align-items-center">
-    <!-- Previous Button -->
-<!--    <p class="!mr-2 flex !my-auto">ສະແດງ {{pagination.currentPage}} - {{pagination.pageSize}} ຈາກ {{pagination.totalItems}} ລາຍການ</p>-->
-    <a-button
-        :disabled="pagination.prevPageUrl == null"
-        class="p-button-sm btn-pre !mr-1"
-        @click="changePage(pagination.prevPageUrl)"
-    >
-    <LeftOutlined/>
-    </a-button>
+  <!-- Pagination Info -->
+  <!-- <p class="!mr-2 flex !my-auto">ສະແດງ {{ pagination.currentPage }} - {{ pagination.pageSize }} ຈາກ {{ pagination.totalItems }} ລາຍການ</p> -->
 
-    <!-- Next Button -->
-    <a-button
-        :disabled="pagination.nextPageUrl == null"
-        class="btn-next p-button-sm p-button-secondary"
-        @click="changePage(pagination.nextPageUrl)"
-    >
-   <RightOutlined/>
-    </a-button>
-  </div>
+  <!-- Previous Button -->
+  <a-button
+    :disabled="pagination.prevPageUrl == null"
+    class="p-button-sm btn-pre !mr-1"
+    @click="changePage(pagination.prevPageUrl)"
+  >
+    <LeftOutlined />
+  </a-button>
+
+  <!-- Next Button -->
+  <a-button
+    :disabled="pagination.nextPageUrl == null"
+    class="btn-next p-button-sm p-button-secondary"
+    @click="changePage(pagination.nextPageUrl)"
+  >
+    <RightOutlined />
+  </a-button>
 </template>
 
 <script setup>
-import { defineEmits, defineProps } from "vue";
-import { LeftOutlined, RightOutlined } from '@ant-design/icons-vue';
+import { LeftOutlined, RightOutlined } from "@ant-design/icons-vue";
 
-const emit = defineEmits();
-
+// Define props
 const props = defineProps({
-  pagination: Object
+  pagination: {
+    type: Object,
+    required: true,
+  },
 });
 
+// Define emits
+const emit = defineEmits(["paginate"]);
+
+// Change page function
 function changePage(page) {
   if (page) {
     const pattern = "cursor=";
@@ -39,12 +44,3 @@ function changePage(page) {
   }
 }
 </script>
-
-<style scoped lang="scss">
-.btn-next, .btn-pre {
-  //height: 25px;
-  //border-radius: 30px;
-  border: none;
-  box-shadow: none;
-}
-</style>

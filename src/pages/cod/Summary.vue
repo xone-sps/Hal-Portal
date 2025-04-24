@@ -119,7 +119,7 @@ const columns = [
     dataIndex: 'paid',
     customRender: ({ text }: { text: number }) => `${text.toLocaleString()} ກີບ`
   },
-  { title: "ສາຂາຕົ້ນທາງ", dataIndex: "senderBranch", key: "senderBranch" },
+  // { title: "ສາຂາຕົ້ນທາງ", dataIndex: "senderBranch", key: "senderBranch" },
   { title: "ສາຂາປາຍທາງ", dataIndex: ["shipment","end_branch","name"], key: "end_branch" },
   { title: "ຜູ້ຝາກ", dataIndex: ['shipment', 'sender_customer', 'account_name'], key: "sender" },
   { title: "ວັນທີສົ່ງບິນ", dataIndex: ["shipment","start_date_actual"], key: "date" },

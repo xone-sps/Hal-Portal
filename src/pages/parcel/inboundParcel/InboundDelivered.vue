@@ -9,10 +9,12 @@
               placeholder="ມື້ເລີ່ມຕົ້ນ" class="!mr-3"
               style="width: 200px;"
               format="DD-MM-YYYY"
+                  :disabled-date="disableStartDate"
           />
           <a-date-picker v-model:value="endDate" placeholder="ມື້ສິ້ນສຸດ" class="!mr-3"
                          style="width: 200px;"
-                         format="DD-MM-YYYY"/>
+                         format="DD-MM-YYYY"
+                         :disabled-date="disableEndDate"/>
           <a-button type="primary" class="search-button !text-white !mr-4" @click="handleSearch">
             ຄົ້ນຫາ
           </a-button>
@@ -98,6 +100,21 @@ const columns = [
   },
 ];
 
+// Disable dates for the Start Date picker
+const disableStartDate = (current: Date) => {
+  if (!endDate.value) {
+    return false; // If no endDate is selected, allow all dates
+  }
+  return current > new Date(endDate.value); // Disable dates after the selected endDate
+};
+
+// Disable dates for the End Date picker
+const disableEndDate = (current: Date) => {
+  if (!startDate.value) {
+    return false; // If no startDate is selected, allow all dates
+  }
+  return current < new Date(startDate.value); // Disable dates before the selected startDate
+};
 
 // Function to handle row detail view
 const viewDetails = (trackingId: string) => {

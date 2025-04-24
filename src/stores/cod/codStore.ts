@@ -3,7 +3,7 @@ import {api} from '@/plugins/axios.ts';
 import {ref} from "vue";
 import dayjs,{Dayjs} from "dayjs";
 
-export const useCodStore = defineStore('cod', {
+export const useCodStore = defineStore('codStore', {
     state: () => ({
         totalQty:0,
         codSummary: 0,
@@ -21,8 +21,8 @@ export const useCodStore = defineStore('cod', {
             pageSize: 25,     // ✅ Add pageSize
             totalItems: 0,
         },
-         startDate: ref<Dayjs>(dayjs().subtract(3, 'month')),
-         endDate: ref<Dayjs>(dayjs()),
+        startDate: dayjs().subtract(3, "month") as Dayjs | null, // ✅ Initialize as Dayjs object
+        endDate: dayjs() as Dayjs | null, // ✅ Initialize as Dayjs object
     }),
     actions: {
         // ✅ Add cursor as a parameter and set a default value
@@ -58,14 +58,14 @@ export const useCodStore = defineStore('cod', {
                 this.loading = false;
             }
         },
-        async fetchCodStatusData(status: string,cursor = '') {
+        async fetchCodStatusData({status='',cursor='',}={}) {
             this.loading = true;
             try {
                 const response = await api.get('/cod/shipment/owner/list', {
                     params: {
                         status:status,
-                        start_date: dayjs(this.startDate).format('YYYY-MM-DD'),
-                        end_date: dayjs(this.endDate).format('YYYY-MM-DD'),
+                        start_date:dayjs(this.startDate).format('YYYY-MM-DD'),
+                        end_date:dayjs(this.endDate).format('YYYY-MM-DD'),
                         use_cursor: true,
                         cursor,
                         per_page: this.pagination.pageSize,
@@ -74,18 +74,19 @@ export const useCodStore = defineStore('cod', {
                 });
 
                 if (response.data && !response.data.error) {
+                    console.log(response.data)
                     const data = response.data.data;
                     // this.totalQty = data.total_qty;
                     // this.codSummary = data.total_price;
                     // this.codFee = data.cod_fee;
                     // this.transferFee = data.transfer_fee;
                     // this.cod_fee_percent = data.cod_fee_percent;
-                    this.codListStatus = data.data;
+                    this.codListStatus = data?.data;
                     // ✅ Update Pagination State
-                    this.pagination.nextPageUrl = data.next_page_url || null;
-                    this.pagination.prevPageUrl = data.prev_page_url || null;
+                    this.pagination.nextPageUrl = data?.next_page_url || null;
+                    this.pagination.prevPageUrl = data?.prev_page_url || null;
                     this.pagination.cursor = cursor;
-                    this.pagination.totalItems = data.total_qty;
+                    this.pagination.totalItems = data?.total_qty;
                     console.log(data)
                 }
             } catch (error) {
@@ -97,12 +98,12 @@ export const useCodStore = defineStore('cod', {
 
         async searchQuery (){
             if(this.startDate != null && this.endDate != null){
-                this.fetchCodStatusData();
+                this.fetchCodStatusData({status:'success'});
             }
         },
         async clearSearch (){
-            this.startDate = '';
-            this.endDate = '';
+            this.startDate = null;
+            this.endDate = null;
         },
         // ✅ Next Page
         // async fetchNextPage() {

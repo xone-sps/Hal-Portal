@@ -14,7 +14,7 @@
 </template>
 
 <script setup>
-import {defineEmits, defineProps, h} from 'vue';
+import {h} from 'vue';
 import {LeftOutlined, RightOutlined} from '@ant-design/icons-vue';
 
 const emit = defineEmits();

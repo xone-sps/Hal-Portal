@@ -10,4 +10,13 @@ export default defineConfig({
     },
   },
   envPrefix: 'VITE_',
+  ...{
+    "compilerOptions": {
+      "baseUrl": ".",
+      "paths": {
+        "@/*": ["src/*"] // Map "@" to the "src" directory
+      }
+    },
+    "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"]
+  },
 });

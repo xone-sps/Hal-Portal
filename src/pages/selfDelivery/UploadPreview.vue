@@ -218,7 +218,7 @@
 </template>
 
 <script setup>
-import {computed, defineEmits, defineProps, onBeforeUnmount, onMounted, onUnmounted, ref, watch} from "vue";
+import {computed, onBeforeUnmount, onMounted, onUnmounted, ref, watch} from "vue";
 import {useImportExcelStore} from "@/stores/parcel/useImportExcelStore";
 import {Modal, notification, message} from 'ant-design-vue';
 import {CloseOutlined, FileSearchOutlined, DeleteOutlined,CopyOutlined,CheckOutlined} from "@ant-design/icons-vue";

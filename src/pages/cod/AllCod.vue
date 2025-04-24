@@ -1,6 +1,10 @@
 <template>
   <div>
-    <a-tabs v-model:activeKey="activeTab" class="mb-4" @change="handleTabChange">
+    <a-tabs
+      v-model:activeKey="activeTab"
+      class="mb-4"
+      @change="handleTabChange"
+    >
       <a-tab-pane key="summary" tab="ສະຫຼຸບຍອດ COD" />
       <a-tab-pane key="pending" tab="ລໍຖ້າການໂອນ" />
       <a-tab-pane key="completed" tab="ໂອນສຳເລັດ" />
@@ -19,26 +23,28 @@ const route = useRoute();
 const router = useRouter();
 
 const activeTab = ref(
-    route.path.includes("pending")
-        ? "pending"
-        : route.path.includes("completed")
-            ? "completed"
-            : "summary"
+  route.path.includes("pending")
+    ? "pending"
+    : route.path.includes("completed")
+    ? "completed"
+    : "summary"
 );
 
-watch(() => route.path, (newPath) => {
-  activeTab.value = newPath.includes("pending")
+watch(
+  () => route.path,
+  (newPath) => {
+    activeTab.value = newPath.includes("pending")
       ? "pending"
       : newPath.includes("completed")
-          ? "completed"
-          : "summary";
-});
+      ? "completed"
+      : "summary";
+  }
+);
 
 const handleTabChange = (key: string) => {
   router.push(`/cod/${key}`);
 };
 </script>
-
 
 <style scoped>
 :deep(.ant-tabs-tab-active) {
@@ -46,14 +52,13 @@ const handleTabChange = (key: string) => {
 }
 
 :deep(.ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn) {
-  color: #E00C16 !important; /* Custom active tab color */
+  color: #e00c16 !important; /* Custom active tab color */
   font-size: 15px !important;
 }
 
 :deep(.ant-tabs-ink-bar) {
-  height: 6px !important;  /* Thicker bottom border */
-  background-color: #E00C16 !important; /* Custom red border */
+  height: 6px !important; /* Thicker bottom border */
+  background-color: #e00c16 !important; /* Custom red border */
   border-radius: 4px;
 }
-
 </style>
