@@ -89,7 +89,7 @@
           </div>
         </div>
         <div class="divider !mt-2"></div>
-        <a-button type="primary" class="!mt-6 !bg-red-600 !text-white px-6 py-3 text-lg rounded-md !h-10" @click="openCODModal">ຢືນຢັນຮັບຍອດເງິນ COD</a-button>
+        <a-button type="primary" class="!mt-6 px-6 py-3 text-lg rounded-md !h-10 ant-btn-primary" :class="{ 'btn-disabled': codStore.codSummary <= 0 }" @click="openCODModal" :disabled="codStore.codSummary <= 0">ຢືນຢັນຮັບຍອດເງິນ COD</a-button>
       </a-card>
     </div>
   </div>
@@ -112,13 +112,13 @@ const codStore = useCodStore();
 
 const openCODModal = () => {
   modalStore.showModal({
-    totalAmount: "14,981,000",
-    codAmount: "5,000,000",
-    codRate: "0",
-    transferFee: "19,000",
-    bankAccount: "182120001640922001",
-    bankOwner: "Outhai VONGSA MS",
-    receiveDate: "25/01/2025",
+    totalAmount: codStore.codSummary,
+    codAmount: codStore.codSummary,
+    codRate: codStore.cod_fee_percent,
+    transferFee: codStore.transferFee,
+    bankAccount: codStore.codList[0]?.shipment?.sender_customer?.account_number,
+    bankOwner: codStore.codList[0]?.shipment?.sender_customer?.account_name,
+    receiveDate: codStore.estimate_receive_date,
   });
 };
 const inboundParcel = () => {
@@ -141,5 +141,11 @@ onMounted(async () => {
   width: 100%;
   height: 1px;
   background-color:#EFEFEF;
+}
+.a-btn[disabled] {
+  background-color: #ccc !important; /* Gray background */
+  color: #666 !important; /* Gray text */
+  cursor: not-allowed !important; /* Not-allowed cursor */
+  border-color: #ccc !important; /* Gray border */
 }
 </style>

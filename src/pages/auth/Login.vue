@@ -1,9 +1,9 @@
 <template>
   <div class="flex h-screen">
     <!-- Left Section - Logo & Branding -->
-    <div class="hidden lg:flex flex-col justify-center items-center !w-1/2 bg-gray-100">
-      <div class="px-3">
-        <img :src="brandImage" alt="HAL Logistics" class="!w-full h-auto rounded-lg object-cover"/>
+    <div class="hidden lg:flex flex-col justify-center items-center w-1/2 bg-gray-100">
+      <div class="w-full h-full">
+        <img :src="brandImage" alt="HAL Logistics" class="w-full h-full object-cover"/>
       </div>
     </div>
     <!-- Right Section - Login Form -->
@@ -11,7 +11,7 @@
       <div class="!w-full max-w-md">
         <!-- Logo -->
         <div class="flex justify-center mb-6">
-          <img :src="logo" alt="Logo" class="w-24 h-24"/>
+          <img :src="logo" alt="Logo" class="w-32 h-32"/>
         </div>
 
         <!-- Title -->

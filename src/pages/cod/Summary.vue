@@ -15,7 +15,7 @@
           <p class="text-gray-500">ຄ່າທໍານຽມໂອນ</p>
           <p class="text-xl font-bold">{{codStore.transferFee.toLocaleString() || '-'}} LAK</p>
         </div>
-        <a-button type="primary" class="!bg-red-600 !text-white" @click="openCODModal">
+        <a-button type="primary" class="ant-btn-primary" :class="{ 'btn-disabled': codStore.codSummary <= 0 }" @click="openCODModal" :disabled="codStore.codSummary <= 0">
           ຢືນຢັນຮັບຍອດ COD
         </a-button>
       </div>
@@ -100,13 +100,13 @@ const codStore = useCodStore();
 
 const openCODModal = () => {
   modalStore.showModal({
-    totalAmount: "5,000,000",
-    codAmount: "5,000,000",
-    codRate: "0",
-    transferFee: "19,000",
-    bankAccount: "182120001640922001",
-    bankOwner: "Outhai VONGSA MS",
-    receiveDate: "25/01/2025",
+    totalAmount: codStore.codSummary,
+    codAmount: codStore.codSummary,
+    codRate: codStore.cod_fee_percent,
+    transferFee: codStore.transferFee,
+    bankAccount: codStore.codList[0]?.shipment?.sender_customer?.account_number,
+    bankOwner: codStore.codList[0]?.shipment?.sender_customer?.account_name,
+    receiveDate: codStore.estimate_receive_date,
   });
 };
 
@@ -126,6 +126,9 @@ const columns = [
 ];
 // ✅ Handle Page Change with Cursor
 const handlePaginate = (cursor: string) => {
+  codStore.fetchCodData(cursor);
+};
+const confirmCOD = (cursor: string) => {
   codStore.fetchCodData(cursor);
 };
 onMounted(async () => {
@@ -148,5 +151,8 @@ onMounted(async () => {
   background-color: #E00C16 !important; /* Custom red border */
   border-radius: 2px;
 }
-
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
 </style>

@@ -50,7 +50,7 @@
     </div>
 
     <template #footer>
-      <a-button type="primary" class="w-full !bg-red-600 !text-white !h-10" @click="handleConfirm">
+      <a-button type="primary" class="w-full !bg-red-600 !text-white !h-10" @click="modalStore.confirmModal">
         ຢືນຢັນຮັບຍອດ COD
       </a-button>
     </template>
@@ -74,6 +74,11 @@ const codSuccessModal = ref();
 const handleConfirm = () => {
   modalStore.closeModal();
   codSuccessModal.value?.showModal();
+};
+
+const confirmCod = () => {
+  // Logic to confirm COD
+  console.log("COD confirmed");
 };
 
 onMounted(() => {

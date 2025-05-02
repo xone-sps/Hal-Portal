@@ -5,14 +5,14 @@
       <!-- Total Amount -->
       <div class="text-center">
         <p class="text-gray-500 text-sm">ຍອດລວມສຸດທິ</p>
-        <p class="text-red-600 font-bold text-2xl">{{ modalStore.modalData.totalAmount }} LAK</p>
+        <p class="text-red-600 font-bold text-2xl">{{ modalStore.modalData.totalAmount.toLocaleString() || '-' }} LAK</p>
       </div>
 
       <!-- COD Details -->
       <div class="mt-4 space-y-2">
         <div class="flex justify-between">
           <p class="text-gray-500">ຍອດ COD ທັງໝົດ</p>
-          <p class="font-semibold">{{ modalStore.modalData.codAmount }} LAK</p>
+          <p class="font-semibold">{{ modalStore.modalData.codAmount.toLocaleString() || '-' }} LAK</p>
         </div>
         <div class="flex justify-between">
           <p class="text-gray-500">ຄ່າທໍານຽມ COD</p>
@@ -20,7 +20,7 @@
         </div>
         <div class="flex justify-between">
           <p class="text-gray-500">ຄ່າທໍານຽມໂອນ</p>
-          <p class="font-semibold">{{ modalStore.modalData.transferFee }} LAK</p>
+          <p class="font-semibold">{{ modalStore.modalData.transferFee.toLocaleString() || '-' }} LAK</p>
         </div>
       </div>
       <div class="dashed-line"></div>
@@ -36,7 +36,7 @@
 
       <!-- Receive Date -->
       <div class="mt-4 space-y-2 flex justify-between rounded-lg bg-gray-100">
-        <p class="p-3 text-gray-500 text-center">ທ່ານຈະໄດ້ຮັບບັນຊີໃນວັນທີ</p>
+        <p class="p-3 text-gray-500 text-center">ທ່ານຈະໄດ້ຮັບເງິນໃນວັນທີ</p>
         <div class="p-3 font-semibold text-center">
           {{ modalStore.modalData.receiveDate }}
         </div>
@@ -63,21 +63,25 @@
 import {onMounted, ref} from "vue";
 import {useModalStore} from "@/stores/useModalStore";
 import CodSuccessModal from "@/components/modals/CodSuccess.vue";
+import { useCodStore } from '@/stores/cod/codStore';
 import {
   WarningOutlined,
 } from "@ant-design/icons-vue";
 
-
+const codStore = useCodStore();
 const modalStore = useModalStore();
 const codSuccessModal = ref();
 
 const handleConfirm = () => {
-  modalStore.closeModal();
-  codSuccessModal.value?.showModal();
+  codStore.confirmCOD().then(() => {
+    modalStore.closeModal();
+    codSuccessModal.value?.showModal();
+  }).catch((error) => {
+    console.error("Error confirming COD:", error);
+  });
 };
 
 onMounted(() => {
-  console.log("codSuccessModal:", codSuccessModal.value);
 });
 </script>
 

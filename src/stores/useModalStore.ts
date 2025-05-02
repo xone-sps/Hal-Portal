@@ -7,13 +7,13 @@ export const useModalStore = defineStore("modalStore", () => {
     const confirmed = ref(false);
 
     const modalData = ref({
-        totalAmount: "14,981,000",
-        codAmount: "5,000,000",
+        totalAmount: "",
+        codAmount: "",
         codRate: "0",
-        transferFee: "19,000",
-        bankAccount: "182120001640922001",
-        bankOwner: "Outhai VONGSA MS",
-        receiveDate: "25/01/2025",
+        transferFee: "",
+        bankAccount: "",
+        bankOwner: "",
+        receiveDate: "",
     });
 
     const showModal = (data: any) => {

@@ -89,6 +89,9 @@
             <a-button type="link" @click="viewDetails(record)">
               <EyeOutlined class="!text-red-500 text-xl cursor-pointer" />
             </a-button>
+            <a-button type="link" @click="codStore.downloadPdf(record)">
+              <FilePdfOutlined class="!text-green-500 text-xl cursor-pointer" />
+            </a-button>
           </template>
         </template>
       </a-table>
@@ -99,7 +102,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 import Pagination from "@/components/pagination.vue";
-import { EyeOutlined } from "@ant-design/icons-vue";
+import { EyeOutlined,FilePdfOutlined } from "@ant-design/icons-vue";
 import { useRouter } from "vue-router";
 import { useCodStore } from "@/stores/cod/codStore.ts";
 
@@ -136,7 +139,7 @@ const columns = [
     key: "start_date_actual",
   },
   {
-    title: "ລາຍລະອຽດ",
+    title: "ຈັດການ",
     key: "details",
     align: "center",
     dataIndex: "details",

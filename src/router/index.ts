@@ -109,12 +109,12 @@ const routes = [
                 ],
             },
             {
-                path: "pending/detail",
-                name: "pending-detail",
+                path: "detail/:id",
+                name: "cod-detail",
                 component: PendingCodDetail,
                 meta: {
                     requiresAuth: true,
-                    title: "ລາຍລະອຽດລໍຖ້າການໂອນ COD",
+                    title: "ລາຍລະອຽດ COD",
                     description: "",
                 },
             },

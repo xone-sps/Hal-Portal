@@ -80,9 +80,8 @@
         :loading="codStore.loading"
       >
         <template #bodyCell="{ column, record }">
-          <!-- Customize Detail Column -->
           <template v-if="column.key === 'details'">
-            <a-button type="link" @click="viewDetails(record)">
+            <a-button type="link" @click="handleViewDetails(record.id)">
               <EyeOutlined class="!text-red-500 text-xl cursor-pointer" />
             </a-button>
           </template>
@@ -96,23 +95,55 @@
 import { onMounted, ref } from "vue";
 import Pagination from "@/components/pagination.vue";
 import { EyeOutlined } from "@ant-design/icons-vue";
-import { useRouter } from "vue-router";
+import { useRouter,useRoute } from "vue-router";
 import { useCodStore } from "@/stores/cod/codStore";
 
 const router = useRouter();
+const route = useRoute();
 const searchQuery = ref("");
 const codStore = useCodStore();
 
 const columns = [
   {
     title: "ເລກບິນໂອນ",
-    dataIndex: ["shipment_number"],
-    key: "shipment_number",
+    dataIndex: ["invoice_number"],
+    key: "invoice_number",
   },
-  { title: "ຍອດລວມສຸດທິ", dataIndex: "totalAmount", key: "totalAmount" },
-  { title: "ລາຍການ COD", dataIndex: "codItems", key: "codItems" },
-  { title: "ຄ່າທໍານຽມໂອນ", dataIndex: "transferFee", key: "transferFee" },
-  { title: "ໄດ້ຮັບບິນເມື່ອໃດ", dataIndex: "receiveDate", key: "receiveDate" },
+  {
+    title: "ລວມຍອດສຸດທິ",
+    dataIndex: "total_price",
+    key: "total_price",
+    customRender: ({ text }: { text: number }) =>
+      `${new Intl.NumberFormat("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(text)} ກີບ`,
+  },
+  {
+    title: "ບໍລິການ COD",
+    dataIndex: "cod_fee",
+    key: "cod_fee",
+    customRender: ({ text }: { text: number }) =>
+      `${new Intl.NumberFormat("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(text)} %`,
+  },
+  {
+    title: "ຄ່າທໍານຽມການໂອນ",
+    dataIndex: "transfer_fee",
+    key: "transfer_fee",
+    customRender: ({ text }: { text: number }) =>
+      `${new Intl.NumberFormat("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(text)} ກີບ`,
+  },
+  {
+    title: "ວັນທີຈະໄດ້ຮັບເງິນ",
+    dataIndex: "estimate_receive_date",
+    key: "estimate_receive_date",
+  },
   {
     title: "ລາຍລະອຽດ",
     key: "details",
@@ -138,22 +169,30 @@ const disableEndDate = (current: Date) => {
 };
 
 const searching = () => {
-  codStore.fetchCodStatusData({status:'processing'});
+  codStore.fetchCodStatusData({
+    status: "pending",
+    startDate: codStore.startDate,
+    endDate: codStore.endDate,
+  });
 };
 // ✅ Handle Page Change with Cursor
 const handlePaginate = (cursor: string) => {
-  codStore.fetchCodStatusData({status:'processing',cursor:cursor});
+  codStore.fetchCodStatusData({ status: "pending", cursor: cursor });
 };
 onMounted(async () => {
-  await codStore.fetchCodStatusData({status:'processing'});
+  await codStore.fetchCodStatusData({ status: "pending" });
 });
 
-const viewDetails = (record: any) => {
-  router.push({
-    name: "pending-detail", // ✅ Correct route name
-    query: { transferId: record.tracking }, // ✅ Pass tracking number as query param
-  });
-};
+async function handleViewDetails(id: string) {
+    await codStore.viewDetails(id, router);
+}
+// const viewDetails = (record: any) => {
+//   console.log("Record ID:", record.id); // Log the record ID
+//   router.push({
+//     name: "cod-detail", // ✅ Correct route name
+//     params: { id: record.id }, // ✅ Pass tracking number as query param
+//   });
+// };
 </script>
 
 <style scoped></style>
