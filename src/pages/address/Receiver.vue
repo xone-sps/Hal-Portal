@@ -4,7 +4,7 @@
     <a-card>
       <div class="flex justify-between items-center !mb-4">
        <div class="">
-         <p class="text-gray-500">ສະແດງ 1-10 ຈາກ 100 ລາຍການ</p>
+         <p class="text-gray-500">ສະແດງ ລາຍການ</p>
        </div>
 
         <!-- Pagination & Search -->
@@ -83,16 +83,16 @@ const columns = [
 const data = [
   {
     key: "1",
-    name: "Thinnakone",
-    phone: "020 5555 5555",
-    address: "020 5555 5555",
+    name: "Jonh Doe",
+    phone: "020 5555 5808",
+    address: "Chommany, Vientiane",
     receiverBranch: "ສີສະຫວາດ (02052525252)",
   },
   {
     key: "1",
-    name: "Thinnakone",
-    phone: "020 5555 5555",
-    address: "020 5555 5555",
+    name: "Thomas Smith",
+    phone: "020 7373 5555",
+    address: "Dongdok, Vientiane",
     receiverBranch: "ສີສະຫວາດ (02052525252)",
   },
 ];

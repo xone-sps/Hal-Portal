@@ -6,10 +6,8 @@ import dayjs, { Dayjs } from "dayjs";
 export const fetchUserProfile = async (): Promise<UserProfile> => {
   try {
     const response = await api.get<UserProfile>("/user-info"); // Use `api` instead of `axios`
-    console.log("User profile data:", response.data); // Log the response data
     return response.data;
   } catch (error) {
-    console.error("Failed to fetch user profile:", error);
     throw error;
   }
 };
@@ -51,3 +49,27 @@ export const updateUserProfile = async (userInfo: Partial<UserProfile>): Promise
       throw error;
     }
   };
+
+   export const changePassword = async (data: { phone: string; password: string }) => {
+            try {
+                const response = await api.post('/change-password', {
+                    tel: data.phone,
+                    password: data.password,
+                });
+
+                if (response.data) {
+                    const { access_token, refresh_token, authUser, permissionRole } = response.data;
+
+                    // ✅ Save to localStorage
+                    localStorage.setItem('token', access_token);
+                    localStorage.setItem('refresh_token', refresh_token);
+                    localStorage.setItem('user', JSON.stringify(authUser));
+                    localStorage.setItem('permissions', JSON.stringify(permissionRole));
+
+                    // ✅ Set api header
+                    api.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
+                }
+            } catch (error) {
+                throw error;
+            }
+        };

@@ -75,12 +75,6 @@ onMounted(async () => {
     });
   }
 
-  // Debugging logs
-  console.log("Filtered Districts:", filteredDistricts.value);
-  console.log("Filtered Villages:", filteredVillages.value);
-  console.log("Province ID:", form.value.province_id);
-  console.log("District ID:", form.value.district_id);
-  console.log("Village ID:", form.value.village_id);
 });
 
 // Watch for changes in province and district to filter dependent data

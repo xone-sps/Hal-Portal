@@ -4,7 +4,7 @@
     <a-card>
       <div class="flex justify-between items-center !mb-4">
         <div class="">
-          <p class="text-gray-500">ສະແດງ 1-10 ຈາກ 100 ລາຍການ</p>
+          <p class="text-gray-500">ສະແດງ ລາຍການ</p>
         </div>
 
         <!-- Pagination & Search -->

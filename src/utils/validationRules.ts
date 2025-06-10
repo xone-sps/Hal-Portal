@@ -40,6 +40,10 @@ export const validationRules = {
     district_id: [{ required: true, message: "ເລືອກເມືອງ", trigger: "change" }],
     village_id: [{ required: true, message: "ເລືອກບ້ານ", trigger: "change" }],
     branch: [{ required: true, message: "ເລືອກສາຂາ", trigger: "change" }],
+    oldPassword: [{ required: true, message: "ປ້ອນລະຫັດຜ່ານເກົ່າ", trigger: "blur" }],
+    newPassword: [{ required: true, message: "ປ້ອນລະຫັດຜ່ານໃໝ່", trigger: "blur" }],
+    confirmPassword: [{ required: true, message: "ຢືນຢັນລະຫັດຜ່ານ", trigger: "blur" }],
+    
 };
 
 export const getValidationRules = (prefixGetter: () => string) => {

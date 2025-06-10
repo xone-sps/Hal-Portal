@@ -99,8 +99,8 @@
             <span v-if="!collapsed" class="text-menu">ທີ່ຢູ່</span>
           </router-link>
         </a-menu-item>
-        <a-menu-item key="password">
-          <router-link to="/cod" class="flex items-center gap-2">
+        <a-menu-item key="change-password">
+          <router-link to="/change-password" class="flex items-center gap-2">
             <img :src="change_password" alt="Open Box Icon" class="w-6 h-6"/>
             <span v-if="!collapsed" class="text-menu">ປ່ຽນລະຫັດຜ່ານ</span>
           </router-link>

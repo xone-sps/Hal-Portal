@@ -30,11 +30,12 @@
     <a-card class="custom-table-card">
       <div class="flex justify-between items-center !mb-4">
         <div>
-          <p class="text-lg font-semibold">ລາຍການພັດສະດຸທີ່ສຳເລັດ <span class="text-red-500">100</span></p>
+          <p class="text-lg font-semibold">ລາຍການພັດສະດຸທີ່ສຳເລັດ <span class="text-red-500">{{ outboundStore.outboundList.length }}</span></p>
         </div>
-        <Pagination  :pagination="outboundStore.pagination"
-                     @paginate="handlePaginate"/>
+
         <div class="flex items-center gap-4">
+                  <Pagination  :pagination="outboundStore.pagination"
+                     @paginate="handlePaginate"/>
           <!-- Search Input -->
           <div class="relative w-90">
             <a-input-search
@@ -69,7 +70,7 @@ import {useOutboundParcelStore} from "@/stores/parcel/outboundStore";
 import type {Dayjs} from 'dayjs';
 import {useRouter} from "vue-router";
 import {useExportStore} from "@/stores/useExportStore";
-import Pagination from "@/components/pagination.vue"
+import Pagination from "@/components/pagination.vue";
 import dayjs from "dayjs";
 import { debounce } from 'lodash';
 
@@ -109,18 +110,23 @@ const viewDetails = (trackingId: string) => {
 
 const handleExport = async () => {
   await exportStore.exportExcel({
-    startDate: startDate.value,
-    endDate: endDate.value,
+    startDate: startDate.value.format('YYYY-MM-DD'),
+    endDate: endDate.value.format('YYYY-MM-DD'),
     status: 'processing',
     query: '',
   });
 };
 const handlePaginate = (cursor: string) => {
-  outboundStore.fetchOutboundData({status: 'processing',cursor:cursor,startDate:startDate.value,endDate:endDate.value});
+  outboundStore.fetchOutboundData({
+    status: 'processing',
+    cursor: cursor,
+    startDate: startDate.value.format('YYYY-MM-DD'),
+    endDate: endDate.value.format('YYYY-MM-DD')
+  });
 };
 const handleSearch = () => {
-  if(startDate.value != '' && endDate.value != ''){
-    outboundStore.fetchOutboundData({status: 'processing',query:searchQuery.value,startDate:startDate.value,endDate:endDate.value},);
+  if(startDate.value != null && endDate.value != null){
+    outboundStore.fetchOutboundData({status: 'processing',query:searchQuery.value,startDate:startDate.value.format('YYYY-MM-DD'),endDate:endDate.value.format('YYYY-MM-DD')},);
   }
 };
 
@@ -138,7 +144,7 @@ const clearSearch = () =>{
   searchQuery.value = '';
 };
 onMounted(async () => {
-  await outboundStore.fetchOutboundData({status: 'processing',startDate:startDate.value,endDate:endDate.value});
+  await outboundStore.fetchOutboundData({status: 'processing',startDate:startDate.value.format('YYYY-MM-DD'),endDate:endDate.value.format('YYYY-MM-DD')});
 });
 
 

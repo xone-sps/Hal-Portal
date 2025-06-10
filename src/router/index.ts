@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
-import {useUserStore} from '@/stores/useUserStore';
+import { useUserStore } from '@/stores/useUserStore';
 import AuthLayout from "@/layouts/AuthLayout.vue";
 import DefaultLayout from "@/layouts/DefaultLayout.vue";
 import Dashboard from "@/pages/Dashboard.vue";
@@ -35,6 +35,7 @@ import ImportExcel from "@/pages/selfDelivery/ImportExcel.vue";
 import ImportSuccess from "@/pages/selfDelivery/Success.vue";
 import ImportPreview from "@/pages/selfDelivery/UploadPreview.vue";
 import MyParcel from "@/pages/selfDelivery/MyParcel.vue";
+import ChangePasswordVue from "@/pages/auth/ChangePassword.vue";
 
 
 
@@ -319,6 +320,18 @@ const routes = [
                         },
                     },
                 ],
+            },
+        ],
+    },
+            {
+        path: "/",
+        component: DefaultLayout,
+        children: [
+            {
+                path: "change-password",
+                name: "change-password",
+                component: ChangePasswordVue,
+                meta: {requiresAuth: true, title: "ປ່ຽນລະຫັດຜ່ານ", description: "" },
             },
         ],
     },

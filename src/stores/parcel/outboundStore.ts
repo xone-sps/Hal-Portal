@@ -32,8 +32,8 @@ export const useOutboundParcelStore = defineStore('outboundStore', {
             try {
                 const params: Record<string, any> = {
                     q: query || this.query, // Use query if provided, otherwise use this.query
-                    start_date: startDate ? dayjs(startDate).format('YYYY-MM-DD') : dayjs(this.startDate).format('YYYY-MM-DD'),
-                    end_date: endDate ? dayjs(endDate).format('YYYY-MM-DD') : dayjs(this.endDate).format('YYYY-MM-DD'),
+                    start_date: startDate ? dayjs(startDate).format('YYYY-MM-DD') : dayjs(startDate).format('YYYY-MM-DD'),
+                    end_date: endDate ? dayjs(endDate).format('YYYY-MM-DD') : dayjs(endDate).format('YYYY-MM-DD'),
                     use_cursor: true,
                     cursor,
                     status:status,
@@ -45,6 +45,7 @@ export const useOutboundParcelStore = defineStore('outboundStore', {
                     const data = response.data;
                     this.totalQty = data.per_page;
                     this.outboundList = data.data;
+                    console.log('Outbound List:', this.outboundList);
                     // ✅ Update Pagination State
                     this.pagination.nextPageUrl = data.next_page_url || null;
                     this.pagination.prevPageUrl = data.prev_page_url || null;
