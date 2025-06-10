@@ -7,19 +7,24 @@
           <!-- Sender Info -->
           <div class="flex items-center gap-3">
             <!-- Avatar -->
-            <a-avatar size="small" class="!bg-red-500 text-white font-bold">S</a-avatar>
+            <a-avatar size="small" class="!bg-red-500 text-white font-bold"
+              >S</a-avatar
+            >
 
             <!-- Name and Edit Option -->
             <div class="flex items-center gap-2">
               <p class="text-lg font-semibold">ຜູ້ສົ່ງ</p>
               <span class="text-blue-500 cursor-pointer flex items-center">
-            <EditOutlined class="!mr-1"/> ແກ້ໄຂຂໍ້ມູນ
-          </span>
+                <EditOutlined class="!mr-1" /> ແກ້ໄຂຂໍ້ມູນ
+              </span>
             </div>
           </div>
           <!-- Save Button -->
-          <a-button type="default" class="!flex !items-center !gap-2 !bg-gray-100">
-            <SaveOutlined/>
+          <a-button
+            type="default"
+            class="!flex !items-center !gap-2 !bg-gray-100"
+          >
+            <SaveOutlined />
             <span>ບັນທຶກໄວ້</span>
           </a-button>
         </div>
@@ -28,15 +33,17 @@
         <div class="mt-4 space-y-2">
           <div class="flex">
             <p class="text-gray-500 w-24">ຊື່</p>
-            <p class="font-semibold">{{ profile?.userName || 'No Name' }}</p>
+            <p class="font-semibold">{{ profile?.userName || "No Name" }}</p>
           </div>
           <div class="flex">
             <p class="text-gray-500 w-24">ເບີໂທລະສັບ</p>
-            <p class="font-semibold">{{ profile?.userTel || 'N/A' }}</p>
+            <p class="font-semibold">{{ profile?.userTel || "N/A" }}</p>
           </div>
           <div class="flex">
             <p class="text-gray-500 w-24">ທີ່ຢູ່</p>
-            <p class="font-semibold">{{ profile?.userProfile?.addresss || 'N/A' }}</p>
+            <p class="font-semibold">
+              {{ profile?.userProfile?.addresss || "N/A" }}
+            </p>
           </div>
         </div>
       </a-card>
@@ -49,56 +56,81 @@
           <!-- Pagination & Search -->
           <div class="flex items-center gap-4">
             <div>
-              <a-button type="primary" class="!bg-red-500 !text-white !mr-1" @click="openAddModal">
-                <PlusOutlined class="!text-white text-l cursor-pointer pr-1"/>
+              <a-button
+                type="primary"
+                class="!bg-red-500 !text-white !mr-1"
+                @click="openAddModal"
+              >
+                <PlusOutlined class="!text-white text-l cursor-pointer pr-1" />
                 ເພີມ
               </a-button>
-              <a-button type="primary" class="!bg-blue-400 !text-white" @click="openAddModal">
-                <FileExcelOutlined class="!text-white text-l cursor-pointer pr-1"/>
+              <a-button
+                type="primary"
+                class="!bg-blue-400 !text-white"
+                @click="openAddModal"
+              >
+                <FileExcelOutlined
+                  class="!text-white text-l cursor-pointer pr-1"
+                />
                 ນໍາຂໍ້ມູນເຂົ້າ
               </a-button>
             </div>
           </div>
         </div>
 
-        <div class="flex justify-between items-center !mb-4" v-if="outboundStore.outboundList.length">
+        <div
+          class="flex justify-between items-center !mb-4"
+          v-if="outboundStore.outboundList.length"
+        >
           <div class="flex items-center">
             <div>
-              <p class="text-gray-500 !mr-4">ສະແດງ {{outboundStore.outboundList.length}} ລາຍການ</p>
+              <p class="text-gray-500 !mr-4">
+                ສະແດງ {{ outboundStore.outboundList.length }} ລາຍການ
+              </p>
             </div>
-            <Pagination :pagination="outboundStore.pagination"
-                        @paginate="handlePaginate"/>
+            <Pagination
+              :pagination="outboundStore.pagination"
+              @paginate="handlePaginate"
+            />
           </div>
           <!-- Pagination & Search -->
           <div class="relative w-80">
             <a-input-search
-                placeholder="Search"
-                class="!w-full !pl-10 1text-left"
+              placeholder="Search"
+              class="!w-full !pl-10 1text-left"
             />
           </div>
         </div>
 
         <!-- Table -->
-        <a-table v-if="outboundStore.outboundList.length" :columns="columns" :data-source="outboundStore.outboundList"
-                 :pagination="false" :locale="{ emptyText: $emptyText() }">
-
+        <a-table
+          v-if="outboundStore.outboundList.length"
+          :columns="columns"
+          :data-source="outboundStore.outboundList"
+          :pagination="false"
+          :locale="{ emptyText: $emptyText() }"
+        >
           <template #bodyCell="{ column, record }">
             <!-- Customize Detail Column -->
             <template v-if="column.key === 'action'">
-              <a-button type="link" @click="viewDetails(record)">
-                <EditOutlined class="text-[#16A34A] text-xl cursor-pointer"/>
+              <a-button type="link" @click="viewDetails(record.shipment_number)">
+                <EyeOutlined class="text-[#16A34A] text-xl cursor-pointer" />
               </a-button>
-              <a-button type="link" @click="deleteItem(record)">
-                <DeleteOutlined class="!text-red-500 text-xl cursor-pointer"/>
+              <a-button type="link" @click="deleteItem(record.id, false)">
+                <DeleteOutlined class="!text-red-500 text-xl cursor-pointer" />
               </a-button>
             </template>
           </template>
         </a-table>
         <div v-if="outboundStore.outboundList == 0">
           <div class="flex flex-col items-center justify-center p-6">
-            <img :src="empty_box" alt="No Data" class="w-22 h-22 mb-2"/>
-            <a-button type="dashed" class="!text-red-500 !mr-1 " @click="openAddModal">
-              <PlusOutlined class="!text-red-500 text-l cursor-pointer pr-1"/>
+            <img :src="empty_box" alt="No Data" class="w-22 h-22 mb-2" />
+            <a-button
+              type="dashed"
+              class="!text-red-500 !mr-1"
+              @click="openAddModal"
+            >
+              <PlusOutlined class="!text-red-500 text-l cursor-pointer pr-1" />
               ເພີມລາຍການ
             </a-button>
           </div>
@@ -119,101 +151,157 @@
       <!-- Remark Info -->
       <div class="flex items-center gap-3">
         <p>
-            <span class="text-red-500">ໝາຍເຫດ:
-            </span>
+          <span class="text-red-500">ໝາຍເຫດ: </span>
           ຄ່າບໍລິການແມ່ນຕ້ອງອ້າງອີງຕາມການຄິດໄລ່ຕົວຈິງຂອງພະນັກງານຮຸ່ງອາລຸນ
         </p>
       </div>
       <!-- Save Button -->
       <div class="text-right !mt-2">
-        <a-button type="primary" class="!bg-red-600 !text-white" @click="submitForm">ຢືນຢັນ ແລະ ປິ້ນບິນ</a-button>
+        <a-button
+          type="primary"
+          class="!bg-red-600 !text-white"
+          @click="submitForm"
+          >ຢືນຢັນ ແລະ ປິ້ນບິນ</a-button
+        >
       </div>
     </div>
   </div>
+  <a-modal
+      v-model:open="isModalOpen"
+      :footer="null"
+      title="ທ່ານຕ້ອງການລຶບຂໍ້ມູນບິນບໍ່"
+      centered
+      :maskClosable="false"
+      :closable="true"
+    >
+      <div class="divider"></div>
+      <div class="p-2">
+        <div class="flex flex-col items-center text-center p-6">
+          <DeleteOutlined class="!text-red-600 text-5xl !mb-4" />
+        </div>
+        <div class="flex">
+          <a-button
+            type="primary"
+            block
+            class="!mt-6 !text-white !text-lg w-full !h-10 !mr-3 !bg-red-400"
+            @click="isModalOpen = false"
+          >
+            ຍົກເລີກ
+          </a-button>
+          <a-button
+            type="primary"
+            block
+            class="!mt-6 !bg-red-500 !text-white !text-lg w-full !h-10 !mr-2"
+            @click="ConfirmDelete"
+            :loading="loading"
+          >
+            ລຶບ
+          </a-button>
+        </div>
+      </div>
+    </a-modal>
   <!-- Use the modal component -->
-  <AddAddressSenderModal
-      v-model="isModalOpen"
-      title="ເພີ່ມລາຍການພັດສະດຸ"
-  >
-  </AddAddressSenderModal>
-
+  <AddMoreParcel v-model="openDrawer" title="ເພີ່ມລາຍການພັດສະດຸ">
+  </AddMoreParcel>
 </template>
 
 <script setup lang="ts">
-import {ref, onMounted, computed} from "vue";
-import {validationRules} from "@/utils/validationRules";
-import {EditOutlined, SaveOutlined, PlusOutlined, FileExcelOutlined,DeleteOutlined} from "@ant-design/icons-vue";
-import Pagination from "@/components/pagination.vue"
-import {useOutboundParcelStore} from "@/stores/parcel/outboundStore";
-import {notification} from "ant-design-vue";
+import { ref, onMounted, computed } from "vue";
+import { validationRules } from "@/utils/validationRules";
+import {
+  EyeOutlined,
+  SaveOutlined,
+  PlusOutlined,
+  FileExcelOutlined,
+  DeleteOutlined,
+  EditOutlined
+} from "@ant-design/icons-vue";
+import Pagination from "@/components/pagination.vue";
+import { useOutboundParcelStore } from "@/stores/parcel/outboundStore";
+import { useManageOrderStore } from "@/stores/parcel/manageOrderStore";
+import { notification } from "ant-design-vue";
 import empty_box from "@/assets/icons/empty.svg";
-import AddAddressSenderModal from "@/components/modals/AddParcelModal.vue";
-import {useUserStore} from "@/stores/useUserStore";
-import dayjs, {Dayjs} from "dayjs";
+import AddMoreParcel from "@/components/modals/AddParcelModal.vue";
+import { useUserStore } from "@/stores/useUserStore";
+import dayjs, { Dayjs } from "dayjs";
+import { useRouter } from "vue-router";
 
 const formRef = ref();
 const isModalOpen = ref(false);
+const openDrawer = ref(false);
 const outboundStore = useOutboundParcelStore();
+const manageOrderStore = useManageOrderStore();
 const userStore = useUserStore();
-const startDate = ref<Dayjs>(dayjs().subtract(3, 'month'));
+const startDate = ref<Dayjs>(dayjs().subtract(3, "month"));
 const endDate = ref<Dayjs>(dayjs());
 const profile = computed(() => userStore.user);
-const form = ref({
-  senderName: "",
-  senderPhone: "",
-  senderAddress: "",
-  receiverName: "",
-  receiverPhone: "",
-  receiverAddress: "",
-  packageType: "",
-  selectedServices: [],
-  originValue: undefined,
-  destinationValue: undefined,
-  parcelType: "",
-  originBranch: [],
-  parcelCategoryValue: undefined,
-  parcelDimensions: "",
-  weight: "",
-});
-const prefixPhone = ref<string>('020');
-const receiverPhone = ref<string>('');
-const serviceMore = ref([
-  {value: "cdc", label: "CDC", detail: "ເກັບຄ່າຂົນສົ່ງປາຍທາງ"},
-  {value: "cod", label: "COD", detail: "ເກັບຄ່າເຄື່ອງປາຍທາງ"},
-  {value: "insurance", label: "ປະກັນໄພ", detail: "ຄຸມຄອງພັດສະດຸຂອງທ່ານ"},
-]);
-
-
+const deleteMore = ref(false);
+const billId = ref("");
+const loading = ref(false);
+const router = useRouter();
+// const form = ref({
+//   senderName: "",
+//   senderPhone: "",
+//   senderAddress: "",
+//   receiverName: "",
+//   receiverPhone: "",
+//   receiverAddress: "",
+//   packageType: "",
+//   selectedServices: [],
+//   originValue: undefined,
+//   destinationValue: undefined,
+//   parcelType: "",
+//   originBranch: [],
+//   parcelCategoryValue: undefined,
+//   parcelDimensions: "",
+//   weight: "",
+// });
 const columns = [
-  {title: "ເລກພັດສະດຸ", dataIndex: "shipment_number", key: "shipment_number"},
-  {title: "ປະເພດພັດສະດຸ", dataIndex: ["parcel", "parcel_category", "name"], key: "parcel_category",},
+  { title: "ເລກພັດສະດຸ", dataIndex: "shipment_number", key: "shipment_number" },
+  {
+    title: "ປະເພດພັດສະດຸ",
+    dataIndex: ["parcel", "parcel_category", "name"],
+    key: "parcel_category",
+  },
   {
     title: "ລາຄາຂົນສົ່ງ",
     dataIndex: "total_freight",
     key: "total_freight",
-    customRender: ({text}: { text: number }) => `${text.toLocaleString()} ກີບ`
+    customRender: ({ text }: { text: number }) =>
+      `${text.toLocaleString()} ກີບ`,
   },
   {
     title: "ລາຄາ COD",
     dataIndex: "total_price",
     key: "cod",
-    customRender: ({text}: { text: number }) => `${text.toLocaleString()} ກີບ`
+    customRender: ({ text }: { text: number }) =>
+      `${text.toLocaleString()} ກີບ`,
   },
   {
     title: "ສາຂາຕົ້ນທາງ",
     key: "start_branch",
-    customRender: ({record}: any) => {
-      return `${record.start_branch?.name || ""} (${record.start_branch?.tel || ""})`;
-    }
+    customRender: ({ record }: any) => {
+      return `${record.start_branch?.name || ""} (${
+        record.start_branch?.tel || ""
+      })`;
+    },
   },
   {
-    title: "ສາຂາປາຍທາງ", key: "end_branch", customRender: ({record}: any) => {
-      return `${record.end_branch?.name || ""} (${record.end_branch?.tel || ""})`;
-    }
+    title: "ສາຂາປາຍທາງ",
+    key: "end_branch",
+    customRender: ({ record }: any) => {
+      return `${record.end_branch?.name || ""} (${
+        record.end_branch?.tel || ""
+      })`;
+    },
   },
   {
-    title: "ວັນທີສົ່ງບິນ", dataIndex: "start_date_actual", key: "start_date_actual",
-    sorter: (a, b) => new Date(a.start_date_actual).getTime() - new Date(b.start_date_actual).getTime(),
+    title: "ວັນທີສົ່ງບິນ",
+    dataIndex: "start_date_actual",
+    key: "start_date_actual",
+    sorter: (a, b) =>
+      new Date(a.start_date_actual).getTime() -
+      new Date(b.start_date_actual).getTime(),
   },
   {
     title: "ຈັດການຂໍ້ມູນ",
@@ -222,35 +310,17 @@ const columns = [
   },
 ];
 const openAddModal = () => {
-  isModalOpen.value = true;
-}
+  openDrawer.value = true;
+};
 const handlePaginate = (cursor: string) => {
   outboundStore.fetchOutboundData({
-    status: 'pending',
+    status: "pending",
     // cursor: cursor,
     startDate: startDate.value,
-    endDate: endDate.value
+    endDate: endDate.value,
   });
 };
 
-const originBranch = ref([
-  {value: "dongdork", label: "DongDork"},
-  {value: "hongkhar", label: "HongKhar"},
-  {value: "chommarny", label: "Chommarny"},
-])
-const destinationBranch = ref([
-      {value: "svk", label: "Savannakhet"},
-      {value: "kayson", label: "Kaysone"},
-      {value: "luk5", label: "Luk 5"},
-    ])
-;
-const parcelCategory = ref([
-  {value: "cloth", label: "ເສື້ອຍຜ້າ"},
-  {value: "cosmetic", label: "ເຄື່ອງສໍາອາງ"},
-]);
-const filterOption = (input: string, option: any) => {
-  return option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0;
-};
 const rules = ref(validationRules); // Assign imported rules
 const submitForm = async () => {
   try {
@@ -271,15 +341,52 @@ const submitForm = async () => {
   }
 };
 onMounted(async () => {
-      await outboundStore.fetchOutboundData({status: 'pending', startDate: startDate.value, endDate: endDate.value});
-    }
-)
-
-const deleteItem = () => {
-
-}
-const viewDetails = (record: any) => {
+  await outboundStore.fetchOutboundData({
+    status: "pending",
+    startDate: startDate.value,
+    endDate: endDate.value,
+  });
+});
+const deleteItem = async (id: any, items: any) => {
   isModalOpen.value = true;
+  deleteMore.value = items;
+  billId.value = id;
+};
+const ConfirmDelete = async () => {
+  loading.value = true;
+  try {
+    const data = {
+      id: billId.value,
+    };
+    const response = await manageOrderStore.deleteParcel(data);
+    notification.success({
+      message: "ສຳເລັດ!",
+      description: response.data.message,
+      placement: "topRight", // Show at top right
+      duration: 3, // Auto close in 5 seconds
+    });
+    await outboundStore.fetchOutboundData({
+      status: "pending",
+      startDate: startDate.value || "",
+      endDate: endDate.value || "",
+    });
+    isModalOpen.value = false;
+  } catch (error) {
+    // Show error notification if delete fails
+    notification.error({
+      message: "ຜິດພາດ!",
+      description:
+        error.response?.data?.message ||
+        "An error occurred while deleting the item.",
+      placement: "topRight",
+      duration: 5, // Auto close in 5 seconds
+    });
+  } finally {
+    loading.value = false;
+  }
+};
+const viewDetails = (trackingId: string) => {
+  router.push({ name: "inbound-detail", params: { trackingId } });
 };
 </script>
 

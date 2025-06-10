@@ -1,0 +1,48 @@
+import dayjs, { Dayjs } from "dayjs";
+
+export interface UserProfile {
+  id: number;
+  name: string;
+  surname: string;
+  tel: string;
+  email: string | null;
+  profile_picture: string | null;
+  bank_name: string | null;
+  account_name: string | null;
+  account_number: string | null;
+  id_card: string | null;
+  passport: string | null;
+  family_book: string | null;
+  agreement: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  village_id: number | null;
+  user_id: number;
+  created_by: string | null;
+  discount: number | null;
+  deleted_at: string | null;
+  created_at: string;
+  updated_at: string;
+  customer_id: string;
+  cod_status: string;
+  customer_type: string;
+  approved_cod_at: string | null;
+  reference_id: string | null;
+  company_cod_status: string;
+  approve_company_cod_at: string | null;
+  creator_id: string | null;
+  user_tel: string;
+  village_name: string;
+  district_name: string;
+  province_name: string;
+  customer_name: string;
+  customer_surname: string;
+  province_id: number | null;  
+  district_id: number | null;  
+  dob: string | Date | Dayjs | null;
+  dob_status: string;
+  gender: string;
+  bank_account_book: string | null;
+  profile_url: string | null;
+  profile_picture_path?: File | number | string | null;
+}

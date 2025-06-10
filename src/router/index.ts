@@ -7,7 +7,7 @@ import AllCod from "@/pages/cod/AllCod.vue";
 import SummaryCod from "@/pages/cod/Summary.vue";
 import PendingCod from "@/pages/cod/PendingCod.vue";
 import CompleteCod from "@/pages/cod/CompleteCod.vue";
-import PendingCodDetail from "@/pages/cod/PendingCodDetail.vue";
+import CodDetail from "@/pages/cod/CodDetail.vue";
 import CompleteCodDetail from "@/pages/cod/CompletedCodDetail.vue";
 import SelfServiceIndex from "@/pages/selfDelivery/SelfServiceIndex.vue";
 import SelfDelivery from "@/pages/selfDelivery/SelfDelivery.vue";
@@ -111,21 +111,11 @@ const routes = [
             {
                 path: "detail/:id",
                 name: "cod-detail",
-                component: PendingCodDetail,
+                component: CodDetail,
                 meta: {
                     requiresAuth: true,
                     title: "ລາຍລະອຽດ COD",
                     description: "",
-                },
-            },
-            {
-                path: "completed/detail",
-                name: "completed-detail",
-                component: CompleteCodDetail,
-                meta: {
-                    requiresAuth: true,
-                    title: "ລາຍລະອຽດໂອນສຳເລັດ",
-                    description: "ລາຍການ COD ທີ່ໄດ້ຮັບເງິນແລ້ວ",
                 },
             },
         ],

@@ -86,7 +86,7 @@
         <template #bodyCell="{ column, record }">
           <!-- Customize Detail Column -->
           <template v-if="column.key === 'details'">
-            <a-button type="link" @click="viewDetails(record)">
+            <a-button type="link" @click="handleViewDetails(record.id)">
               <EyeOutlined class="!text-red-500 text-xl cursor-pointer" />
             </a-button>
             <a-button type="link" @click="codStore.downloadPdf(record)">
@@ -102,7 +102,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 import Pagination from "@/components/pagination.vue";
-import { EyeOutlined,FilePdfOutlined } from "@ant-design/icons-vue";
+import { EyeOutlined, FilePdfOutlined } from "@ant-design/icons-vue";
 import { useRouter } from "vue-router";
 import { useCodStore } from "@/stores/cod/codStore.ts";
 
@@ -113,30 +113,55 @@ const codStore = useCodStore();
 const columns = [
   {
     title: "ເລກບິນໂອນ",
-    dataIndex: ["shipment_number"],
-    key: "shipment_number",
+    dataIndex: ["invoice_number"],
+    key: "invoice_number",
   },
   {
     title: "ຍອດລວມສຸດທິ",
     dataIndex: "total_price",
     key: "total_price",
     customRender: ({ text }: { text: number }) =>
-      `${text.toLocaleString()} ກີບ`,
+      `${new Intl.NumberFormat("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(text)} ກີບ`,
   },
-  { title: "ປະເພດພັດສະດຸ", dataIndex: ["parcel","parcel_category","name"], key: "parcel_category" },
-  { title: "ສາຂາຕົ້ນທາງ", dataIndex: ["start_branch","name"], key: "start_branch" },
-  { title: "ສາຂາປາຍທາງ", dataIndex: ["end_branch","name"], key: "end_branch" },
+  // {
+  //   title: "ຍອດລວມສຸດທິ",
+  //   dataIndex: "sub_total_price",
+  //   key: "sub_total_price",
+  //   customRender: ({ text }: { text: number }) =>
+  //     `${new Intl.NumberFormat("en-US", {
+  //       minimumFractionDigits: 2,
+  //       maximumFractionDigits: 2,
+  //     }).format(text)} ກີບ`,
+  // },
+  // {
+  //   title: "ຍອດລວມສຸດທິ",
+  //   dataIndex: "total_fee",
+  //   key: "total_fee",
+  //   customRender: ({ text }: { text: number }) =>
+  //     `${new Intl.NumberFormat("en-US", {
+  //       minimumFractionDigits: 2,
+  //       maximumFractionDigits: 2,
+  //     }).format(text)} ກີບ`,
+  // },
+  { title: "% COD", dataIndex: "cod_fee_percent", key: "cod_fee_percent" },
+  // { title: "ຄ່າທໍານຽມ COD", dataIndex: "cod_fee", key: "cod_fee" },
   {
-    title: "ຜູ້ຮັບ",
-    dataIndex: ["receiver_customer", "name"],
-    key: "receiver_customer",
+    title: "ຄ່າທໍານຽມໂອນ",
+    dataIndex: "transfer_fee",
+    key: "transfer_fee",
+    customRender: ({ text }: { text: number }) =>
+      `${new Intl.NumberFormat("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(text)} ກີບ`,
   },
-  // { title: "ລາຍການ COD", dataIndex: "codItems", key: "codItems" },
-  // { title: "ຄ່າທໍານຽມໂອນ", dataIndex: "transferFee", key: "transferFee" },
   {
-    title: "ວັນທີຮັບບິນ",
-    dataIndex: "start_date_actual",
-    key: "start_date_actual",
+    title: "ວັນທີຊໍາລະ",
+    dataIndex: "paid_at",
+    key: "paid_at",
   },
   {
     title: "ຈັດການ",
@@ -168,7 +193,7 @@ const disableEndDate = (current: Date) => {
 //   pageSize: 30,
 // });
 const searching = () => {
-  codStore.fetchCodStatusData({status:'success'});
+  codStore.fetchCodStatusData({ status: "success" });
 };
 // ✅ Handle Page Change with Cursor
 const handlePaginate = (cursor: string) => {
@@ -178,12 +203,9 @@ onMounted(async () => {
   await codStore.fetchCodStatusData({ status: "success" });
 });
 
-const viewDetails = (record: any) => {
-  router.push({
-    name: "pending-detail", // ✅ Correct route name
-    query: { transferId: record.tracking }, // ✅ Pass tracking number as query param
-  });
-};
+async function handleViewDetails(id: string) {
+    await codStore.viewDetails(id, router);
+}
 </script>
 
 <style scoped></style>

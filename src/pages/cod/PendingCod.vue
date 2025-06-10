@@ -105,7 +105,7 @@ const codStore = useCodStore();
 
 const columns = [
   {
-    title: "ເລກບິນໂອນ",
+    title: "ເລກບິນ",
     dataIndex: ["invoice_number"],
     key: "invoice_number",
   },
@@ -186,13 +186,6 @@ onMounted(async () => {
 async function handleViewDetails(id: string) {
     await codStore.viewDetails(id, router);
 }
-// const viewDetails = (record: any) => {
-//   console.log("Record ID:", record.id); // Log the record ID
-//   router.push({
-//     name: "cod-detail", // ✅ Correct route name
-//     params: { id: record.id }, // ✅ Pass tracking number as query param
-//   });
-// };
 </script>
 
 <style scoped></style>

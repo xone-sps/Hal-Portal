@@ -137,10 +137,10 @@
 .ant-btn-primary {
   color: white;
   background-color: var(--color-red-600);
-  border-color: var(--color-red-600);
+  /* border-color: var(--color-red-600); */
 }
 .ant-btn-primary:hover{
   color: white;
   background-color: var(--color-red-600) !important;
-  border-color: var(--color-red-600) !important;
+  /* border-color: var(--color-red-600); */
 }

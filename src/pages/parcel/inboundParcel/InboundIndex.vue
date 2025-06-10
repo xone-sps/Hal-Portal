@@ -1,7 +1,7 @@
 <template>
   <div>
     <a-tabs v-model:activeKey="activeTab" @change="handleTabChange" class="custom-tab">
-      <a-tab-pane key="" tab="ກໍາລັງຈັສົ່ງ"/>
+      <a-tab-pane key="" tab="ກໍາລັງຈັດສົ່ງ"/>
       <a-tab-pane key="arrived" tab="ຮອດສາຂາປາຍທາງ"/>
       <a-tab-pane key="delivered" tab="ຈັດສົ່ງສໍາເລັດ"/>
       <a-tab-pane key="return" tab="ຕີກັບ"/>
