@@ -80,9 +80,12 @@
         :loading="codStore.loading"
       >
         <template #bodyCell="{ column, record }">
+            <template v-if="column.key === 'estimate_receive_date'">
+    {{ record.estimate_receive_date ? dayjs(record.estimate_receive_date).format('DD-MM-YYYY') : '-' }}
+  </template>
           <template v-if="column.key === 'details'">
             <a-button type="link" @click="handleViewDetails(record.id)">
-              <EyeOutlined class="!text-red-500 text-xl cursor-pointer" />
+              <EyeOutlined class="!text-green-500 text-xl cursor-pointer" />
             </a-button>
           </template>
         </template>
@@ -97,6 +100,7 @@ import Pagination from "@/components/pagination.vue";
 import { EyeOutlined } from "@ant-design/icons-vue";
 import { useRouter,useRoute } from "vue-router";
 import { useCodStore } from "@/stores/cod/codStore";
+import dayjs from "dayjs";
 
 const router = useRouter();
 const route = useRoute();

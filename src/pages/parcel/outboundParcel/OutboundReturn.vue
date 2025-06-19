@@ -109,7 +109,7 @@ const columns = [
 
 // Function to handle row detail view
 const viewDetails = (trackingId: string) => {
-  router.push({ name: "inbound-detail", params: { trackingId } });
+  router.push({ name: "parcel-detail", params: { trackingId } });
 };
 
 const handleExport = async () => {
@@ -154,9 +154,6 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-:deep(.ant-tabs-tab-active) {
-  /*font-weight: bold !important;*/
-}
 
 :deep(.ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn) {
   color: #E00C16 !important; /* Custom active tab color */

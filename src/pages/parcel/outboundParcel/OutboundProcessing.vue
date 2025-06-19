@@ -30,7 +30,7 @@
     <a-card class="custom-table-card">
       <div class="flex justify-between items-center !mb-4">
         <div>
-          <p class="text-lg font-semibold">ລາຍການພັດສະດຸທີ່ສຳເລັດ <span class="text-red-500">{{ outboundStore.outboundList.length }}</span></p>
+          <p class="text-lg font-semibold">ລາຍການພັດສະດຸທີ່ສຳເລັດ <span class="text-red-500">{{ outboundStore.outboundList?.length }}</span></p>
         </div>
 
         <div class="flex items-center gap-4">
@@ -105,7 +105,7 @@ const columns = [
 ];
 
 const viewDetails = (trackingId: string) => {
-  router.push({ name: "inbound-detail", params: { trackingId } });
+  router.push({ name: "parcel-detail", params: { trackingId } });
 };
 
 const handleExport = async () => {

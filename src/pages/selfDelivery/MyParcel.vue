@@ -339,7 +339,7 @@ const columns = [
 ];
 
 const viewDetails = (trackingId: string) => {
-  router.push({ name: "inbound-detail", params: { trackingId } });
+  router.push({ name: "parcel-detail", params: { trackingId } });
 };
 
 const gotoImportExcel = () => {

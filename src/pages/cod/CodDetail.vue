@@ -3,9 +3,9 @@
     <!-- Breadcrumb Component -->
     <Breadcrumb />
   </div>
-  <div class="p-6">
+  <div class="p-2">
     <!-- Header Section -->
-    <a-card class="!mb-4">
+    <a-card class="!mb-1">
       <div class="flex justify-between items-center">
         <div>
           <p class="text-lg font-bold">
@@ -22,11 +22,11 @@
     </a-card>
 
     <!-- Summary Section -->
-    <a-card class="!mb-4">
+    <a-card class="!mb-1">
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div>
           <p class="text-gray-500">ຍອດລວມສຸດທິ</p>
-          <p class="text-blue-600 text-3xl font-bold">
+          <p class="text-red-600 text-base sm:text-lg md:text-lg lg:text-xl font-bold">
             {{
               codStore.codDetail.total_price
                 ? new Intl.NumberFormat("en-US", {
@@ -40,7 +40,7 @@
         </div>
         <div>
           <p class="text-gray-500">ຍອດ COD ທັງໝົດ</p>
-          <p class="text-xl font-bold">
+          <p class="text-base sm:text-lg md:text-lg lg:text-lg font-bold">
             {{
               codStore.codDetail.sub_total_price
                 ? new Intl.NumberFormat("en-US", {
@@ -53,16 +53,16 @@
           </p>
         </div>
         <div>
-          <p class="text-gray-500">ທ່ານຈະໄດ້ຮັບບັນຊີໃນວັນທີ</p>
-          <p class="text-xl font-bold">
-            {{ codStore.codDetail.estimate_receive_date }}
+          <p class="text-gray-500">ຈະໄດ້ຮັບເງິນໃນວັນທີ</p>
+          <p class="text-base sm:text-lg md:text-lg lg:text-lg">
+               {{ codStore.codDetail.estimate_receive_date ? dayjs(codStore.codDetail.estimate_receive_date).format('DD-MM-YYYY') : '-' }}
           </p>
         </div>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
         <div>
           <p class="text-gray-500">ຄ່າທໍານຽມ COD</p>
-          <p class="text-xl font-bold">
+          <p class="text-base sm:text-lg md:text-lg lg:text-lg">
             {{
               codStore.codDetail.cod_fee_percent
                 ? new Intl.NumberFormat("en-US", {
@@ -76,7 +76,7 @@
         </div>
         <div>
           <p class="text-gray-500">ຄ່າທໍານຽມໂອນ</p>
-          <p class="text-xl font-bold">
+          <p class="text-base sm:text-lg md:text-lg lg:text-lg">
             {{
               codStore.codDetail.transfer_fee
                 ? new Intl.NumberFormat("en-US", {
@@ -101,6 +101,10 @@
           </span>
         </p>
         <div class="flex items-center gap-4">
+            <Pagination
+              :pagination="codStore.pagination"
+              @paginate="handlePaginate"
+            />
           <!-- <a-pagination v-model:current="pagination.current" :total="pagination.total" :pageSize="pagination.pageSize" show-less-items /> -->
           <a-input-search
             v-model:value="searchQuery"
@@ -113,21 +117,35 @@
         :columns="columns"
         :data-source="codStore.codDetail.data"
         :pagination="false"
-      />
+      >
+           <template #bodyCell="{ column, record }">
+          <!-- Customize Detail Column -->
+                   <template v-if="column.key === 'details'">
+            <a-button type="link" @click="viewParcelDetails(record.shipment_payment.shipment.shipment_number)">
+              <EyeOutlined class="!text-green-500 text-xl cursor-pointer" />
+            </a-button>
+          </template>
+        </template>
+  
+      </a-table>
     </a-card>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
+import { EyeOutlined } from "@ant-design/icons-vue";
+import Pagination from "@/components/Pagination.vue";
 import { useRoute } from "vue-router";
 import Breadcrumb from "@/components/breadcrumb.vue";
 import { useCodStore } from "@/stores/cod/codStore";
+import {useRouter} from "vue-router";
+import dayjs from "dayjs";
 
 const codStore = useCodStore();
 const route = useRoute();
 const searchQuery = ref("");
-const pagination = { current: 1, pageSize: 10, total: 100 };
+const router = useRouter();
 
 const columns = [
   {
@@ -179,9 +197,19 @@ const columns = [
     dataIndex: ["shipment_payment", "shipment", "start_date_actual"],
     key: "start_date_actual",
   },
+  {
+    title: "ເບິ່ງບິນ",
+    dataIndex: ["details", "details", "details"],
+    key: "details",
+  },
 ];
+const viewParcelDetails = (trackingId: string) => {
+  router.push({ name: "parcel-detail", params: { trackingId } });
+};
 onMounted(async () => {
-  await codStore.fetchCodDetail(route.params?.id);
+  const idParam = route.params?.id;
+  const id = Array.isArray(idParam) ? idParam[0] : idParam;
+  await codStore.fetchCodDetail(id as string);
 });
 </script>
 

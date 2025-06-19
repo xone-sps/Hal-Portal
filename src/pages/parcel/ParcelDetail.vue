@@ -1,3 +1,82 @@
+<script setup lang="ts">
+import { watchEffect, ref, computed } from "vue";
+import { useRoute } from "vue-router";
+import { message } from "ant-design-vue";
+import Breadcrumb from "@/components/breadcrumb.vue";
+import Barcode from "@/components/barcode.vue";
+import logo from "@/assets/images/logo.png";
+import html2canvas from "html2canvas";
+import {
+  CopyOutlined,
+  ArrowRightOutlined,
+  WhatsAppOutlined,
+  LinkOutlined,
+  SaveOutlined,
+} from "@ant-design/icons-vue";
+import { useInboundParcelStore } from "@/stores/parcel/inboundStore";
+
+const billRef = ref<HTMLElement | null>(null);
+
+const inboundStore = useInboundParcelStore();
+const route = useRoute();
+const copyToClipboard = async (value: string) => {
+  if (!value) {
+    message.warning(" No value to copy");
+    return;
+  }
+  try {
+    await navigator.clipboard.writeText(value);
+    message.success(" Copied bill number!");
+  } catch (err) {
+    message.error(" Failed to copy");
+  }
+};
+watchEffect(async () => {
+  const trackingId = route.params.trackingId as string;
+  if (trackingId) {
+    await inboundStore.fetchTrackingParcel(trackingId);
+  }
+});
+// ✅ Reverse order of tracking event (latest at the bottom)
+const reversedTrackingEvent = computed(() => {
+  return inboundStore.trackingEvent.slice().reverse();
+});
+const trackingParcel = (billNumber: string) => {
+  const trackingUrl = `https://hal-logistics.la/tracking/${billNumber}`;
+  window.open(trackingUrl, "_blank");
+};
+
+const saveBill = async () => {
+  if (!billRef.value) return;
+
+  // Optional: Override problematic colors for html2canvas
+  const originalColor = billRef.value.style.color;
+  billRef.value.style.color = "#222"; // or your preferred color
+
+  const canvas = await html2canvas(billRef.value, {
+    backgroundColor: "#fff", // ensures white background
+    useCORS: true,           // if you have images from other domains
+  });
+
+  // Revert color if you changed it
+  billRef.value.style.color = originalColor;
+
+  const link = document.createElement("a");
+  link.download = "bill.png";
+  link.href = canvas.toDataURL("image/png");
+  link.click();
+};
+// ✅ Get latest index based on highest delivery_state (in reversed order)
+const latestIndex = computed(() => {
+  const reversed = inboundStore.trackingEvent.slice().reverse();
+  return reversed.reduce((maxIndex, item, index) => {
+    return item.delivery_state > reversed[maxIndex].delivery_state
+      ? index
+      : maxIndex;
+  }, 0);
+});
+</script>
+
 <template>
   <div class="!bg-white px-6 pb-2">
     <!-- Breadcrumb Component -->
@@ -6,8 +85,9 @@
   <div class="px-3 py-2">
     <!-- Header Section -->
     <div class="flex justify-between">
+      <!-- Billing Information -->
       <div class="w-1/3">
-        <div class="p-4 max-w-md mx-auto bg-white">
+        <div ref="billRef" class="p-4 max-w-md mx-auto bg-white">
           <!-- Header Section -->
           <div class="flex justify-between items-center pb-3">
             <div class="flex items-center gap-2">
@@ -60,7 +140,26 @@
               </span>
             </div>
           </div>
-
+          <div class="flex justify-end py-2">
+           <!-- <a @click="saveBill" target="_blank" rel="noopener" class="!mr-3">
+          <SaveOutlined class="text-2xl !text-gray-600" />
+        </a> -->
+            <a
+              @click="trackingParcel(inboundStore.shipmentInfo.bill_number)"
+              target="_blank"
+              rel="noopener"
+              class="!mr-3"
+            >
+              <LinkOutlined class="text-2xl !text-blue-600" />
+            </a>
+            <a
+              :href="`https://wa.me/${inboundStore.shipmentInfo.receiver_phone_number}`"
+              target="_blank"
+              rel="noopener"
+            >
+              <WhatsAppOutlined class="text-2xl !text-green-600" />
+            </a>
+          </div>
           <h4
             class="font-semibold text-gray-700 bg-gray-100 mb-2 p-3 rounded text-center"
           >
@@ -157,6 +256,7 @@
         </div>
       </div>
 
+      <!-- Tracking Timeline -->
       <div class="w-2/3 ml-4">
         <div class="p-4 bg-white">
           <h4 class="text-md font-semibold !mb-6 !text-gray-800">
@@ -195,53 +295,12 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { watchEffect, ref, computed } from "vue";
-import { useRoute } from "vue-router";
-import { message } from "ant-design-vue";
-import Breadcrumb from "@/components/breadcrumb.vue";
-import Barcode from "@/components/barcode.vue";
-import logo from "@/assets/images/logo.png";
-import { CopyOutlined, ArrowRightOutlined } from "@ant-design/icons-vue";
-import { useInboundParcelStore } from "@/stores/parcel/inboundStore";
-
-const inboundStore = useInboundParcelStore();
-const route = useRoute();
-const copyToClipboard = async (value: string) => {
-  if (!value) {
-    message.warning(" No value to copy");
-    return;
-  }
-  try {
-    await navigator.clipboard.writeText(value);
-    message.success(" Copied bill number!");
-  } catch (err) {
-    message.error(" Failed to copy");
-  }
-};
-watchEffect(async () => {
-  const trackingId = route.params.trackingId as string;
-  if (trackingId) {
-    await inboundStore.fetchTrackingParcel(trackingId);
-  }
-});
-// ✅ Reverse order of tracking event (latest at the bottom)
-const reversedTrackingEvent = computed(() => {
-  return inboundStore.trackingEvent.slice().reverse();
-});
-
-// ✅ Get latest index based on highest delivery_state (in reversed order)
-const latestIndex = computed(() => {
-  const reversed = inboundStore.trackingEvent.slice().reverse();
-  return reversed.reduce((maxIndex, item, index) => {
-    return item.delivery_state > reversed[maxIndex].delivery_state
-      ? index
-      : maxIndex;
-  }, 0);
-});
-</script>
 <style scoped>
+.bill-capture * {
+  color: #222 !important;
+  background: #fff !important;
+  border-color: #ccc !important;
+}
 /* Timeline item alignment */
 .a-timeline-item {
   padding-left: 10px !important;

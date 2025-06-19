@@ -23,7 +23,7 @@ export const useCodStore = defineStore("codStore", {
       prevPageUrl: null,
       cursor: "",
       currentPage: 1, // ✅ Add currentPage
-      pageSize: 25, // ✅ Add pageSize
+      pageSize: 50, // ✅ Add pageSize
       totalItems: 0,
     },
     startDate: dayjs().subtract(3, "month") as Dayjs | null, // ✅ Initialize as Dayjs object
@@ -166,11 +166,17 @@ export const useCodStore = defineStore("codStore", {
         this.loading = false;
       }
     },
-    async fetchCodDetail(id: string) {
-      console.log("fetchCodDetail", id);
+    async fetchCodDetail(id: string,{cursor = "" } = {}) {
       this.loading = true;
       try {
-        const response = await api.get(`/cod/owner/list/${id}`); // Use template literals for cleaner concatenation
+        const response = await api.get(`/cod/owner/list/${id}`,{
+          params: {
+            use_cursor: true,
+            cursor,
+            per_page: 50,
+            current_page: this.pagination.currentPage,
+          },
+        }); // Use template literals for cleaner concatenation
 
         if (response.data && !response.data.error) {
           const data = response.data;

@@ -147,7 +147,7 @@ const clearSearch = () =>{
 
 // Function to handle row detail view
 const viewDetails = (trackingId: string) => {
-  router.push({ name: "inbound-detail", params: { trackingId } });
+  router.push({ name: "parcel-detail", params: { trackingId } });
 };
 onMounted(async () => {
   await outboundStore.fetchOutboundData({status: 'success',startDate:startDate.value.format('YYYY-MM-DD'),endDate:endDate.value.format('YYYY-MM-DD')});

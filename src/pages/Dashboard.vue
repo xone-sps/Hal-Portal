@@ -33,15 +33,15 @@
           <div class="flex justify-between text-lg">
             <div>
               <p class="text-gray-600">ຈັດສົ່ງສຳເລັດ</p>
-              <p class="font-bold text-xl">5</p>
+              <p class="font-bold text-base sm:text-small md:text-small lg:text-lg">5</p>
             </div>
             <div>
               <p class="text-gray-600">ກຳລັງຈັດສົ່ງ</p>
-              <p class=" font-bold text-xl">10</p>
+              <p class=" font-bold text-base sm:text-small md:text-small lg:text-lg">10</p>
             </div>
             <div>
               <p class="text-gray-600">ພັດສະດຸຕີກັບ</p>
-              <p class="font-bold text-xl">-</p>
+              <p class="font-bold text-base sm:text-small md:text-small lg:text-lg">-</p>
             </div>
           </div>
         </a-card>
@@ -56,15 +56,15 @@
           <div class="flex justify-between text-lg">
             <div>
               <p class="text-gray-600">ຈັດສົ່ງສຳເລັດ</p>
-              <p class="  text-xl">200</p>
+              <p class="text-base sm:text-small md:text-small lg:text-lg">200</p>
             </div>
             <div>
               <p class="text-gray-600">ກຳລັງຈັດສົ່ງ</p>
-              <p class="font-bold text-xl">92</p>
+              <p class="font-bold text-base sm:text-small md:text-small lg:text-lg">92</p>
             </div>
             <div>
               <p class="text-gray-600">ພັດສະດຸຕີກັບ</p>
-              <p class="font-bold text-xl">-</p>
+              <p class="font-bold text-base sm:text-small md:text-small lg:text-lg">-</p>
             </div>
           </div>
         </a-card>
@@ -76,16 +76,16 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
           <div>
             <p class="text-gray-600">ຍອດ COD ທັງໝົດ</p>
-            <p class="text-red-600 text-3xl font-bold py-2">{{codStore.codSummary.toLocaleString()}} LAK</p>
+            <p class="text-red-600 text-base sm:text-lg md:text-xl lg:text-xl font-bold py-2">{{codStore.codSummary.toLocaleString()}} LAK</p>
             <p class="text-gray-600 pt-6 pb-4">ຄ່າທຳນຽມ {{codStore.cod_fee_percent.toLocaleString()}} % <span class="pl-4">ຄ່າທຳນຽມໂອນ {{codStore.transferFee.toLocaleString()}} LAK</span></p>
           </div>
           <div>
             <p class="text-gray-600">ລໍຖ້າການໂອນ</p>
-            <p class="text-black text-2xl font-bold py-2">3,402,000 LAK</p>
+            <p class="text-black text-base sm:text-lg md:text-xl lg:text-xl font-bold py-2">3,402,000 LAK</p>
           </div>
           <div>
             <p class="text-gray-600">ໂອນສຳເລັດ</p>
-            <p class="text-black text-2xl font-bold py-2">1,493,000 LAK</p>
+            <p class="text-black text-base sm:text-lg md:text-xl lg:text-xl font-bold py-2">1,493,000 LAK</p>
           </div>
         </div>
         <div class="divider !mt-2"></div>

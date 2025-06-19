@@ -171,7 +171,7 @@ const disableEndDate = (current: Date) => {
 };
 // Function to handle row detail view
 const viewDetails = (trackingId: string) => {
-  router.push({ name: "inbound-detail", params: { trackingId } });
+  router.push({ name: "parcel-detail", params: { trackingId } });
 };
 const handlePaginate = (cursor: string) => {
   inboundStore.fetchInboundData({

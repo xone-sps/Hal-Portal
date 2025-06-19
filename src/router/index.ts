@@ -8,7 +8,6 @@ import SummaryCod from "@/pages/cod/Summary.vue";
 import PendingCod from "@/pages/cod/PendingCod.vue";
 import CompleteCod from "@/pages/cod/CompleteCod.vue";
 import CodDetail from "@/pages/cod/CodDetail.vue";
-import CompleteCodDetail from "@/pages/cod/CompletedCodDetail.vue";
 import SelfServiceIndex from "@/pages/selfDelivery/SelfServiceIndex.vue";
 import SelfDelivery from "@/pages/selfDelivery/SelfDelivery.vue";
 import DeliveryMoreParcel from "@/pages/selfDelivery/DeliveryMoreParcel.vue";
@@ -18,14 +17,13 @@ import OutboundArrived from "@/pages/parcel/outboundParcel/OutboundArrived.vue";
 import OutboundDelivered from "@/pages/parcel/outboundParcel/OutboundDelivered.vue";
 import OutboundReturn from "@/pages/parcel/outboundParcel/OutboundReturn.vue";
 import OutboundReturned from "@/pages/parcel/outboundParcel/OutboundReturned.vue";
-import OutboundDetail from "@/pages/parcel/outboundParcel/OutboundDetail.vue";
 import InboundIndex from "@/pages/parcel/inboundParcel/InboundIndex.vue";
 import InboundProcessing from "@/pages/parcel/inboundParcel/InboundProcessing.vue";
 import InboundArrived from "@/pages/parcel/inboundParcel/InboundArrived.vue";
 import InboundDelivered from "@/pages/parcel/inboundParcel/InboundDelivered.vue";
 import InboundReturn from "@/pages/parcel/inboundParcel/InboundReturn.vue";
 import InboundReturned from "@/pages/parcel/inboundParcel/InboundReturned.vue";
-import InboundDetail from "@/pages/parcel/inboundParcel/InboundDetail.vue";
+import ParcelDetail from "@/pages/parcel/ParcelDetail.vue";
 import  Profile from "@/pages/Profile.vue";
 import  AllAddress from "@/pages/address/AllAddress.vue";
 import  SenderAddress from "@/pages/address/Sender.vue";
@@ -220,12 +218,6 @@ const routes = [
                     },
                 ]
             },
-            {
-                path: "outbound/detail/$id",
-                name: "outbound-detail",
-                component: OutboundDetail,
-                meta: {requiresAuth: true, title: "ລາຍລະອຽດພັດສະດຸຂາອອກ", description: "" },
-            },
             // Inbound route
             {
                 path: "inbound",
@@ -265,10 +257,10 @@ const routes = [
                 ]
             },
             {
-                path: "inbound/detail/:trackingId",
-                name: "inbound-detail",
-                component: InboundDetail,
-                meta: {requiresAuth: true, title: "ລາຍລະອຽດພັດສະດຸຂາເຂົ້າ", description: "" },
+                path: "detail/:trackingId",
+                name: "parcel-detail",
+                component: ParcelDetail,
+                meta: {requiresAuth: true, title: "ລາຍລະອຽດພັດສະດຸ", description: "" },
             },
 
         ]
