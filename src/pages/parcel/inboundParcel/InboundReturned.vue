@@ -95,7 +95,7 @@ import { useExportStore } from "@/stores/useExportStore";
 import { useRouter } from "vue-router";
 import dayjs, { Dayjs } from "dayjs";
 import { debounce } from "lodash";
-import Pagination from "@/components/pagination.vue";
+import Pagination from "@/components/Pagination.vue";
 
 const inboundStore = useInboundParcelStore();
 const exportStore = useExportStore();

@@ -233,7 +233,7 @@ import { notification } from "ant-design-vue";
 import type { Dayjs } from "dayjs";
 import { useRouter } from "vue-router";
 import { useExportStore } from "@/stores/useExportStore";
-import Pagination from "@/components/pagination.vue";
+import Pagination from "@/components/Pagination.vue";
 import dayjs from "dayjs";
 import { debounce } from "lodash";
 import type { UploadChangeParam } from "ant-design-vue";

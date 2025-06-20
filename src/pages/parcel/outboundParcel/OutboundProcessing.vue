@@ -95,7 +95,7 @@ import { useOutboundParcelStore } from "@/stores/parcel/outboundStore";
 import type { Dayjs } from "dayjs";
 import { useRouter } from "vue-router";
 import { useExportStore } from "@/stores/useExportStore";
-import Pagination from "@/components/pagination.vue";
+import Pagination from "@/components/Pagination.vue";
 import dayjs from "dayjs";
 import { debounce } from "lodash";
 import { formatDate } from "@/utils/format";

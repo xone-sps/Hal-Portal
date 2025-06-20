@@ -96,7 +96,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
-import Pagination from "@/components/pagination.vue";
+import Pagination from "@/components/Pagination.vue";
 import { EyeOutlined } from "@ant-design/icons-vue";
 import { useRouter,useRoute } from "vue-router";
 import { useCodStore } from "@/stores/cod/codStore";

@@ -215,7 +215,7 @@ import {
   DeleteOutlined,
   EditOutlined
 } from "@ant-design/icons-vue";
-import Pagination from "@/components/pagination.vue";
+import Pagination from "@/components/Pagination.vue";
 import { useOutboundParcelStore } from "@/stores/parcel/outboundStore";
 import { useManageOrderStore } from "@/stores/parcel/manageOrderStore";
 import { notification } from "ant-design-vue";

@@ -90,7 +90,7 @@
 import { onMounted, ref } from "vue";
 import { useInboundParcelStore } from "@/stores/parcel/inboundStore";
 import { useExportStore } from "@/stores/useExportStore";
-import Pagination from "@/components/pagination.vue";
+import Pagination from "@/components/Pagination.vue";
 import { EyeOutlined } from "@ant-design/icons-vue";
 import { useRouter } from "vue-router";
 import { debounce } from "lodash";

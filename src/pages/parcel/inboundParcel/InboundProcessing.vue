@@ -98,7 +98,7 @@ import { debounce } from "lodash";
 import { useRouter } from "vue-router";
 import { useInboundParcelStore } from "@/stores/parcel/inboundStore";
 import { useExportStore } from "@/stores/useExportStore";
-import Pagination from "@/components/pagination.vue";
+import Pagination from "@/components/Pagination.vue";
 import dayjs, { Dayjs } from "dayjs";
 import { formatDate } from "@/utils/format";
 
