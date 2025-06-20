@@ -1,9 +1,9 @@
 import { defineStore } from "pinia";
-import { api } from "@/plugins/axios.ts";
+import { api } from "@/plugins/axios";
 import { ref } from "vue";
 import dayjs, { Dayjs } from "dayjs";
 import { notification } from "ant-design-vue";
-import { useRouter } from "vue-router";
+import { useRouter,Router } from "vue-router";
 
 export const useCodStore = defineStore("codStore", {
   state: () => ({

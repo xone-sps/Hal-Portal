@@ -171,12 +171,4 @@ h1,h2,h3,h4,p, span,a,.ant-tabs,.ant-table-wrapper .ant-table {
   }
 }
 
-@media (min-width: 1024px) {
-  body {
 
-  }
-
-  #app {
-
-  }
-}

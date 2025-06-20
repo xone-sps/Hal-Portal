@@ -53,11 +53,11 @@
             }}</span>
           </p>
         </div>
-        <Pagination
-          :pagination="inboundStore.pagination"
-          @paginate="handlePaginate"
-        />
         <div class="flex items-center gap-4">
+          <Pagination
+            :pagination="inboundStore.pagination"
+            @paginate="handlePaginate"
+          />
           <!-- Search Input -->
           <div class="relative w-90">
             <a-input-search
@@ -95,6 +95,7 @@ import { useExportStore } from "@/stores/useExportStore";
 import { useRouter } from "vue-router";
 import dayjs, { Dayjs } from "dayjs";
 import { debounce } from "lodash";
+import Pagination from "@/components/pagination.vue";
 
 const inboundStore = useInboundParcelStore();
 const exportStore = useExportStore();
@@ -102,6 +103,7 @@ const router = useRouter();
 const searchQuery = ref("");
 const startDate = ref<Dayjs>(dayjs().subtract(3, "month"));
 const endDate = ref<Dayjs>(dayjs());
+import { formatDate } from "@/utils/format";
 
 const columns = [
   { title: "ເລກພັດສະດຸ", dataIndex: "shipment_number", key: "shipment_number" },
@@ -155,7 +157,7 @@ const disableStartDate = (current: Date) => {
   if (!endDate.value) {
     return false; // If no endDate is selected, allow all dates
   }
-  return current > new Date(endDate.value); // Disable dates after the selected endDate
+  return current > new Date(formatDate(endDate.value)); // Disable dates after the selected endDate
 };
 
 // Disable dates for the End Date picker
@@ -163,7 +165,7 @@ const disableEndDate = (current: Date) => {
   if (!startDate.value) {
     return false; // If no startDate is selected, allow all dates
   }
-  return current < new Date(startDate.value); // Disable dates before the selected startDate
+  return current < new Date(formatDate(startDate.value)); // Disable dates before the selected startDate
 };
 
 const viewDetails = (trackingId: string) => {
@@ -174,17 +176,17 @@ const handlePaginate = (cursor: string) => {
   inboundStore.fetchInboundData({
     status: "returned_success",
     cursor: cursor,
-    startDate: startDate.value,
-    endDate: endDate.value,
+    startDate: formatDate(startDate.value),
+    endDate: formatDate(endDate.value),
   });
 };
 const handleSearch = async () => {
-  if (startDate.value !== "" && endDate.value !== "") {
+  if (startDate.value !== null && endDate.value !== null) {
     await inboundStore.fetchInboundData({
       status: "returned_success",
       query: searchQuery.value,
-      startDate: startDate.value,
-      endDate: endDate.value,
+      startDate: formatDate(startDate.value),
+      endDate: formatDate(endDate.value),
     });
   }
 };
@@ -198,8 +200,8 @@ const debouncedSearch = debounce(async () => {
 }, 300);
 const handleExport = async () => {
   await exportStore.exportExcel({
-    startDate: startDate,
-    endDate: endDate,
+    startDate: formatDate(startDate.value),
+    endDate: formatDate(endDate.value),
     status: "returned_success",
     query: "",
   });
@@ -212,17 +214,13 @@ const clearSearch = () => {
 onMounted(async () => {
   await inboundStore.fetchInboundData({
     status: "returned_success",
-    startDate: startDate.value,
-    endDate: endDate.value,
+    startDate: formatDate(startDate.value),
+    endDate: formatDate(endDate.value),
   });
 });
 </script>
 
 <style scoped>
-:deep(.ant-tabs-tab-active) {
-  /*font-weight: bold !important;*/
-}
-
 :deep(.ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn) {
   color: #e00c16 !important; /* Custom active tab color */
   font-size: 15px !important;

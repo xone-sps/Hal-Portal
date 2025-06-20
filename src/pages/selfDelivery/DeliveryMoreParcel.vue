@@ -10,7 +10,6 @@
             <a-avatar size="small" class="!bg-red-500 text-white font-bold"
               >S</a-avatar
             >
-
             <!-- Name and Edit Option -->
             <div class="flex items-center gap-2">
               <p class="text-lg font-semibold">ຜູ້ສົ່ງ</p>
